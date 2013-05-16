@@ -154,68 +154,78 @@ public class CladeAgeProbabilities {
 
 							// Run birth-death simulation with those parameter values, only if t > 0, else result = 0.
 							if (tree_duration - sampling_gap >= 0) {
-
+								
 								// Initiate arrays for branch origin and branch termination.
-								ArrayList branch_origin = new ArrayList();
-								ArrayList branch_termination = new ArrayList();
-								ArrayList new_branch_origin = new ArrayList();
-								ArrayList<E> new_branch_termination = new ArrayList();
+								ArrayList<Double> branch_origin = new ArrayList<Double>();
+								ArrayList<Double> branch_termination = new ArrayList<Double>();
+								ArrayList<Double> new_branch_origin = new ArrayList<Double>();
+								ArrayList<Double> new_branch_termination = new ArrayList<Double>();
 //								double[] branch_origin = new double[max_tree_size + 1];
 //								int branch_origin_counter = 0;
 //								double[] branch_termination = new double[max_tree_size + 1];
 //								int branch_termination_counter = 0;
 //								double[] new_branch_origin = new double[max_tree_size + 1];
 //								new_branch_origin[0] = tree_duration;
+								new_branch_origin.add(tree_duration);
 //								int new_branch_origin_counter = 1;
 //								double[] new_branch_termination = new double[max_tree_size + 1];
 //								int new_branch_termination_counter = 0;
 
 								// Start the tree generation loop.
 //								while (new_branch_origin_counter > 0 && branch_origin_counter < max_tree_size) {
-								while (new_branch_origin.length > 0 && branch_origin.length < max_tree_size) {
+								while (new_branch_origin.size() > 0 && branch_origin.size() < max_tree_size) {
 
 									// For each new origin, add a new termination.
 //									for (int o = 0; o < new_branch_origin_counter; o++) {
-									for (int o = 0; o < new_branch_origin.length; o++) {
+									for (int o = 0; o < new_branch_origin.size(); o++) {
 //										new_branch_termination[new_branch_termination_counter] = new_branch_origin[o] - (Math.log(Math.random())/(-(lambda+mu)));
-										new_branch_termination.add(new_branch_origin[o] - (Math.log(Math.random())/(-(lambda+mu))));
+										new_branch_termination.add(new_branch_origin.get(o) - (Math.log(Math.random())/(-(lambda+mu))));
 //										new_branch_termination_counter += 1;
 									}
 
 									// Add new origin and termination to the old collection.
 //									for (int o = 0; o < new_branch_origin_counter; o++) {
-									for (int o = 0; o < new_branch_origin.length; o++) {
+									for (int o = 0; o < new_branch_origin.size(); o++) {
 //										branch_origin[branch_origin_counter] = new_branch_origin[o];
-										branch_origin.add(new_branch_origin[o]);
+										branch_origin.add(new_branch_origin.get(o));
 //										branch_origin_counter += 1;
 									}
-									for (int t = 0; t < new_branch_termination_counter; t++) {
-										branch_termination[branch_termination_counter] = new_branch_termination[t];
-										branch_termination_counter += 1;
+//									for (int t = 0; t < new_branch_termination_counter; t++) {
+									for (int t = 0; t < new_branch_termination.size(); t++) {
+//										branch_termination[branch_termination_counter] = new_branch_termination[t];
+										branch_termination.add(new_branch_termination.get(t));
+//										branch_termination_counter += 1;
 									}
 
 									// Empty the new origin array.
-									new_branch_origin = new double[max_tree_size + 1];
-									new_branch_origin_counter = 0;
+//									new_branch_origin = new double[max_tree_size + 1];
+									new_branch_origin = new ArrayList<Double>();
+//									new_branch_origin_counter = 0;
 
 									// For each new termination, add it to the new origin array if it is > 0 and rand < lambda/(lambda+mu) - this represents a speciation event.
-									for (int t = 0; t < new_branch_termination_counter; t++) {
-										if (new_branch_termination[t] > 0) {
+//									for (int t = 0; t < new_branch_termination_counter; t++) {
+									for (int t = 0; t < new_branch_termination.size(); t++) {										
+//										if (new_branch_termination[t] > 0) {
+										if (new_branch_termination.get(t) > 0) {
 											if (Math.random() < lambda/(lambda+mu)) {
-												new_branch_origin[new_branch_origin_counter] = new_branch_termination[t];
-												new_branch_origin_counter += 1;
-												new_branch_origin[new_branch_origin_counter] = new_branch_termination[t];
-												new_branch_origin_counter += 1;
+//												new_branch_origin[new_branch_origin_counter] = new_branch_termination[t];
+												new_branch_origin.add(new_branch_termination.get(t));
+//												new_branch_origin_counter += 1;
+//												new_branch_origin[new_branch_origin_counter] = new_branch_termination[t];
+												new_branch_origin.add(new_branch_termination.get(t));
+//												new_branch_origin_counter += 1;
 											}
 										}
 									}
 
 									// Empty the new termination array.
-									new_branch_termination = new double[max_tree_size + 1];
-									new_branch_termination_counter = 0;
+//									new_branch_termination = new double[max_tree_size + 1];
+									new_branch_termination = new ArrayList<Double>();
+//									new_branch_termination_counter = 0;
 
 									// Set one_of_the_trees_too_large to true if this tree has become too large.
-									if (branch_origin_counter >= max_tree_size) {
+//									if (branch_origin_counter >= max_tree_size) {
+									if (branch_origin.size() >= max_tree_size) {
 										one_of_the_trees_too_large[i] = true;
 									}
 
@@ -224,9 +234,12 @@ public class CladeAgeProbabilities {
 								// Count the number of extant species and set branch terminations that are less than 0 back to 0.
 								int extant_taxa = 0;
 								if (one_of_the_trees_too_large[i] == false) {
-									for (int b = 0; b < branch_termination_counter; b++) {
-										if (branch_termination[b] < 0) {
-											branch_termination[b] = 0.0;
+//									for (int b = 0; b < branch_termination_counter; b++) {
+									for (int b = 0; b < branch_termination.size(); b++) {
+//										if (branch_termination[b] < 0) {
+										if (branch_termination.get(b) < 0) {
+//											branch_termination[b] = 0.0;
+											branch_termination.set(b,0.0);
 											extant_taxa += 1;
 										}
 									}
@@ -234,12 +247,17 @@ public class CladeAgeProbabilities {
 
 								// Set branch origins and terminations that are more than tree_duration-sampling_gap back to tree_duration-sampling_gap.
 								if (one_of_the_trees_too_large[i] == false) {
-									for (int b = 0; b < branch_origin_counter; b++) {
-										if (branch_origin[b] > tree_duration-sampling_gap) {
-											branch_origin[b] = tree_duration-sampling_gap;
+//									for (int b = 0; b < branch_origin_counter; b++) {
+									for (int b = 0; b < branch_origin.size(); b++) {
+//										if (branch_origin[b] > tree_duration-sampling_gap) {
+										if (branch_origin.get(b) > tree_duration-sampling_gap) {
+//											branch_origin[b] = tree_duration-sampling_gap;
+											branch_origin.set(b,tree_duration-sampling_gap);
 										}
-										if (branch_termination[b] > tree_duration-sampling_gap) {
-											branch_termination[b] = tree_duration-sampling_gap;
+//										if (branch_termination[b] > tree_duration-sampling_gap) {
+										if (branch_termination.get(b) > tree_duration-sampling_gap) {
+//											branch_termination[b] = tree_duration-sampling_gap;
+											branch_termination.set(b,tree_duration-sampling_gap);
 										}
 									}
 								}
@@ -248,8 +266,10 @@ public class CladeAgeProbabilities {
 								if (one_of_the_trees_too_large[i] == false) {
 									if (extant_taxa > 0) {
 										double sum_of_species_duration = 0;
-										for (int b = 0; b < branch_origin_counter; b++) {
-											sum_of_species_duration += branch_origin[b] - branch_termination[b];
+//										for (int b = 0; b < branch_origin_counter; b++) {
+										for (int b = 0; b < branch_origin.size(); b++) {
+//											sum_of_species_duration += branch_origin[b] - branch_termination[b];
+											sum_of_species_duration += branch_origin.get(b) - branch_termination.get(b);
 										}
 
 										// Once a suitable tree is found, calculate the result for multiple different values of psi.
@@ -1045,7 +1065,6 @@ public class CladeAgeProbabilities {
 			// Find the best result among the nmReplicates replicates.
 			int index = 0;
 			for (int x = 1; x < nmRepetitions; x++) {
-				System.out.println("Yx: " + ys[x]);
 				if (ys[x] < ys[index]) {
 					index = x;
 				}
@@ -1083,7 +1102,6 @@ public class CladeAgeProbabilities {
 		System.out.println("RMSD: " + approx_distribution_rmsd);
 
 	}
-	
 	
 	public static void main(String[] args) {
 
