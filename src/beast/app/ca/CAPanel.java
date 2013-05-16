@@ -1,5 +1,6 @@
 package beast.app.ca;
 
+
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
@@ -16,29 +17,28 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
-import javax.swing.JTextArea;
-import javax.swing.SwingWorker;
+import javax.swing.ToolTipManager;
 
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.BevelBorder;
 
 import beast.app.beauti.BeautiPanel;
+import beast.app.util.Utils;
 import beast.math.distributions.Exponential;
 import beast.math.distributions.ParametricDistribution;
 
@@ -46,6 +46,98 @@ public class CAPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	static final String CA_ICON = "beast/app/ca/icons/cladeage_256x256px.png";
+
+	final static String OCCURRENCE_AGE_HELP = "<html>First occurrence age:<br/>"+
+"<br/>"+
+"The age of the oldest fossil of the clade. <br/>"+
+"If this age is known exactly, it should be specified in the 'Minimum' <br/>"+
+"field. If not, you should specify both a minimum and maximum age.<br/>" +
+"<br/>" +
+"Consider a fosil described in the literature to have come from the oligocene,<br/>" +
+"which extends from about 34 million to 23 million years before the present <br/>" +
+"(33.9±0.1 to 23.03±0.05 Ma). The uncertainties in the boundaries are small <br/>" +
+"enough to be ignored, so the minimum is 23.03 and maximum 33.9 if you want <br/>" +
+"to express ages in millions of years. <br/>" +
+"</html>";
+
+	final static String DIV_RATE_HELP = "<html>Net diversification rate:<br/>"+
+"<br/>"+
+"The net diversification rate is the difference between <br/>"+
+"speciation and extinction rate. Estimates can be obtained <br/>"+
+"e.g. with MEDUSA (Alfaro et al. 2009) or TreePar (Stadler 2011).<br/>"+
+"-<br/>"+
+"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
+"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
+
+	final static String TURNOVER_RATE_HELP = "<html>Turnover rate:<br/>"+
+"<br/>"+
+"The turnover rate is the ratio of extinction and speciation <br/>"+
+"rate. Estimates can be obtained e.g. with MEDUSA (Alfaro et al. <br/>"+
+"2009) or TreePar (Stadler 2011).<br/>"+
+"-<br/>"+
+"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
+"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
+
+	final static String SAMPLING_RATE_HELP = "<html>Sampling rate:<br/>"+
+"<br/>"+
+"The sampling rate (sometimes called 'preservation rate') <br/>"+
+"includes all processes that result in the publication of a fossil, <br/>"+
+"including fossilization, discovery, identification and description <br/>"+
+"(Friedman & Brazeau 2011). Estimates have been reported for many <br/>"+
+"taxonomic groups (e.g. Foote et al. 1999, Foote & Sepkoski 1999) <br/>"+
+"and can be obtained by methods outlined in Foote (1997).<br/>"+
+"-<br/>"+
+"Foote (1997) Paleobiology 23, 278-300 Proc R Soc B 278, 432-439, <br/>"+
+"<a href='http://www.jstor.org/stable/2401105'>http://www.jstor.org/stable/2401105</a><br/>"+
+"Foote et al. (1999) Science 283, 1310-1314, <br/>"+
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/10037598'>http://www.ncbi.nlm.nih.gov/pubmed/10037598</a><br/>"+
+"Foote & Sepkoski (1999) Nature 398, 415-417, <br/>"+
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/11536900'>http://www.ncbi.nlm.nih.gov/pubmed/11536900</a><br/>"+
+"Friedman & Brazeau (2011), <br/>"+
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/20739322‎'>http://www.ncbi.nlm.nih.gov/pubmed/20739322‎</a></html>";
+
+	final static String SAMPLING_GAP_HELP = "<html>Sampling gap:<br/>"+
+"<br/>"+
+"The sampling gap represents the time period after a clade's <br/>"+
+"origin during which it could not have fossilized (possibly due to <br/>"+
+"small population size or limited geographic distribution), or its <br/>"+
+"earliest fossils could not be recognized as part of this clade (as <br/>"+
+"no apomorphies may have evolved yet). Specifying a sampling gap <br/>"+
+"is optional. A sampling gap of 0.0-2.0 Ma may be a <br/>"+
+"reasonable assumption.</html>";
+
+	final static String NR_SIMULATIONS_HELP = "<html>Number of tree simulations:<br/>"+
+"<br/>"+
+"The number of times birth-death trees are <br/>"+
+"simulated to estimate the total unobserved lineage duration of a <br/>"+
+"clade given the net diversification rate and the turnover rate. The <br/>"+
+"higher this number, the better the estimates of the unobserved history, <br/>"+
+"and thus of clade age probabilities. The default of 1000 <br/>"+
+"tree simulations usually works well.</html>";
+
+	final static String MAX_NR_TREES_HELP = "<html>Maximum number of trees:<br/>"+
+"<br/>"+
+"If the net diversification rate is high (> 0.5), <br/>"+
+"the simulated trees could potentially become very large, which can <br/>"+
+"substantially slow down the estimation of clade age probabilities. <br/>"+
+"The maximum number of branches limits the size of simulated trees. <br/>"+
+"If the limit should be hit for a given age in one of the simulations, <br/>"+
+"this age will not be further analysed and it <br/>"+
+"will not appear in the output. There is no reason to decrease <br/>"+
+"this number, but in extreme cases you might want <br/>"+
+"to increase it.</html>";
+
+	final static String REPS_PER_TREE_HELP = "<html>Sampling replicates per tree:<br/>"+
+"<br/>"+
+"If a range of sampling rates has been specified, <br/>"+
+"this number specifies how often rates will be drawn at random <br/>"+
+"from this range for each simulated tree to estimate the probabilities <br/>"+
+"of unobserved lineage durations. The default of 10 sampling <br/>"+
+"replicates per tree usually works well.</html>";
 
     // GUI components
 	private JTextField textField_maxOccuranceAge;
@@ -78,7 +170,7 @@ public class CAPanel extends JPanel {
 	private double maxTurnoverRate = minTurnoverRate;
 	private double maxSamplingRate = minSamplingRate;
 	private double maxSamplingGap = minSamplingGap;
-	private int NumberOfTreeSimulations = 100;
+	private int NumberOfTreeSimulations = 1000;
 	private int MaxNrOfBranches = 100000;
 	private int SamplingReplicatesPerTree = 10;
 
@@ -341,8 +433,9 @@ public class CAPanel extends JPanel {
 		btnHelpButtonFirstOccurance.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "First occurance is ...");
+				showHelp(OCCURRENCE_AGE_HELP);
 			}
+
 		});
 
 		JButton btnHelpButton2= new JButton("?");
@@ -353,7 +446,7 @@ public class CAPanel extends JPanel {
 		btnHelpButton2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "First occurance is ...");
+				showHelp(DIV_RATE_HELP);
 			}
 		});
 
@@ -365,7 +458,7 @@ public class CAPanel extends JPanel {
 		btnHelpButton3.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "First occurance is ...");
+				showHelp(TURNOVER_RATE_HELP);
 			}
 		});
 
@@ -377,7 +470,7 @@ public class CAPanel extends JPanel {
 		btnHelpButton4.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "First occurance is ...");
+				showHelp(SAMPLING_RATE_HELP);
 			}
 		});
 		
@@ -389,7 +482,7 @@ public class CAPanel extends JPanel {
 		btnHelpButton5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "First occurance is ...");
+				showHelp(SAMPLING_GAP_HELP);
 			}
 		});
 		
@@ -525,7 +618,7 @@ public class CAPanel extends JPanel {
 				ages = probs.getAges();
 				probabilities =  probs.getProbabilities();
 				// normalize
-				double sum = probabilities[0] * (ages[1] - ages[0]);;
+				double sum = probabilities[0] * (ages[1] - ages[0] + 300);
 				for (int i = 1; i < probabilities.length-1; i++) {
 					sum += probabilities[i] * (ages[i-1] - ages[i+1])/2.0;
 				}
@@ -830,6 +923,28 @@ public class CAPanel extends JPanel {
 		panel4.add(horizontalGlue, gbc_horizontalGlue);
 		
 		dataToGUI();
+
+		lblBirt.setToolTipText(OCCURRENCE_AGE_HELP);
+		lblNetDiversificationRate.setToolTipText(DIV_RATE_HELP);
+		lblRurnoverRateDb.setToolTipText(TURNOVER_RATE_HELP);
+		lblSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
+		lblNewLabel.setToolTipText(SAMPLING_GAP_HELP);
+		lblNewLabel_1.setToolTipText(NR_SIMULATIONS_HELP);
+		lblMaximumNumberOf.setToolTipText(MAX_NR_TREES_HELP);
+		lblSamplingReplicatesPer.setToolTipText(REPS_PER_TREE_HELP);
+		textField_maxOccuranceAge.setToolTipText(OCCURRENCE_AGE_HELP);
+		textField_maxDivRate.setToolTipText(DIV_RATE_HELP);
+		textField_maxTurnoverRate.setToolTipText(TURNOVER_RATE_HELP);
+		textField_maxSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
+		textField_maxSamplingGap.setToolTipText(SAMPLING_GAP_HELP);
+		textField_minOccuranceAge.setToolTipText(OCCURRENCE_AGE_HELP);
+		textField_minDivRate.setToolTipText(DIV_RATE_HELP);
+		textField_minTurnoverRate.setToolTipText(TURNOVER_RATE_HELP);
+		textField_minSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
+		textField_minSamplginGap.setToolTipText(SAMPLING_GAP_HELP);
+		textField_NumberOfTreeSimulations.setToolTipText(NR_SIMULATIONS_HELP);
+		textField_MaxNrOfBranches.setToolTipText(MAX_NR_TREES_HELP);
+		textField_SamplingReplicatesPerTree.setToolTipText(REPS_PER_TREE_HELP);
 	}
 
 	void dataToGUI() {
@@ -955,8 +1070,41 @@ public class CAPanel extends JPanel {
 	    }
 	}
 
+	private void showHelp(String text) {
+//		JTextPane k = new JTextPane();
+//		k.setContentType("text/html");
+//		k.setText(text);
+		
+		   final JEditorPane pane = new JEditorPane();
+		   pane.setContentType("text/html");
+		   pane.setText(text);
+		    pane.setEditable(false);
+		    ToolTipManager.sharedInstance().registerComponent(pane);
+
+//		    HyperlinkListener l = new HyperlinkListener() {
+//		        @Override
+//		        public void hyperlinkUpdate(HyperlinkEvent e) {
+//		            if (HyperlinkEvent.EventType.ACTIVATED == e.getEventType()) {
+//		                try {
+//		                    pane.setPage(e.getURL());
+//		                } catch (Exception e1) {
+//		                    e1.printStackTrace();
+//		                }
+//		            }
+//
+//		        }
+//
+//		    };
+//		    pane.addHyperlinkListener(l);
+		    String title = text.substring(0, text.indexOf(":"));
+		    title = title.replaceAll("<html>", "");
+			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE);
+		
+	}
+
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
+        Utils.loadUIManager();
 		frame.setSize(1024, 728);
         ImageIcon icon = BeautiPanel.getIcon(CA_ICON);
         if (icon != null) {
