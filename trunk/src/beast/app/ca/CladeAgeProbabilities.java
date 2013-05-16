@@ -2,6 +2,8 @@ package beast.app.ca;
 
 import java.util.ArrayList;
 
+import javax.swing.JProgressBar;
+
 public class CladeAgeProbabilities {
 
 	// Initialize objects that are to become variables of class instances.
@@ -16,7 +18,7 @@ public class CladeAgeProbabilities {
 	private double approx_distribution_rmsd;
 	private int number_of_ages_with_trees_that_are_too_large;
 	private double offset = 0;
-	// private double cancel1 = false;
+	private boolean cancel1 = false;
 
 	// Initialize constants for Lanczos approximation of the gamma function.
 	private double lanczos_g = 7;
@@ -81,8 +83,12 @@ public class CladeAgeProbabilities {
 	// public void setSimulation_progress_indicator_box(???)
 	// public ??? getSimulation_progress_indicator_box()
 
-	// public void setCancel1(???)
-	// public ??? getCancel1()
+	public void setCancel1() {
+		cancel1 = true;
+	}
+	public boolean getCancel1() {
+		return cancel1;
+	}
 
 	// public void setCancel2(???)
 	// public ??? getCancel2()
@@ -91,7 +97,8 @@ public class CladeAgeProbabilities {
 		return number_of_ages_with_trees_that_are_too_large;
 	}
 
-	public void bd_simulate(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, int bd_sample_size, int max_tree_size, int psi_sample_size) {
+	public void bd_simulate(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, int bd_sample_size, int max_tree_size, int psi_sample_size, JProgressBar dpb) {
+		cancel1 = false;
 
 		// Unhide the progress indicator.
 		// simulation_progress_indicator.setHidden(false);
@@ -124,7 +131,10 @@ public class CladeAgeProbabilities {
 			// Feedback.
 			System.out.println(bd + 1);
 
-			// if (cancel1 == false) {
+			if (cancel1) {
+				return;
+			}
+			dpb.setValue(bd);
 
 				// Increment the progress indicator and update the text.
 				// lines 88..102 of Probabilities.rb
@@ -322,7 +332,7 @@ public class CladeAgeProbabilities {
 
 	} // public void bd_simulate(...)
 
-	public void fitExponential() {
+	public double fitExponential() {
 		int nmRepetitions = 10;
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
@@ -640,6 +650,7 @@ public class CladeAgeProbabilities {
 		System.out.println("Distribution type: " + approx_distribution_type);
 		System.out.println("Mean: " + approx_distribution_parameters[0]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
+		return approx_distribution_parameters[0];
 	}
 	
 	public void fitLognormal() {
@@ -1106,7 +1117,7 @@ public class CladeAgeProbabilities {
 	public static void main(String[] args) {
 
 		CladeAgeProbabilities cladeAgeProbabilities = new CladeAgeProbabilities();
-		cladeAgeProbabilities.bd_simulate(10.0,13.0,0.04,0.08,0.001,0.4,0.008,0.018,0,2,100,100000,10);
+		cladeAgeProbabilities.bd_simulate(10.0,13.0,0.04,0.08,0.001,0.4,0.008,0.018,0,2,100,100000,10, new JProgressBar());
 		cladeAgeProbabilities.fitLognormal();
 
   }
