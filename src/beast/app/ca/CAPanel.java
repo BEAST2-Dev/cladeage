@@ -192,9 +192,9 @@ public class CAPanel extends JPanel {
 	public CAPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{525, 375, 100};
-		gridBagLayout.rowHeights = new int[]{150, 500, 20};
+		gridBagLayout.rowHeights = new int[]{170, 450, 40};
 		gridBagLayout.columnWeights = new double[]{1.0, 1.0, 1.0};
-		gridBagLayout.rowWeights = new double[]{1.0, 1.0, 1.0};
+		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
 		setLayout(gridBagLayout);
 		
 		JPanel panel = new JPanel();
@@ -207,7 +207,7 @@ public class CAPanel extends JPanel {
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0};
 		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		panel.setLayout(gbl_panel);
 
@@ -501,9 +501,9 @@ public class CAPanel extends JPanel {
 		gbc_panel2.gridy = 0;
 		add(panel2, gbc_panel2);
 		GridBagLayout gbl_panel2 = new GridBagLayout();
-		gbl_panel2.columnWidths = new int[]{0, 0};
+		gbl_panel2.columnWidths = new int[]{0, 0, 0};
 		gbl_panel2.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_panel2.columnWeights = new double[]{0, 0};
+		gbl_panel2.columnWeights = new double[]{0, 1.0, 0};
 		gbl_panel2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		panel2.setLayout(gbl_panel2);
 
@@ -672,6 +672,45 @@ public class CAPanel extends JPanel {
 		gbc_verticalGlue.gridy = 5;
 		panel2.add(verticalGlue, gbc_verticalGlue);
 
+		// help buttons for panel2
+		JButton btnHelpNrSimulateions = new JButton("?");
+		GridBagConstraints gbc_btnNewButton12 = new GridBagConstraints();
+		gbc_btnNewButton12.gridx = 3;
+		gbc_btnNewButton12.gridy = 1;
+		panel2.add(btnHelpNrSimulateions, gbc_btnNewButton12);
+		btnHelpNrSimulateions.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showHelp(NR_SIMULATIONS_HELP);
+			}
+		});
+		
+		JButton btnHelpNrBranches = new JButton("?");
+		GridBagConstraints gbc_btnNewButton13 = new GridBagConstraints();
+		gbc_btnNewButton13.gridx = 3;
+		gbc_btnNewButton13.gridy = 2;
+		panel2.add(btnHelpNrBranches, gbc_btnNewButton13);
+		btnHelpNrBranches.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showHelp(MAX_NR_TREES_HELP);
+			}
+		});
+
+		JButton btnHelpReplicates = new JButton("?");
+		GridBagConstraints gbc_btnNewButton14 = new GridBagConstraints();
+		gbc_btnNewButton14.gridx = 3;
+		gbc_btnNewButton14.gridy = 3;
+		panel2.add(btnHelpReplicates, gbc_btnNewButton14);
+		btnHelpReplicates.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showHelp(REPS_PER_TREE_HELP);
+			}
+		});
+
+		
+		
 		JPanel panel3 = new JPanel();
 		panel3.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Clade age probabilities", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GridBagConstraints gbc_panel3 = new GridBagConstraints();
