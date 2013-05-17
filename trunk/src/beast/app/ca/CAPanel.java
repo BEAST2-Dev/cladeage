@@ -16,6 +16,8 @@ import java.awt.Insets;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,6 +44,9 @@ import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 import beast.app.beauti.BeautiPanel;
+import beast.app.draw.SmallButton;
+import beast.app.draw.SmallButton.ButtonType;
+import beast.app.draw.SmallButtonOld;
 import beast.app.util.Utils;
 import beast.math.distributions.ExpGamma;
 import beast.math.distributions.Exponential;
@@ -432,7 +437,7 @@ public class CAPanel extends JPanel {
 		panel.add(textField_maxSamplingGap, gbc_textField_5);
 
 		// help buttons for panel1
-		JButton btnHelpButtonFirstOccurance = new JButton("?");
+		JButton btnHelpButtonFirstOccurance = newHelpButton();
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.gridx = 5;
 		gbc_btnNewButton.gridy = 1;
@@ -445,7 +450,7 @@ public class CAPanel extends JPanel {
 
 		});
 
-		JButton btnHelpButton2= new JButton("?");
+		JButton btnHelpButton2= newHelpButton();
 		GridBagConstraints gbc_btnNewButton2 = new GridBagConstraints();
 		gbc_btnNewButton2.gridx = 5;
 		gbc_btnNewButton2.gridy = 2;
@@ -457,7 +462,7 @@ public class CAPanel extends JPanel {
 			}
 		});
 
-		JButton btnHelpButton3= new JButton("?");
+		JButton btnHelpButton3= newHelpButton();
 		GridBagConstraints gbc_btnNewButton3 = new GridBagConstraints();
 		gbc_btnNewButton3.gridx = 5;
 		gbc_btnNewButton3.gridy = 3;
@@ -469,7 +474,7 @@ public class CAPanel extends JPanel {
 			}
 		});
 
-		JButton btnHelpButton4= new JButton("?");
+		JButton btnHelpButton4= newHelpButton();
 		GridBagConstraints gbc_btnNewButton4 = new GridBagConstraints();
 		gbc_btnNewButton4.gridx = 5;
 		gbc_btnNewButton4.gridy = 4;
@@ -481,7 +486,7 @@ public class CAPanel extends JPanel {
 			}
 		});
 		
-		JButton btnHelpButton5= new JButton("?");
+		JButton btnHelpButton5= newHelpButton();
 		GridBagConstraints gbc_btnNewButton5 = new GridBagConstraints();
 		gbc_btnNewButton5.gridx = 5;
 		gbc_btnNewButton5.gridy = 5;
@@ -673,7 +678,7 @@ public class CAPanel extends JPanel {
 		panel2.add(verticalGlue, gbc_verticalGlue);
 
 		// help buttons for panel2
-		JButton btnHelpNrSimulateions = new JButton("?");
+		JButton btnHelpNrSimulateions = newHelpButton();
 		GridBagConstraints gbc_btnNewButton12 = new GridBagConstraints();
 		gbc_btnNewButton12.gridx = 3;
 		gbc_btnNewButton12.gridy = 1;
@@ -685,7 +690,7 @@ public class CAPanel extends JPanel {
 			}
 		});
 		
-		JButton btnHelpNrBranches = new JButton("?");
+		JButton btnHelpNrBranches = newHelpButton();
 		GridBagConstraints gbc_btnNewButton13 = new GridBagConstraints();
 		gbc_btnNewButton13.gridx = 3;
 		gbc_btnNewButton13.gridy = 2;
@@ -697,7 +702,7 @@ public class CAPanel extends JPanel {
 			}
 		});
 
-		JButton btnHelpReplicates = new JButton("?");
+		JButton btnHelpReplicates = newHelpButton();
 		GridBagConstraints gbc_btnNewButton14 = new GridBagConstraints();
 		gbc_btnNewButton14.gridx = 3;
 		gbc_btnNewButton14.gridy = 3;
@@ -844,44 +849,18 @@ public class CAPanel extends JPanel {
 		            
 		            // draw statistics
 		            if (m_distr != null) {
-			            String distr = m_distr.getClass().getName();
-			            distr = distr.substring(distr.lastIndexOf('.') + 1);
-			            distr = distr.replace("Impl", "");
-			            distr = distr.replaceAll("([A-Z])", " $1").trim();
 			            int statoffsetx = getWidth() - 120;
 			            int statoffsety = graphoffset + 10;
-		                g.drawString(distr, statoffsetx, statoffsety);
-		                g.drawString("RMDS: " + format(m_rmsd,5), statoffsetx, statoffsety + 10);
-		                if (m_distr instanceof ExponentialDistributionImpl) {
-		                	double mean = ((ExponentialDistributionImpl) m_distr).getMean();
-			                g.drawString("mean: " + format(mean,5), statoffsetx, statoffsety + 20);
-		                }
-		                if (m_distr instanceof LogNormalImpl) {
-		                	double mean = ((LogNormalImpl) m_distr).getMean();
-		                	double sigma = ((LogNormalImpl) m_distr).getSigma();
-			                g.drawString("mean: " + format(mean,5), statoffsetx, statoffsety + 20);
-			                g.drawString("sigma: " + format(sigma,5), statoffsetx, statoffsety + 30);
-		                }
-		                if (m_distr instanceof GammaDistributionImpl) {
-		                	double alpha = ((GammaDistributionImpl) m_distr).getAlpha();
-		                	double beta = ((GammaDistributionImpl) m_distr).getBeta();
-			                g.drawString("alpha: " + format(alpha,5), statoffsetx, statoffsety + 20);
-			                g.drawString("beta: " + format(beta,5), statoffsetx, statoffsety + 30);
-		                }
-		                if (m_distr instanceof ExpGamma) {
-		                	double mean = ((ExpGamma) m_distr).getMean();
-		                	double alpha = ((ExpGamma) m_distr).getAlpha();
-		                	double beta = ((ExpGamma) m_distr).getBeta();
-		                	double weight = ((ExpGamma) m_distr).getWeight();
-			                g.drawString("mean: " + format(mean,5), statoffsetx, statoffsety + 20);
-			                g.drawString("alpha: " + format(alpha,5), statoffsetx, statoffsety + 30);
-			                g.drawString("beta: " + format(beta,5), statoffsetx, statoffsety + 40);
-			                g.drawString("weight: " + format(weight,5), statoffsetx, statoffsety + 50);
-		                }
+		            	String text = getFitParameters();
+		            	String [] strs = text.split("\n");
+		            	for (int i = 0; i < strs.length; i++) {
+			                g.drawString(strs[i], statoffsetx, statoffsety + i * 10);
+		            	}
 		            }
 				}
 			};
-		    /**
+
+			/**
 		     * maps most significant digit to nr of ticks on graph *
 		     */
 		    final int[] NR_OF_TICKS = new int[]{5, 10, 8, 6, 8, 10, 6, 7, 8, 9, 10};
@@ -910,19 +889,31 @@ public class CAPanel extends JPanel {
 	            return fY;
 	        }
 	        
-	        private String format(double value) {
-	            return format(value,3);
-	        }
-
-	        private String format(double value, int digits) {
-	            StringWriter writer = new StringWriter();
-	            PrintWriter pw = new PrintWriter(writer);
-	            pw.printf("%." + digits +"g", value);
-	            pw.flush();
-	            return writer.toString();
-	        }
 
 		};
+		panel_1.setToolTipText("Click to show parameters of fit");
+		panel_1.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String text = getFitParameters();
+				text = text.replaceAll("\n", "<br/>");
+				showHelp("<html>Distribution fit:<br/>" + text + "</html>");
+			}
+		});
+		
 		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_1.setBackground(Color.gray);
 		panel_1.setPreferredSize(new Dimension(1024,400));
@@ -955,7 +946,7 @@ public class CAPanel extends JPanel {
 		gbc_lblDistributionType.gridy = 2;
 		panel4.add(lblDistributionType, gbc_lblDistributionType);
 		
-		comboBox = new JComboBox(new String[]{"Best fit","Exponential","Gamma","Log Normal"});
+		comboBox = new JComboBox(new String[]{"Best fit","Exponential","Gamma","Log Normal", "Exp Gamma"});
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 0, 5);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -972,30 +963,57 @@ public class CAPanel extends JPanel {
 				if (type.equals("Best fit")) {
 					m_distr = probs.fitExponential();
 					m_rmsd = probs.getApprox_distribution_rmsd();
+					normalise();
 					ContinuousDistribution tmp = probs.fitGamma();
 					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
 						m_rmsd = probs.getApprox_distribution_rmsd();
 						m_distr = tmp;
+						normalise();
 					}
 					tmp = probs.fitLognormal();
 					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
 						m_rmsd = probs.getApprox_distribution_rmsd();
 						m_distr = tmp;
+						normalise();
+					}
+					tmp = probs.fitExpGamma();
+					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+						m_rmsd = probs.getApprox_distribution_rmsd();
+						m_distr = tmp;
+						normalise();
 					}
 				}
 				if (type.equals("Exponential")) {
 					m_distr = probs.fitExponential();
 					m_rmsd = probs.getApprox_distribution_rmsd();
+					normalise();
 				}
 				if (type.equals("Gamma")) {
 					m_distr = probs.fitGamma();
 					m_rmsd = probs.getApprox_distribution_rmsd();
+					normalise();
 				}
 				if (type.equals("Log Normal")) {
 					m_distr = probs.fitLognormal();
 					m_rmsd = probs.getApprox_distribution_rmsd();
+					normalise();
+				}
+				if (type.equals("Exp Gamma")) {
+					m_distr = probs.fitExpGamma();
+					m_rmsd = probs.getApprox_distribution_rmsd();
+					normalise();
 				}
 				panel_1.repaint();
+			}
+
+			private void normalise() {
+				
+				double [] probabilities = probs.getProbabilities();
+				double sum = probs.getNormaliser();
+				for (int i = 0; i < probabilities.length; i++) {
+					probabilities[i] /= sum;
+				}
+			
 			}
 		});
 		GridBagConstraints gbc_btnFindApproximation = new GridBagConstraints();
@@ -1033,6 +1051,10 @@ public class CAPanel extends JPanel {
 		textField_NumberOfTreeSimulations.setToolTipText(NR_SIMULATIONS_HELP);
 		textField_MaxNrOfBranches.setToolTipText(MAX_NR_TREES_HELP);
 		textField_SamplingReplicatesPerTree.setToolTipText(REPS_PER_TREE_HELP);
+	}
+
+	private JButton newHelpButton() {
+		return new HelpButton("?",true);
 	}
 
 	void dataToGUI() {
@@ -1186,9 +1208,62 @@ public class CAPanel extends JPanel {
 //		    pane.addHyperlinkListener(l);
 		    String title = text.substring(0, text.indexOf(":"));
 		    title = title.replaceAll("<html>", "");
-			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE);
+			//JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE, BeautiPanel.getIcon(CA_ICON));
 		
 	}
+
+    private String getFitParameters() {
+    	if (m_distr == null) {
+    		return "No model fit yet";
+    	}
+    	String text = "";
+        String distr = m_distr.getClass().getName();
+        distr = distr.substring(distr.lastIndexOf('.') + 1);
+        distr = distr.replace("Impl", "");
+        distr = distr.replaceAll("([A-Z])", " $1").trim();
+        text += distr +"\n";
+        text += "RMDS: " + format(m_rmsd,5) +"\n";
+        if (m_distr instanceof ExponentialDistributionImpl) {
+        	double mean = ((ExponentialDistributionImpl) m_distr).getMean();
+            text += "mean: " + format(mean,5) + "\n";
+        }
+        if (m_distr instanceof LogNormalImpl) {
+        	double mean = ((LogNormalImpl) m_distr).getMean();
+        	double sigma = ((LogNormalImpl) m_distr).getSigma();
+            text += "mean: " + format(mean,5) + "\n";
+            text += "sigma: " + format(sigma,5) + "\n";
+        }
+        if (m_distr instanceof GammaDistributionImpl) {
+        	double alpha = ((GammaDistributionImpl) m_distr).getAlpha();
+        	double beta = ((GammaDistributionImpl) m_distr).getBeta();
+            text += "alpha: " + format(alpha,5) + "\n";
+            text += "beta: " + format(beta,5) + "\n";
+        }
+        if (m_distr instanceof ExpGamma) {
+        	double mean = ((ExpGamma) m_distr).getMean();
+        	double alpha = ((ExpGamma) m_distr).getAlpha();
+        	double beta = ((ExpGamma) m_distr).getBeta();
+        	double weight = ((ExpGamma) m_distr).getWeight();
+            text += "mean: " + format(mean,5) + "\n";
+            text += "alpha: " + format(alpha,5) + "\n";
+            text += "beta: " + format(beta,5) + "\n";
+            text += "weight: " + format(weight,5) + "\n";
+        }
+        return text;
+	}
+
+    private String format(double value) {
+        return format(value,3);
+    }
+
+    private String format(double value, int digits) {
+        StringWriter writer = new StringWriter();
+        PrintWriter pw = new PrintWriter(writer);
+        pw.printf("%." + digits +"g", value);
+        pw.flush();
+        return writer.toString();
+    }
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
