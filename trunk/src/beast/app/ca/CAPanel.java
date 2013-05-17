@@ -37,9 +37,15 @@ import javax.swing.Box;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.BevelBorder;
 
+import org.apache.commons.math.distribution.ContinuousDistribution;
+import org.apache.commons.math.distribution.ExponentialDistributionImpl;
+import org.apache.commons.math.distribution.GammaDistributionImpl;
+
 import beast.app.beauti.BeautiPanel;
 import beast.app.util.Utils;
+import beast.math.distributions.ExpGamma;
 import beast.math.distributions.Exponential;
+import beast.math.distributions.LogNormalImpl;
 import beast.math.distributions.ParametricDistribution;
 
 public class CAPanel extends JPanel {
@@ -47,7 +53,7 @@ public class CAPanel extends JPanel {
 
 	static final String CA_ICON = "beast/app/ca/icons/cladeage_256x256px.png";
 
-	final static String OCCURRENCE_AGE_HELP = "<html>First occurrence age:<br/>"+
+	final public static String OCCURRENCE_AGE_HELP = "<html>First occurrence age:<br/>"+
 "<br/>"+
 "The age of the oldest fossil of the clade. <br/>"+
 "If this age is known exactly, it should be specified in the 'Minimum' <br/>"+
@@ -60,7 +66,7 @@ public class CAPanel extends JPanel {
 "to express ages in millions of years. <br/>" +
 "</html>";
 
-	final static String DIV_RATE_HELP = "<html>Net diversification rate:<br/>"+
+	final public static String DIV_RATE_HELP = "<html>Net diversification rate:<br/>"+
 "<br/>"+
 "The net diversification rate is the difference between <br/>"+
 "speciation and extinction rate. Estimates can be obtained <br/>"+
@@ -71,7 +77,7 @@ public class CAPanel extends JPanel {
 "Stadler (2009) PNAS 108, 6187-6192, <br/>"+
 "<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
 
-	final static String TURNOVER_RATE_HELP = "<html>Turnover rate:<br/>"+
+	final public static String TURNOVER_RATE_HELP = "<html>Turnover rate:<br/>"+
 "<br/>"+
 "The turnover rate is the ratio of extinction and speciation <br/>"+
 "rate. Estimates can be obtained e.g. with MEDUSA (Alfaro et al. <br/>"+
@@ -82,7 +88,7 @@ public class CAPanel extends JPanel {
 "Stadler (2009) PNAS 108, 6187-6192, <br/>"+
 "<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
 
-	final static String SAMPLING_RATE_HELP = "<html>Sampling rate:<br/>"+
+	final public static String SAMPLING_RATE_HELP = "<html>Sampling rate:<br/>"+
 "<br/>"+
 "The sampling rate (sometimes called 'preservation rate') <br/>"+
 "includes all processes that result in the publication of a fossil, <br/>"+
@@ -100,7 +106,7 @@ public class CAPanel extends JPanel {
 "Friedman & Brazeau (2011), <br/>"+
 "<a href='http://www.ncbi.nlm.nih.gov/pubmed/20739322‎'>http://www.ncbi.nlm.nih.gov/pubmed/20739322‎</a></html>";
 
-	final static String SAMPLING_GAP_HELP = "<html>Sampling gap:<br/>"+
+	final public static String SAMPLING_GAP_HELP = "<html>Sampling gap:<br/>"+
 "<br/>"+
 "The sampling gap represents the time period after a clade's <br/>"+
 "origin during which it could not have fossilized (possibly due to <br/>"+
@@ -110,7 +116,7 @@ public class CAPanel extends JPanel {
 "is optional. A sampling gap of 0.0-2.0 Ma may be a <br/>"+
 "reasonable assumption.</html>";
 
-	final static String NR_SIMULATIONS_HELP = "<html>Number of tree simulations:<br/>"+
+	final public static String NR_SIMULATIONS_HELP = "<html>Number of tree simulations:<br/>"+
 "<br/>"+
 "The number of times birth-death trees are <br/>"+
 "simulated to estimate the total unobserved lineage duration of a <br/>"+
@@ -119,7 +125,7 @@ public class CAPanel extends JPanel {
 "and thus of clade age probabilities. The default of 1000 <br/>"+
 "tree simulations usually works well.</html>";
 
-	final static String MAX_NR_TREES_HELP = "<html>Maximum number of trees:<br/>"+
+	final public static String MAX_NR_TREES_HELP = "<html>Maximum number of trees:<br/>"+
 "<br/>"+
 "If the net diversification rate is high (> 0.5), <br/>"+
 "the simulated trees could potentially become very large, which can <br/>"+
@@ -131,7 +137,7 @@ public class CAPanel extends JPanel {
 "this number, but in extreme cases you might want <br/>"+
 "to increase it.</html>";
 
-	final static String REPS_PER_TREE_HELP = "<html>Sampling replicates per tree:<br/>"+
+	final public static String REPS_PER_TREE_HELP = "<html>Sampling replicates per tree:<br/>"+
 "<br/>"+
 "If a range of sampling rates has been specified, <br/>"+
 "this number specifies how often rates will be drawn at random <br/>"+
@@ -178,7 +184,8 @@ public class CAPanel extends JPanel {
 	double [] ages;
 	double [] probabilities;
 	
-    ParametricDistribution m_distr = null;
+	ContinuousDistribution m_distr = null;
+	double m_rmsd = 0;
 
 
 	
@@ -618,15 +625,15 @@ public class CAPanel extends JPanel {
 				ages = probs.getAges();
 				probabilities =  probs.getProbabilities();
 				// normalize
-				double sum = probabilities[0] * (ages[1] - ages[0] + 300);
-				for (int i = 1; i < probabilities.length-1; i++) {
-					sum += probabilities[i] * (ages[i-1] - ages[i+1])/2.0;
-				}
-				sum += probabilities[probabilities.length-1] * (ages[probabilities.length-2] - ages[probabilities.length-1]);
-				
-				for (int i = 0; i < probabilities.length; i++) {
-					probabilities[i] /= sum;
-				}
+//				double sum = probabilities[0] * (ages[1] - ages[0] + 300);
+//				for (int i = 1; i < probabilities.length-1; i++) {
+//					sum += probabilities[i] * (ages[i-1] - ages[i+1])/2.0;
+//				}
+//				sum += probabilities[probabilities.length-1] * (ages[probabilities.length-2] - ages[probabilities.length-1]);
+//				
+//				for (int i = 0; i < probabilities.length; i++) {
+//					probabilities[i] /= sum;
+//				}
 				
 
 				btnFindApproximation.setEnabled(true);
@@ -696,13 +703,13 @@ public class CAPanel extends JPanel {
 		            g.fillRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
 		            g.setColor(Color.BLACK);
 		            g.drawRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
-		            try {
-		            	if (m_distr != null) {
-		            		m_distr.initAndValidate();
-		            	}
-		            } catch (Exception e1) {
-		                // ignore
-		            }
+//		            try {
+//		            	if (m_distr != null) {
+//		            		m_distr.initAndValidate();
+//		            	}
+//		            } catch (Exception e1) {
+//		                // ignore
+//		            }
 		            int nPoints = ages.length;
 		            int[] xPoints = new int[nPoints];
 		            int[] yPoints = new int[nPoints];
@@ -795,7 +802,44 @@ public class CAPanel extends JPanel {
 		                g.drawLine(graphoffset - 5, y, graphoffset, y);
 		                g.drawString(format(fYMax * i / NR_OF_TICKS_Y), 0, y - 2);
 		            }
-					
+		            
+		            // draw statistics
+		            if (m_distr != null) {
+			            String distr = m_distr.getClass().getName();
+			            distr = distr.substring(distr.lastIndexOf('.') + 1);
+			            distr = distr.replace("Impl", "");
+			            distr = distr.replaceAll("([A-Z])", " $1").trim();
+			            int statoffsetx = getWidth() - 120;
+			            int statoffsety = graphoffset + 10;
+		                g.drawString(distr, statoffsetx, statoffsety);
+		                g.drawString("RMDS: " + format(m_rmsd,5), statoffsetx, statoffsety + 10);
+		                if (m_distr instanceof ExponentialDistributionImpl) {
+		                	double mean = ((ExponentialDistributionImpl) m_distr).getMean();
+			                g.drawString("mean: " + format(mean,5), statoffsetx, statoffsety + 20);
+		                }
+		                if (m_distr instanceof LogNormalImpl) {
+		                	double mean = ((LogNormalImpl) m_distr).getMean();
+		                	double sigma = ((LogNormalImpl) m_distr).getSigma();
+			                g.drawString("mean: " + format(mean,5), statoffsetx, statoffsety + 20);
+			                g.drawString("sigma: " + format(sigma,5), statoffsetx, statoffsety + 30);
+		                }
+		                if (m_distr instanceof GammaDistributionImpl) {
+		                	double alpha = ((GammaDistributionImpl) m_distr).getAlpha();
+		                	double beta = ((GammaDistributionImpl) m_distr).getBeta();
+			                g.drawString("alpha: " + format(alpha,5), statoffsetx, statoffsety + 20);
+			                g.drawString("beta: " + format(beta,5), statoffsetx, statoffsety + 30);
+		                }
+		                if (m_distr instanceof ExpGamma) {
+		                	double mean = ((ExpGamma) m_distr).getMean();
+		                	double alpha = ((ExpGamma) m_distr).getAlpha();
+		                	double beta = ((ExpGamma) m_distr).getBeta();
+		                	double weight = ((ExpGamma) m_distr).getWeight();
+			                g.drawString("mean: " + format(mean,5), statoffsetx, statoffsety + 20);
+			                g.drawString("alpha: " + format(alpha,5), statoffsetx, statoffsety + 30);
+			                g.drawString("beta: " + format(beta,5), statoffsetx, statoffsety + 40);
+			                g.drawString("weight: " + format(weight,5), statoffsetx, statoffsety + 50);
+		                }
+		            }
 				}
 			};
 		    /**
@@ -828,9 +872,13 @@ public class CAPanel extends JPanel {
 	        }
 	        
 	        private String format(double value) {
+	            return format(value,3);
+	        }
+
+	        private String format(double value, int digits) {
 	            StringWriter writer = new StringWriter();
 	            PrintWriter pw = new PrintWriter(writer);
-	            pw.printf("%.3g", value);
+	            pw.printf("%." + digits +"g", value);
 	            pw.flush();
 	            return writer.toString();
 	        }
@@ -883,31 +931,32 @@ public class CAPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String type = (String) comboBox.getSelectedItem();
 				if (type.equals("Best fit")) {
-					JOptionPane.showMessageDialog(getParent(), "Not implemented yet");
-					return;
+					m_distr = probs.fitExponential();
+					m_rmsd = probs.getApprox_distribution_rmsd();
+					ContinuousDistribution tmp = probs.fitGamma();
+					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+						m_rmsd = probs.getApprox_distribution_rmsd();
+						m_distr = tmp;
+					}
+					tmp = probs.fitLognormal();
+					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+						m_rmsd = probs.getApprox_distribution_rmsd();
+						m_distr = tmp;
+					}
 				}
 				if (type.equals("Exponential")) {
-					double mean = probs.fitExponential();
-					m_distr = new Exponential();
-					try {
-						m_distr.initByName("mean", mean + "");
-					} catch (Exception e2) {
-						e2.printStackTrace();
-					}
-					panel_1.repaint();
-					return;
+					m_distr = probs.fitExponential();
+					m_rmsd = probs.getApprox_distribution_rmsd();
 				}
 				if (type.equals("Gamma")) {
-					JOptionPane.showMessageDialog(getParent(), "Not implemented yet");
-					return;
+					m_distr = probs.fitGamma();
+					m_rmsd = probs.getApprox_distribution_rmsd();
 				}
 				if (type.equals("Log Normal")) {
-					JOptionPane.showMessageDialog(getParent(), "Not implemented yet");
-					return;
+					m_distr = probs.fitLognormal();
+					m_rmsd = probs.getApprox_distribution_rmsd();
 				}
-				
-				
-				
+				panel_1.repaint();
 			}
 		});
 		GridBagConstraints gbc_btnFindApproximation = new GridBagConstraints();
