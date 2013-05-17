@@ -4,6 +4,12 @@ import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
 
+import org.apache.commons.math.distribution.ContinuousDistribution;
+import org.apache.commons.math.distribution.ExponentialDistributionImpl;
+import org.apache.commons.math.distribution.GammaDistributionImpl;
+
+import beast.math.distributions.LogNormalImpl;
+
 public class CladeAgeProbabilities {
 
 	// Initialize objects that are to become variables of class instances.
@@ -332,7 +338,7 @@ public class CladeAgeProbabilities {
 
 	} // public void bd_simulate(...)
 
-	public double fitExponential() {
+	public ContinuousDistribution fitExponential() {
 		int nmRepetitions = 10;
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
@@ -642,7 +648,7 @@ public class CladeAgeProbabilities {
 			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
 			String approx_distribution_type = "Exponential";
 			double[] approx_distribution_parameters = {expMean};
-			double approx_distribution_rmsd = expRmsd;
+			approx_distribution_rmsd = expRmsd;
 		
 		// }
 		
@@ -650,10 +656,12 @@ public class CladeAgeProbabilities {
 		System.out.println("Distribution type: " + approx_distribution_type);
 		System.out.println("Mean: " + approx_distribution_parameters[0]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
-		return approx_distribution_parameters[0];
+
+		return new ExponentialDistributionImpl(approx_distribution_parameters[0]);		
+	
 	}
 	
-	public void fitLognormal() {
+	public ContinuousDistribution fitLognormal() {
 		int nmRepetitions = 10;
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
@@ -1102,7 +1110,7 @@ public class CladeAgeProbabilities {
 			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
 			String approx_distribution_type = "Lognormal";
 			double[] approx_distribution_parameters = {logMean,logStdev};
-			double approx_distribution_rmsd = logRmsd;
+			approx_distribution_rmsd = logRmsd;
 			
 		// }
 
@@ -1112,9 +1120,10 @@ public class CladeAgeProbabilities {
 		System.out.println("Stdev (log): " + approx_distribution_parameters[1]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
 
+		return new LogNormalImpl(approx_distribution_parameters[0], approx_distribution_parameters[1]);
 	}
 
-	public void fitGamma() {
+	public ContinuousDistribution fitGamma() {
 		int nmRepetitions = 10;
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
@@ -1671,7 +1680,7 @@ public class CladeAgeProbabilities {
 			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
 			String approx_distribution_type = "Gamma";
 			double[] approx_distribution_parameters = {gamShape,gamScale};
-			double approx_distribution_rmsd = gamRmsd;
+			approx_distribution_rmsd = gamRmsd;
 			
 		// }
 
@@ -1681,7 +1690,7 @@ public class CladeAgeProbabilities {
 		System.out.println("Scale: " + approx_distribution_parameters[1]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
 
-			
+		return new GammaDistributionImpl(approx_distribution_parameters[0], approx_distribution_parameters[1]);			
 	}
 	
 	public static void main(String[] args) {
