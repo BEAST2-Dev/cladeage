@@ -134,9 +134,6 @@ public class CladeAgeProbabilities {
 
 		for (int bd = 0; bd < bd_sample_size; bd++) {
 
-			// Feedback.
-			System.out.println(bd + 1);
-
 			if (cancel1) {
 				return;
 			}
@@ -176,71 +173,41 @@ public class CladeAgeProbabilities {
 								ArrayList<Double> branch_termination = new ArrayList<Double>();
 								ArrayList<Double> new_branch_origin = new ArrayList<Double>();
 								ArrayList<Double> new_branch_termination = new ArrayList<Double>();
-//								double[] branch_origin = new double[max_tree_size + 1];
-//								int branch_origin_counter = 0;
-//								double[] branch_termination = new double[max_tree_size + 1];
-//								int branch_termination_counter = 0;
-//								double[] new_branch_origin = new double[max_tree_size + 1];
-//								new_branch_origin[0] = tree_duration;
 								new_branch_origin.add(tree_duration);
-//								int new_branch_origin_counter = 1;
-//								double[] new_branch_termination = new double[max_tree_size + 1];
-//								int new_branch_termination_counter = 0;
 
 								// Start the tree generation loop.
-//								while (new_branch_origin_counter > 0 && branch_origin_counter < max_tree_size) {
 								while (new_branch_origin.size() > 0 && branch_origin.size() < max_tree_size) {
 
 									// For each new origin, add a new termination.
-//									for (int o = 0; o < new_branch_origin_counter; o++) {
 									for (int o = 0; o < new_branch_origin.size(); o++) {
-//										new_branch_termination[new_branch_termination_counter] = new_branch_origin[o] - (Math.log(Math.random())/(-(lambda+mu)));
 										new_branch_termination.add(new_branch_origin.get(o) - (Math.log(Math.random())/(-(lambda+mu))));
-//										new_branch_termination_counter += 1;
 									}
 
 									// Add new origin and termination to the old collection.
-//									for (int o = 0; o < new_branch_origin_counter; o++) {
 									for (int o = 0; o < new_branch_origin.size(); o++) {
-//										branch_origin[branch_origin_counter] = new_branch_origin[o];
 										branch_origin.add(new_branch_origin.get(o));
-//										branch_origin_counter += 1;
 									}
-//									for (int t = 0; t < new_branch_termination_counter; t++) {
 									for (int t = 0; t < new_branch_termination.size(); t++) {
-//										branch_termination[branch_termination_counter] = new_branch_termination[t];
 										branch_termination.add(new_branch_termination.get(t));
-//										branch_termination_counter += 1;
 									}
 
 									// Empty the new origin array.
-//									new_branch_origin = new double[max_tree_size + 1];
 									new_branch_origin = new ArrayList<Double>();
-//									new_branch_origin_counter = 0;
 
 									// For each new termination, add it to the new origin array if it is > 0 and rand < lambda/(lambda+mu) - this represents a speciation event.
-//									for (int t = 0; t < new_branch_termination_counter; t++) {
 									for (int t = 0; t < new_branch_termination.size(); t++) {										
-//										if (new_branch_termination[t] > 0) {
 										if (new_branch_termination.get(t) > 0) {
 											if (Math.random() < lambda/(lambda+mu)) {
-//												new_branch_origin[new_branch_origin_counter] = new_branch_termination[t];
 												new_branch_origin.add(new_branch_termination.get(t));
-//												new_branch_origin_counter += 1;
-//												new_branch_origin[new_branch_origin_counter] = new_branch_termination[t];
 												new_branch_origin.add(new_branch_termination.get(t));
-//												new_branch_origin_counter += 1;
 											}
 										}
 									}
 
 									// Empty the new termination array.
-//									new_branch_termination = new double[max_tree_size + 1];
 									new_branch_termination = new ArrayList<Double>();
-//									new_branch_termination_counter = 0;
 
 									// Set one_of_the_trees_too_large to true if this tree has become too large.
-//									if (branch_origin_counter >= max_tree_size) {
 									if (branch_origin.size() >= max_tree_size) {
 										one_of_the_trees_too_large[i] = true;
 									}
@@ -250,11 +217,8 @@ public class CladeAgeProbabilities {
 								// Count the number of extant species and set branch terminations that are less than 0 back to 0.
 								int extant_taxa = 0;
 								if (one_of_the_trees_too_large[i] == false) {
-//									for (int b = 0; b < branch_termination_counter; b++) {
 									for (int b = 0; b < branch_termination.size(); b++) {
-//										if (branch_termination[b] < 0) {
 										if (branch_termination.get(b) < 0) {
-//											branch_termination[b] = 0.0;
 											branch_termination.set(b,0.0);
 											extant_taxa += 1;
 										}
@@ -263,16 +227,11 @@ public class CladeAgeProbabilities {
 
 								// Set branch origins and terminations that are more than tree_duration-sampling_gap back to tree_duration-sampling_gap.
 								if (one_of_the_trees_too_large[i] == false) {
-//									for (int b = 0; b < branch_origin_counter; b++) {
 									for (int b = 0; b < branch_origin.size(); b++) {
-//										if (branch_origin[b] > tree_duration-sampling_gap) {
 										if (branch_origin.get(b) > tree_duration-sampling_gap) {
-//											branch_origin[b] = tree_duration-sampling_gap;
 											branch_origin.set(b,tree_duration-sampling_gap);
 										}
-//										if (branch_termination[b] > tree_duration-sampling_gap) {
 										if (branch_termination.get(b) > tree_duration-sampling_gap) {
-//											branch_termination[b] = tree_duration-sampling_gap;
 											branch_termination.set(b,tree_duration-sampling_gap);
 										}
 									}
@@ -282,9 +241,7 @@ public class CladeAgeProbabilities {
 								if (one_of_the_trees_too_large[i] == false) {
 									if (extant_taxa > 0) {
 										double sum_of_species_duration = 0;
-//										for (int b = 0; b < branch_origin_counter; b++) {
 										for (int b = 0; b < branch_origin.size(); b++) {
-//											sum_of_species_duration += branch_origin[b] - branch_termination[b];
 											sum_of_species_duration += branch_origin.get(b) - branch_termination.get(b);
 										}
 
@@ -349,7 +306,7 @@ public class CladeAgeProbabilities {
 		for (int x = 0; x < nmRepetitions; x++) {
 			// if (cancel2 == false) {
 				
-				// Initiate the simplex, find 3 verteces.
+				// Initiate the simplex, find 3 vertices.
 				// vertex0
 				double vertex0c___ = 0.5 + Math.random();
 				double vertex0mean = 10 + Math.random()*50;
@@ -1693,11 +1650,576 @@ public class CladeAgeProbabilities {
 		return new GammaDistributionImpl(approx_distribution_parameters[0], approx_distribution_parameters[1]);			
 	}
 	
+	public void fitExpGamma() {
+		int nmRepetitions = 10;
+		
+		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
+		double[] c1s = new double[nmRepetitions];
+		double[] means = new double[nmRepetitions];
+		double[] c2s = new double[nmRepetitions];
+		double[] thetas = new double[nmRepetitions];
+		double[] ys = new double[nmRepetitions];
+		double k = 2.0;
+		// gamma(k) is also calculated to avoid time-consuming recalculation of it for every value of t.
+		// This is done using the Lanczos approximation (http://en.wikipedia.org/wiki/Lanczos_approximation), and only positive values are considered.
+		double lanczos_z = k-1;
+		double lanczos_x = lanczos_p[0];
+		for (int i = 1; i <= lanczos_g+1; i++){
+			lanczos_x += lanczos_p[i]/(lanczos_z+i);
+		}
+		double lanczos_t = lanczos_z + lanczos_g + 0.5;
+		double gammaK = Math.sqrt(2*Math.PI) * Math.pow(lanczos_t,(lanczos_z+0.5)) * Math.exp(-lanczos_t) * lanczos_x;
+		
+		for (int x = 0; x < nmRepetitions; x++) {
+			
+			// if (cancel2 == false) {
+			
+				// Initiate the simplex, find 5 vertices.
+				// vertex0
+				double vertex0c1___ = 0.05 + Math.random()*0.5;
+				double vertex0mean_ = 10 + Math.random()*50;
+				double vertex0c2___ = 0.5*(0.5 + Math.random());
+				double vertex0theta = (10 + Math.random()*50)/k;
+				double vertex0Y = 0;
+		
+				// vertex1
+				double vertex1c1___ = 0.05 + Math.random()*0.5;
+				double vertex1mean_ = 10 + Math.random()*50;
+				double vertex1c2___ = 0.5*(0.5 + Math.random());
+				double vertex1theta = (10 + Math.random()*50)/k;
+				double vertex1Y = 0;
+		
+				// vertex2
+				double vertex2c1___ = 0.05 + Math.random()*0.5;
+				double vertex2mean_ = 10 + Math.random()*50;
+				double vertex2c2___ = 0.5*(0.5 + Math.random());
+				double vertex2theta = (10 + Math.random()*50)/k;
+				double vertex2Y = 0;
+		
+				// vertex3
+				double vertex3c1___ = 0.05 + Math.random()*0.5;
+				double vertex3mean_ = 10 + Math.random()*50;
+				double vertex3c2___ = 0.5*(0.5 + Math.random());
+				double vertex3theta = (10 + Math.random()*50)/k;
+				double vertex3Y = 0;
+		
+				// vertex4
+				double vertex4c1___ = 0.05 + Math.random()*0.5;
+				double vertex4mean_ = 10 + Math.random()*50;
+				double vertex4c2___ = 0.5*(0.5 + Math.random());
+				double vertex4theta = (10 + Math.random()*50)/k;
+				double vertex4Y = 0;
+				
+				// Prepare for the Nelder-Mead loop.
+				boolean keepGoing = true;
+				int stepCounter = 0;
+		
+				// Until converged do the loop.
+				while (keepGoing == true) {
+					
+					// Increment the stepCounter.
+					stepCounter += 1;
+
+					// Calculate the y value of each vertex.
+					// vertex0
+					vertex0Y = 0;
+					for (int i = 0; i < ages.length; i++) {
+						if (one_of_the_trees_too_large[i] == false) {
+							double exp_part = (1/vertex0mean_) * Math.exp(-(1/vertex0mean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(vertex0theta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/vertex0theta));
+							vertex0Y += Math.pow((probabilities[i]-(vertex0c1___*exp_part+vertex0c2___*gamma_part)),2);
+						}
+					}
+					
+					// Calculate the y value of each vertex.
+					// vertex1
+					vertex1Y = 0;
+					for (int i = 0; i < ages.length; i++) {
+						if (one_of_the_trees_too_large[i] == false) {
+							double exp_part = (1/vertex1mean_) * Math.exp(-(1/vertex1mean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(vertex1theta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/vertex1theta));
+							vertex1Y += Math.pow((probabilities[i]-(vertex1c1___*exp_part+vertex1c2___*gamma_part)),2);
+						}
+					}
+					
+					// Calculate the y value of each vertex.
+					// vertex2
+					vertex2Y = 0;
+					for (int i = 0; i < ages.length; i++) {
+						if (one_of_the_trees_too_large[i] == false) {
+							double exp_part = (1/vertex2mean_) * Math.exp(-(1/vertex2mean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(vertex2theta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/vertex2theta));
+							vertex2Y += Math.pow((probabilities[i]-(vertex2c1___*exp_part+vertex2c2___*gamma_part)),2);
+						}
+					}
+					
+					// Calculate the y value of each vertex.
+					// vertex3
+					vertex3Y = 0;
+					for (int i = 0; i < ages.length; i++) {
+						if (one_of_the_trees_too_large[i] == false) {
+							double exp_part = (1/vertex3mean_) * Math.exp(-(1/vertex3mean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(vertex3theta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/vertex3theta));
+							vertex3Y += Math.pow((probabilities[i]-(vertex3c1___*exp_part+vertex3c2___*gamma_part)),2);
+						}
+					}
+					
+					// Calculate the y value of each vertex.
+					// vertex4
+					vertex4Y = 0;
+					for (int i = 0; i < ages.length; i++) {
+						if (one_of_the_trees_too_large[i] == false) {
+							double exp_part = (1/vertex4mean_) * Math.exp(-(1/vertex4mean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(vertex4theta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/vertex4theta));
+							vertex4Y += Math.pow((probabilities[i]-(vertex4c1___*exp_part+vertex4c2___*gamma_part)),2);
+						}
+					}
+										
+					// Find the best (=lowest) y value.
+					double bestY = vertex0Y;
+					if (vertex1Y < bestY) {
+						bestY = vertex1Y;
+					}
+					if (vertex2Y < bestY) {
+						bestY = vertex2Y;
+					}
+					if (vertex3Y < bestY) {
+						bestY = vertex3Y;
+					}
+					if (vertex4Y < bestY) {
+						bestY = vertex4Y;
+					}
+		
+					// Find the worst (=highest) y value.
+					double worstY = vertex0Y;
+					if (vertex1Y > worstY) {
+						worstY = vertex1Y;
+					}
+					if (vertex2Y > worstY) {
+						worstY = vertex2Y;
+					}
+					if (vertex3Y > worstY) {
+						worstY = vertex3Y;
+					}
+					if (vertex4Y > worstY) {
+						worstY = vertex4Y;
+					}
+					
+					// Find the second-worst (=second-highest) y value.
+					double secondWorstY = bestY;
+					if (vertex0Y > secondWorstY && vertex0Y != worstY) {
+						secondWorstY = vertex0Y;
+					}
+					if (vertex1Y > secondWorstY && vertex1Y != worstY) {
+						secondWorstY = vertex1Y;
+					}
+					if (vertex2Y > secondWorstY && vertex2Y != worstY) {
+						secondWorstY = vertex2Y;
+					}
+					if (vertex3Y > secondWorstY && vertex3Y != worstY) {
+						secondWorstY = vertex3Y;
+					}
+					if (vertex4Y > secondWorstY && vertex4Y != worstY) {
+						secondWorstY = vertex4Y;
+					}
+		
+					// Find the parameter values of the best vertex.
+					double bestc1___ = 0;
+					double bestmean_ = 0;
+					double bestc2___ = 0;
+					double besttheta = 0;
+					if (vertex0Y == bestY) {
+		                bestc1___ = vertex0c1___;
+		                bestmean_ = vertex0mean_;
+		                bestc2___ = vertex0c2___;
+		                besttheta = vertex0theta;
+					} else if (vertex1Y == bestY) {
+		                bestc1___ = vertex1c1___;
+		                bestmean_ = vertex1mean_;
+		                bestc2___ = vertex1c2___;
+		                besttheta = vertex1theta;
+					} else if (vertex2Y == bestY) {
+		                bestc1___ = vertex2c1___;
+		                bestmean_ = vertex2mean_;
+		                bestc2___ = vertex2c2___;
+		                besttheta = vertex2theta;
+					} else if (vertex3Y == bestY) {
+		                bestc1___ = vertex3c1___;
+		                bestmean_ = vertex3mean_;
+		                bestc2___ = vertex3c2___;
+		                besttheta = vertex3theta;
+					} else if (vertex4Y == bestY) {
+		                bestc1___ = vertex4c1___;
+		                bestmean_ = vertex4mean_;
+		                bestc2___ = vertex4c2___;
+		                besttheta = vertex4theta;
+					}
+		
+					// Find the parameter values of the worst vertex.
+		            double worstc1___ = 0;
+		            double worstmean_ = 0;
+		            double worstc2___ = 0;
+		            double worsttheta = 0;
+					if (vertex0Y == worstY) {
+		                worstc1___ = vertex0c1___;
+		                worstmean_ = vertex0mean_;
+		                worstc2___ = vertex0c2___;
+		                worsttheta = vertex0theta;
+					} else if (vertex1Y == worstY) {
+		                worstc1___ = vertex1c1___;
+		                worstmean_ = vertex1mean_;
+		                worstc2___ = vertex1c2___;
+		                worsttheta = vertex1theta;
+					} else if (vertex2Y == worstY) {
+		                worstc1___ = vertex2c1___;
+		                worstmean_ = vertex2mean_;
+		                worstc2___ = vertex2c2___;
+		                worsttheta = vertex2theta;
+					} else if (vertex3Y == worstY) {
+		                worstc1___ = vertex3c1___;
+		                worstmean_ = vertex3mean_;
+		                worstc2___ = vertex3c2___;
+		                worsttheta = vertex3theta;
+					} else if (vertex4Y == worstY) {
+		                worstc1___ = vertex4c1___;
+		                worstmean_ = vertex4mean_;
+		                worstc2___ = vertex4c2___;
+		                worsttheta = vertex4theta;
+					}
+		
+					// Calculate the sum of the parameters over all vertices.
+					double sumc1___ = vertex0c1___ + vertex1c1___ + vertex2c1___ + vertex3c1___ + vertex4c1___;
+					double summean_ = vertex0mean_ + vertex1mean_ + vertex2mean_ + vertex3mean_ + vertex4mean_;
+					double sumc2___ = vertex0c2___ + vertex1c2___ + vertex2c2___ + vertex3c2___ + vertex4c2___;
+					double sumtheta = vertex0theta + vertex1theta + vertex2theta + vertex3theta + vertex4theta;
+					
+					// Calculate the parameter values of the centroid.
+					double centroidc1___ = (sumc1___ - worstc1___)/4.0;
+					double centroidmean_ = (summean_ - worstmean_)/4.0;
+					double centroidc2___ = (sumc2___ - worstc2___)/4.0;
+					double centroidtheta = (sumtheta - worsttheta)/4.0;
+					
+					// Calculate the reflection of the worst vertex at the centroid (with reflection coefficient alpha).
+					double reflectionc1___ = centroidc1___ + alph * (centroidc1___ - worstc1___);
+					double reflectionmean_ = centroidmean_ + alph * (centroidmean_ - worstmean_);
+					double reflectionc2___ = centroidc2___ + alph * (centroidc2___ - worstc2___);
+					if (reflectionc2___ <= 0) {
+						reflectionc2___ = 0.5*(0.5 + Math.random());
+					}
+					double reflectiontheta = centroidtheta + alph * (centroidtheta - worsttheta);
+					if (reflectiontheta < 0) {
+						reflectiontheta = (10 + Math.random()*50)/k;
+					}
+		
+					// Calculate the y value of the reflection.
+					double reflectionY = 0;
+					for (int i = 0; i < ages.length; i++) {
+						if (one_of_the_trees_too_large[i] == false) {
+							double exp_part = (1/reflectionmean_) * Math.exp(-(1/reflectionmean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(reflectiontheta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/reflectiontheta));
+							reflectionY += Math.pow((probabilities[i]-(reflectionc1___*exp_part+reflectionc2___*gamma_part)),2);
+						}
+					}
+					
+					// Consider the three cases:
+					// i.)   reflection is better than all vertices.
+					// ii.)  reflection is better than the second-worst vertex.
+					// iii.) reflection is worse than or equally good as the second-worst vertex.
+		
+					// Case i): If reflection is better than all vertices, replace the worst vertex with an extension of the reflection (by factor gamm).
+					if (reflectionY < bestY) {
+						
+						// Calculate the extension of the worst vertex at the centroid (with extension coefficient gamma).
+						double extensionc1___ = centroidc1___ + gamm * (centroidc1___ - worstc1___);
+						double extensionmean_ = centroidmean_ + gamm * (centroidmean_ - worstmean_);
+						double extensionc2___ = centroidc2___ + gamm * (centroidc2___ - worstc2___);
+						if (extensionc2___ <= 0) {
+							extensionc2___ = 0.5*(0.5 + Math.random());
+						}
+						double extensiontheta = centroidtheta + gamm * (centroidtheta - worsttheta);
+						if (extensiontheta < 0) {
+							extensiontheta = (10 + Math.random()*50)/k;
+						}
+		
+						// Calculate the y value of the extension.
+						double extensionY = 0;
+						for (int i = 0; i < ages.length; i++) {
+							if (one_of_the_trees_too_large[i] == false) {
+								double exp_part = (1/extensionmean_) * Math.exp(-(1/extensionmean_)*(ages[i]-offset));
+								double gamma_part = (1.0/(Math.pow(extensiontheta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/extensiontheta));
+								extensionY += Math.pow((probabilities[i]-(extensionc1___*exp_part+extensionc2___*gamma_part)),2);
+							}
+						}
+						
+						// Figure out which values to use as replacement for the values of the worst vertex.
+		                double replacec1___ = 0;
+		                double replacemean_ = 0;
+		                double replacec2___ = 0;
+		                double replacetheta = 0;
+						if (reflectionY < extensionY) {
+		                    replacec1___ = reflectionc1___;
+		                    replacemean_ = reflectionmean_;
+		                    replacec2___ = reflectionc2___;
+		                    replacetheta = reflectiontheta;
+						} else {
+		                    replacec1___ = extensionc1___;
+		                    replacemean_ = extensionmean_;
+		                    replacec2___ = extensionc2___;
+		                    replacetheta = extensiontheta;
+						}
+						
+						// Replace the parameter values of the worst vertex with the replacement values.
+						if (vertex0Y == worstY) {
+		                    vertex0c1___ = replacec1___;
+		                    vertex0mean_ = replacemean_;
+		                    vertex0c2___ = replacec2___;
+		                    vertex0theta = replacetheta;
+						} else if (vertex1Y == worstY) {
+		                    vertex1c1___ = replacec1___;
+		                    vertex1mean_ = replacemean_;
+		                    vertex1c2___ = replacec2___;
+		                    vertex1theta = replacetheta;
+						} else if (vertex2Y == worstY) {
+		                    vertex2c1___ = replacec1___;
+		                    vertex2mean_ = replacemean_;
+		                    vertex2c2___ = replacec2___;
+		                    vertex2theta = replacetheta;
+						} else if (vertex3Y == worstY) {
+		                    vertex3c1___ = replacec1___;
+		                    vertex3mean_ = replacemean_;
+		                    vertex3c2___ = replacec2___;
+		                    vertex3theta = replacetheta;
+						} else if (vertex4Y == worstY) {
+		                    vertex4c1___ = replacec1___;
+		                    vertex4mean_ = replacemean_;
+		                    vertex4c2___ = replacec2___;
+		                    vertex4theta = replacetheta;
+						}
+		
+					// Case ii): If the reflection is better than the second worst vertex, replace the worst vertex with the reflection.
+					} else if (reflectionY < secondWorstY) {
+		
+						if (vertex0Y == worstY) {
+		                    vertex0c1___ = reflectionc1___;
+		                    vertex0mean_ = reflectionmean_;
+		                    vertex0c2___ = reflectionc2___;
+		                    vertex0theta = reflectiontheta;
+						} else if  (vertex1Y == worstY) {
+		                    vertex1c1___ = reflectionc1___;
+		                    vertex1mean_ = reflectionmean_;
+		                    vertex1c2___ = reflectionc2___;
+		                    vertex1theta = reflectiontheta;
+						} else if (vertex2Y == worstY) {
+		                    vertex2c1___ = reflectionc1___;
+		                    vertex2mean_ = reflectionmean_;
+		                    vertex2c2___ = reflectionc2___;
+		                    vertex2theta = reflectiontheta;
+						} else if (vertex3Y == worstY) {
+		                    vertex3c1___ = reflectionc1___;
+		                    vertex3mean_ = reflectionmean_;
+		                    vertex3c2___ = reflectionc2___;
+		                    vertex3theta = reflectiontheta;
+						} else if (vertex4Y == worstY) {
+		                    vertex4c1___ = reflectionc1___;
+		                    vertex4mean_ = reflectionmean_;
+		                    vertex4c2___ = reflectionc2___;
+		                    vertex4theta = reflectiontheta;
+						}
+		
+					// Case iii): If the reflection is worse than or equally good as the second-worst vertex, calculate the contraction (by factor @@beta (=ro in the Wikipedia example)).
+					} else {
+		
+						// Calculate the contraction.
+						double contractionc1___ = centroidc1___ + beta * (centroidc1___ - worstc1___);
+						double contractionmean_ = centroidmean_ + beta * (centroidmean_ - worstmean_);
+						double contractionc2___ = centroidc2___ + beta * (centroidc2___ - worstc2___);
+						double contractiontheta = centroidtheta + beta * (centroidtheta - worsttheta);
+		
+						// Calculate the y value of the contraction.
+						double contractionY = 0;
+						for (int i = 0; i < ages.length; i++) {
+							if (one_of_the_trees_too_large[i] == false) {
+								double exp_part = (1/contractionmean_) * Math.exp(-(1/contractionmean_)*(ages[i]-offset));
+								double gamma_part = (1.0/(Math.pow(contractiontheta,k)))*(1/gammaK)*(Math.pow((ages[i]-offset),(k-1)))*(Math.exp(-(ages[i]-offset)/contractiontheta));
+								contractionY += Math.pow((probabilities[i]-(contractionc1___*exp_part+contractionc2___*gamma_part)),2);
+							}
+						}
+		
+						// Consider two subcases of case iii:
+						// iiia) The contraction is better than the worst vertex.
+						// iiib) The contraction is not better than the worst vertex.
+						
+						// Case iiia): If the contraction is better than the worst vertex, replace the worst vertex with the contraction.
+						if (contractionY < worstY) {
+							
+							// Replace the parameter values of the worst vertex with the contraction values.
+							if (vertex0Y == worstY) {
+		                        vertex0c1___ = contractionc1___;
+		                        vertex0mean_ = contractionmean_;
+		                        vertex0c2___ = contractionc2___;
+		                        vertex0theta = contractiontheta;
+							} else if (vertex1Y == worstY) {
+		                        vertex1c1___ = contractionc1___;
+		                        vertex1mean_ = contractionmean_;
+		                        vertex1c2___ = contractionc2___;
+		                        vertex1theta = contractiontheta;
+							} else if (vertex2Y == worstY) {
+		                        vertex2c1___ = contractionc1___;
+		                        vertex2mean_ = contractionmean_;
+		                        vertex2c2___ = contractionc2___;
+		                        vertex2theta = contractiontheta;
+							} else if (vertex3Y == worstY) {
+		                        vertex3c1___ = contractionc1___;
+		                        vertex3mean_ = contractionmean_;
+		                        vertex3c2___ = contractionc2___;
+		                        vertex3theta = contractiontheta;
+							} else if (vertex4Y == worstY) {
+		                        vertex4c1___ = contractionc1___;
+		                        vertex4mean_ = contractionmean_;
+		                        vertex4c2___ = contractionc2___;
+		                        vertex4theta = contractiontheta;
+							}
+		
+						// Case iiib): If the contraction is not better than the worst vertex, bring all verteces closer to the best vertex.
+						} else {
+		
+							// Replace each vertex by a new vertex that is halfway between the original vertex and the best vertex (given that @@delt  = 0.5, the default setting)
+							// vertex0
+		                    vertex0c1___ = bestc1___ + delt  * (vertex0c1___ - bestc1___);
+		                    vertex0mean_ = bestmean_ + delt  * (vertex0mean_ - bestmean_);
+		                    vertex0c2___ = bestc2___ + delt  * (vertex0c2___ - bestc2___);
+		                    vertex0theta = besttheta + delt  * (vertex0theta - besttheta);
+		
+							// vertex1
+		                    vertex1c1___ = bestc1___ + delt  * (vertex1c1___ - bestc1___);
+		                    vertex1mean_ = bestmean_ + delt  * (vertex1mean_ - bestmean_);
+		                    vertex1c2___ = bestc2___ + delt  * (vertex1c2___ - bestc2___);
+		                    vertex1theta = besttheta + delt  * (vertex1theta - besttheta);
+		
+							// vertex2
+		                    vertex2c1___ = bestc1___ + delt  * (vertex2c1___ - bestc1___);
+		                    vertex2mean_ = bestmean_ + delt  * (vertex2mean_ - bestmean_);
+		                    vertex2c2___ = bestc2___ + delt  * (vertex2c2___ - bestc2___);
+		                    vertex2theta = besttheta + delt  * (vertex2theta - besttheta);
+		
+							// vertex3
+		                    vertex3c1___ = bestc1___ + delt  * (vertex3c1___ - bestc1___);
+		                    vertex3mean_ = bestmean_ + delt  * (vertex3mean_ - bestmean_);
+		                    vertex3c2___ = bestc2___ + delt  * (vertex3c2___ - bestc2___);
+		                    vertex3theta = besttheta + delt  * (vertex3theta - besttheta);
+		
+							// vertex4
+		                    vertex4c1___ = bestc1___ + delt  * (vertex4c1___ - bestc1___);
+		                    vertex4mean_ = bestmean_ + delt  * (vertex4mean_ - bestmean_);
+		                    vertex4c2___ = bestc2___ + delt  * (vertex4c2___ - bestc2___);
+		                    vertex4theta = besttheta + delt  * (vertex4theta - besttheta);
+															
+						} // if (contractionY < worstY)	
+											
+					} // if (reflectionY < bestY)
+		
+					// Stop the loop when all parameter values are identical in the first 10 decimals.
+					keepGoing = false;
+					if (Math.abs(vertex0c1___ - vertex1c1___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0mean_ - vertex1mean_) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0c2___ - vertex1c2___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0theta - vertex1theta) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0c1___ - vertex2c1___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0mean_ - vertex2mean_) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0c2___ - vertex2c2___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0theta - vertex2theta) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0c1___ - vertex3c1___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0mean_ - vertex3mean_) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0c2___ - vertex3c2___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0theta - vertex3theta) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0c1___ - vertex4c1___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0mean_ - vertex4mean_) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0c2___ - vertex4c2___) > 0.000000001) {
+						keepGoing = true;
+					} else if (Math.abs(vertex0theta - vertex4theta) > 0.000000001) {
+						keepGoing = true;
+					}
+					if (stepCounter > 1000) {
+						keepGoing = false;
+					}
+					// if (cancel2 == true) {
+					// 	keepGoing = false;
+					// }
+		
+				} // while (keepGoing == true) 
+		
+				// Report all parameters and y.
+				c1s[x] = vertex0c1___;
+				means[x] = vertex0mean_;
+				c2s[x] = vertex0c2___;
+				thetas[x] = vertex0theta;
+				ys[x] = vertex0Y;
+				
+			//} if (cancel2 == false)
+			
+		} // for (int x = 0; x < nmRepetitions; x++)
+				
+		// if (cancel2 == false) {
+		
+			// Find the best result among the nmReplicates replicates.
+			int index = 0;
+			for (int x = 1; x < nmRepetitions; x++) {
+				if (ys[x] < ys[index]) {
+					index = x;
+				}
+			}
+			
+			double expGamConstant1 = c1s[index];
+			double expGamMean = means[index];
+			double expGamConstant2 = c2s[index];
+			double expGamScale = thetas[index];
+			double expGamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1-number_of_ages_with_trees_that_are_too_large));
+
+			// Fill arrays approx_ages and approx_probabilities.
+			approx_ages = new double[1001];
+			approx_probabilities = new double[1001];
+			for (int x = 0; x < 1001; x++) {
+				approx_ages[x] = offset + (x/1000.0)*(ages[0]-offset);				
+				double exp_part = (1/expGamMean) * Math.exp(-(1/expGamMean)*(approx_ages[x]-offset));
+				double gamma_part = (1.0/(Math.pow(expGamScale,k)))*(1/gammaK)*(Math.pow((approx_ages[x]-offset),(k-1)))*(Math.exp(-(approx_ages[x]-offset)/expGamScale));
+				approx_probabilities[x] = expGamConstant1*exp_part + expGamConstant2*gamma_part;
+			}
+
+			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
+			String approx_distribution_type = "ExpGamma";
+			double[] approx_distribution_parameters = {expGamMean,(expGamConstant1/expGamConstant2),expGamScale};
+			double approx_distribution_rmsd = expGamRmsd;
+			
+		// }
+		
+		// XXX needs to be changed so that an object of class ParameterDistribution is returned.
+		System.out.println("Distribution type: " + approx_distribution_type);
+		System.out.println("Mean: " + approx_distribution_parameters[0]);
+		System.out.println("Ratio: " + approx_distribution_parameters[1]);
+		System.out.println("Scale: " + approx_distribution_parameters[2]);
+		System.out.println("RMSD: " + approx_distribution_rmsd);
+		
+	}
+	
 	public static void main(String[] args) {
 
 		CladeAgeProbabilities cladeAgeProbabilities = new CladeAgeProbabilities();
-		cladeAgeProbabilities.bd_simulate(10.0,13.0,0.04,0.08,0.001,0.4,0.008,0.018,0,2,1000,100000,10, new JProgressBar());
-		cladeAgeProbabilities.fitGamma();
+		cladeAgeProbabilities.bd_simulate(10.0,10.0,0.03,0.03,0.4,0.4,0.01,0.01,0,0,1000,100000,10, new JProgressBar());
+		cladeAgeProbabilities.fitExpGamma();
 
   }
 }
