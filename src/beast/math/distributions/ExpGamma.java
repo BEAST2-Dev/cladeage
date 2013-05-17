@@ -13,6 +13,10 @@ public class ExpGamma implements ContinuousDistribution {
     final org.apache.commons.math.distribution.GammaDistribution dist2 = new GammaDistributionImpl(1.0, 1.0);
     
     
+    public ExpGamma(double weight, double mean, double alpha, double beta) {
+    	setParameters(weight, mean, alpha, beta);
+    }
+    
     public double getMean() {
     	return dist1.getMean();
     }

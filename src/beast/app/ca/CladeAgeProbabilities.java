@@ -8,6 +8,7 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
+import beast.math.distributions.ExpGamma;
 import beast.math.distributions.LogNormalImpl;
 
 public class CladeAgeProbabilities {
@@ -35,6 +36,9 @@ public class CladeAgeProbabilities {
 	private double gamm = 2.0;
 	private double beta = -0.5;
 	private double delt  = 0.5;
+	
+	// normaliser for simulated probablities
+	private double normaliser = 1.0;
 
 	public double getOffset() {
 		return offset;
@@ -614,6 +618,8 @@ public class CladeAgeProbabilities {
 		System.out.println("Mean: " + approx_distribution_parameters[0]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
 
+		
+		normaliser = expConstant;
 		return new ExponentialDistributionImpl(approx_distribution_parameters[0]);		
 	
 	}
@@ -1076,6 +1082,8 @@ public class CladeAgeProbabilities {
 		System.out.println("Mean (log): " + approx_distribution_parameters[0]);
 		System.out.println("Stdev (log): " + approx_distribution_parameters[1]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
+
+		normaliser = logConstant;
 
 		return new LogNormalImpl(approx_distribution_parameters[0], approx_distribution_parameters[1]);
 	}
@@ -1647,10 +1655,12 @@ public class CladeAgeProbabilities {
 		System.out.println("Scale: " + approx_distribution_parameters[1]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
 
+		normaliser = gamConstant;
+
 		return new GammaDistributionImpl(approx_distribution_parameters[0], approx_distribution_parameters[1]);			
 	}
 	
-	public void fitExpGamma() {
+	public ContinuousDistribution fitExpGamma() {
 		int nmRepetitions = 10;
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
@@ -2202,7 +2212,7 @@ public class CladeAgeProbabilities {
 			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
 			String approx_distribution_type = "ExpGamma";
 			double[] approx_distribution_parameters = {expGamMean,(expGamConstant1/expGamConstant2),expGamScale};
-			double approx_distribution_rmsd = expGamRmsd;
+			approx_distribution_rmsd = expGamRmsd;
 			
 		// }
 		
@@ -2213,6 +2223,12 @@ public class CladeAgeProbabilities {
 		System.out.println("Scale: " + approx_distribution_parameters[2]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
 		
+		normaliser = expGamConstant1+expGamConstant2;
+
+		return new ExpGamma(expGamConstant1/(expGamConstant1+expGamConstant2), 
+				approx_distribution_parameters[0], 
+				approx_distribution_parameters[1], 
+				approx_distribution_parameters[2]); 
 	}
 	
 	public static void main(String[] args) {
@@ -2222,4 +2238,8 @@ public class CladeAgeProbabilities {
 		cladeAgeProbabilities.fitExpGamma();
 
   }
+
+	public double getNormaliser() {
+		return normaliser;
+	}
 }
