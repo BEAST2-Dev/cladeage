@@ -807,6 +807,9 @@ public class CAPanel extends JPanel {
 		                if (m_distr != null) {
 		                    try {
 		                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints);
+		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
+		                        	fyPoints2[i] = 0;
+		                        }
 		                    } catch (Exception e) {
 		                        fyPoints2[i] = 0;
 		                    }

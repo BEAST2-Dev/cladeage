@@ -67,6 +67,8 @@ public class FossilCalibration extends ParametricDistribution {
 		NumberOfTreeSimulations = NumberOfTreeSimulationsInput.get();
 		MaxNrOfBranches = MaxNrOfBranchesInput.get();
 		SamplingReplicatesPerTree = SamplingReplicatesPerTreeInput.get();
+		
+		//TODO: deal with offset
 	}
     
 	@Override
