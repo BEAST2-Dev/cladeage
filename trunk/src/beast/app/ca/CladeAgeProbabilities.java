@@ -2103,9 +2103,9 @@ public class CladeAgeProbabilities {
 		System.out.println("Scale: " + approx_distribution_parameters[2]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
 		
-		normaliser = expGamConstant1+expGamConstant2;
+		normaliser = expGamConstant1 + expGamConstant2;
 
-		return new ExpGamma(expGamConstant1/(expGamConstant1+expGamConstant2), 
+		return new ExpGamma(expGamConstant2/(expGamConstant1+expGamConstant2), 
 				approx_distribution_parameters[0], 
 				approx_distribution_parameters[1], 
 				approx_distribution_parameters[2]); 
