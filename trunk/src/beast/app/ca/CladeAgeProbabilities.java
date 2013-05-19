@@ -19,11 +19,11 @@ public class CladeAgeProbabilities {
 	private double[] probabilities = new double[number_of_ages+1];
 	private double[] approx_ages = new double[number_of_ages+1];
 	private double[] approx_probabilities = new double[number_of_ages+1];
-	private boolean[] one_of_the_trees_too_large = new boolean[number_of_ages + 1];
+	private double[] raw_probabilities = new double[number_of_ages+1];
+	private int[] successful_simulations = new int[number_of_ages+1];
 	private String approx_distribution_type;
 	private double[] approx_distribution_parameters;
 	private double approx_distribution_rmsd;
-	private int number_of_ages_with_trees_that_are_too_large;
 	private double offset = 0;
 	private boolean cancel1 = false;
 	private double mean_psi = 0;
@@ -104,23 +104,17 @@ public class CladeAgeProbabilities {
 	// public void setCancel2(???)
 	// public ??? getCancel2()
 
-	public int getNumber_of_ages_with_trees_that_are_too_large() {
-		return number_of_ages_with_trees_that_are_too_large;
-	}
-
 	public void bd_simulate(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, int bd_sample_size, int max_tree_size, int psi_sample_size, JProgressBar dpb) {
 		cancel1 = false;
-
-		// Unhide the progress indicator.
-		// simulation_progress_indicator.setHidden(false);
 
 		// Reset arrays.
 		ages = new double[number_of_ages + 1];
 		probabilities = new double[number_of_ages + 1];
 		approx_ages = new double[number_of_ages + 1];
 		approx_probabilities = new double[number_of_ages + 1];
-		one_of_the_trees_too_large = new boolean[number_of_ages + 1];
-
+		raw_probabilities = new double[number_of_ages + 1];
+		
+		
 		// Memorize the offset and the mean sampling rate.
 		offset = first_occurrence_age_min;
 		mean_psi = (psi_min+psi_max)/2.0;
@@ -134,171 +128,133 @@ public class CladeAgeProbabilities {
 		}
 		ages[number_of_ages] = first_occurrence_age_min;
 
-		// Initiate percentage and old_percentage for the progress indicator.
-		// double multi_percentage = 0.0;
-		// double old_multi_percentage = 0.0;
-
-		for (int bd = 0; bd < bd_sample_size; bd++) {
-
+		while (successful_simulations[0] < bd_sample_size) {
 			if (cancel1) {
 				return;
 			}
-			dpb.setValue(bd);
+			// Update the progress bar.
+			dpb.setValue(successful_simulations[0]);
 
-				// Increment the progress indicator and update the text.
-				// lines 88..102 of Probabilities.rb
+			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
+			double ndr = ndr_min + Math.random() * (ndr_max-ndr_min);
+			double epsilon = epsilon_min + Math.random() * (epsilon_max-epsilon_min);
+			double mu = (ndr*epsilon)/(1.0 - epsilon);
+			double lambda = ndr + mu;
 
-				// For each age, perform birth death simulations.
-				for (int i = 0; i < number_of_ages+1; i++) {
+			// Draw a duration t for this simulation.
+			double first_occurrence_age = first_occurrence_age_min + Math.random()*(first_occurrence_age_max-first_occurrence_age_min);
+			
+			// Draw a sampling gap.
+			double sampling_gap = sampling_gap_min + Math.random()*(sampling_gap_max-sampling_gap_min);
+			
+			// Determine the maximum tree duration.
+			double max_tree_duration = ages[0] - first_occurrence_age;
+			
+			// Initiate arrays for branch origin and branch termination.
+			ArrayList<Double> branch_origin = new ArrayList<Double>();
+			ArrayList<Double> branch_termination = new ArrayList<Double>();
+			ArrayList<Double> new_branch_origin = new ArrayList<Double>();
+			ArrayList<Double> new_branch_termination = new ArrayList<Double>();
+			new_branch_origin.add(0.0);
 
-					if (one_of_the_trees_too_large[i] == false) {
-						double age = ages[i];
-						boolean successful_bd_simulation = false;
-						double result_sum = 0;
-						boolean keepGoing = true;
+			// Start the tree generation loop.
+			while (new_branch_origin.size() > 0) {
 
-						while (keepGoing == true) {
-
-							// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
-							double ndr = ndr_min + Math.random() * (ndr_max-ndr_min);
-							double epsilon = epsilon_min + Math.random() * (epsilon_max-epsilon_min);
-							double mu = (ndr*epsilon)/(1.0 - epsilon);
-							double lambda = ndr + mu;
-
-							// Draw a duration t for this simulation.
-							double tree_duration = age - first_occurrence_age_max + Math.random() * (first_occurrence_age_max-first_occurrence_age_min);
-
-							// Draw a sampling gap.
-							double sampling_gap = sampling_gap_min + Math.random() * (sampling_gap_max-sampling_gap_min);
-
-							// Run birth-death simulation with those parameter values, only if t > 0, else result = 0.
-							if (tree_duration - sampling_gap >= 0) {
-								
-								// Initiate arrays for branch origin and branch termination.
-								ArrayList<Double> branch_origin = new ArrayList<Double>();
-								ArrayList<Double> branch_termination = new ArrayList<Double>();
-								ArrayList<Double> new_branch_origin = new ArrayList<Double>();
-								ArrayList<Double> new_branch_termination = new ArrayList<Double>();
-								new_branch_origin.add(tree_duration);
-
-								// Start the tree generation loop.
-								while (new_branch_origin.size() > 0 && branch_origin.size() < max_tree_size) {
-
-									// For each new origin, add a new termination.
-									for (int o = 0; o < new_branch_origin.size(); o++) {
-										new_branch_termination.add(new_branch_origin.get(o) - (Math.log(Math.random())/(-(lambda+mu))));
-									}
-
-									// Add new origin and termination to the old collection.
-									for (int o = 0; o < new_branch_origin.size(); o++) {
-										branch_origin.add(new_branch_origin.get(o));
-									}
-									for (int t = 0; t < new_branch_termination.size(); t++) {
-										branch_termination.add(new_branch_termination.get(t));
-									}
-
-									// Empty the new origin array.
-									new_branch_origin = new ArrayList<Double>();
-
-									// For each new termination, add it to the new origin array if it is > 0 and rand < lambda/(lambda+mu) - this represents a speciation event.
-									for (int t = 0; t < new_branch_termination.size(); t++) {										
-										if (new_branch_termination.get(t) > 0) {
-											if (Math.random() < lambda/(lambda+mu)) {
-												new_branch_origin.add(new_branch_termination.get(t));
-												new_branch_origin.add(new_branch_termination.get(t));
-											}
-										}
-									}
-
-									// Empty the new termination array.
-									new_branch_termination = new ArrayList<Double>();
-
-									// Set one_of_the_trees_too_large to true if this tree has become too large.
-									if (branch_origin.size() >= max_tree_size) {
-										one_of_the_trees_too_large[i] = true;
-									}
-
-								} // while (new_branch_origin_counter > 0 && branch_origin_counter < max_tree_size)
-
-								// Count the number of extant species and set branch terminations that are less than 0 back to 0.
-								int extant_taxa = 0;
-								if (one_of_the_trees_too_large[i] == false) {
-									for (int b = 0; b < branch_termination.size(); b++) {
-										if (branch_termination.get(b) < 0) {
-											branch_termination.set(b,0.0);
-											extant_taxa += 1;
-										}
-									}
-								}
-
-								// Set branch origins and terminations that are more than tree_duration-sampling_gap back to tree_duration-sampling_gap.
-								if (one_of_the_trees_too_large[i] == false) {
-									for (int b = 0; b < branch_origin.size(); b++) {
-										if (branch_origin.get(b) > tree_duration-sampling_gap) {
-											branch_origin.set(b,tree_duration-sampling_gap);
-										}
-										if (branch_termination.get(b) > tree_duration-sampling_gap) {
-											branch_termination.set(b,tree_duration-sampling_gap);
-										}
-									}
-								}
-
-								// If the tree contains at least one extant species, calculate the sum of species durations.
-								if (one_of_the_trees_too_large[i] == false) {
-									if (extant_taxa > 0) {
-										double sum_of_species_duration = 0;
-										for (int b = 0; b < branch_origin.size(); b++) {
-											sum_of_species_duration += branch_origin.get(b) - branch_termination.get(b);
-										}
-
-										// Once a suitable tree is found, calculate the result for multiple different values of psi.
-										for (int p = 0; p < psi_sample_size; p++) {
-											double psi = psi_min + Math.random() * (psi_max-psi_min);
-											result_sum += psi * Math.exp(-psi*sum_of_species_duration);
-										}
-
-										// Mark the birth-death simulation as successful.
-										successful_bd_simulation = true;
-									}
-								}
-
-							} else if (tree_duration - sampling_gap < 0) { 
-
-								// Mark the birth-death simulation as successful.
-								successful_bd_simulation = true;
-
-							} // if tree_duration >= 0 ... else if (tree_duration - sampling_gap < 0) 
-
-							// Check whether the loop should go on.
-							if (successful_bd_simulation == true || one_of_the_trees_too_large[i] == true) {
-								keepGoing = false;
-							}
-
-						} // while (keepGoing == true)
-
-						// Scale the result_sum and add it to the probabilities array.
-						if (one_of_the_trees_too_large[i] == false) {
-							probabilities[i] += result_sum/ (double) (bd_sample_size*psi_sample_size);
-						}
-
-					} // if (one_of_the_trees_too_large[i] == false)
-
-				} // for (int i = 0; i < number_of_ages+1; i++)
-
-			// } // if (cancel1 == false) {
-
-		} // for (int b = 0; b < bd_sample_size; b++)
-		
-		// if (cancel1 == false) {
-			int number_of_ages_with_trees_that_are_too_large = 0;
-			for (int i = 0; i < number_of_ages+1; i++) {
-				if (one_of_the_trees_too_large[i] == true) {
-					number_of_ages_with_trees_that_are_too_large += 1;
-					probabilities[i] = -1;
+				// For each new origin, add a new termination.
+				for (int o = 0; o < new_branch_origin.size(); o++) {
+					new_branch_termination.add(new_branch_origin.get(o) + (Math.log(Math.random())/(-(lambda+mu))));
 				}
-			}
-		//}
 
+				// Add new origin and termination to the old collection.
+				for (int o = 0; o < new_branch_origin.size(); o++) {
+					branch_origin.add(new_branch_origin.get(o));
+				}
+				for (int t = 0; t < new_branch_termination.size(); t++) {
+					branch_termination.add(new_branch_termination.get(t));
+				}
+				
+				// Empty the new origin array.
+				new_branch_origin = new ArrayList<Double>();
+				
+				// For each new termination, add it to the new origin array if it is < max_tree_duration and rand < lambda/(lambda+mu) - this represents a speciation event.
+				for (int t = 0; t < new_branch_termination.size(); t++) {										
+					if (new_branch_termination.get(t) < max_tree_duration) {
+						if (Math.random() < lambda/(lambda+mu)) {
+							new_branch_origin.add(new_branch_termination.get(t));
+							new_branch_origin.add(new_branch_termination.get(t));
+						}
+					}
+				}
+				
+				// Empty the new termination array.
+				new_branch_termination = new ArrayList<Double>();
+				
+			} // while (new_branch_origin.size() > 0)
+			
+			// Set extant_at_this_age to false before looping through all ages. This can be done because we start with the oldest age, and as soon as we
+			// find an age for which extant_at_this_age is true, this will also be true for all younger ages.
+			boolean extant_at_this_age = false;
+			for (int i = 0; i < ages.length; i++) {
+				
+				// For each age, determine the tree length.
+				double tree_duration = ages[i] - first_occurrence_age;
+				
+				// Trim the tree so that no branches are older than @ages[i] - first_occurrence_age. While trimming, make sure the tree contains at least one extant species.
+				if (tree_duration > 0) {
+					for (int o = branch_origin.size()-1; o >= 0; o--) {
+						boolean remove_this_branch = false;
+						if (branch_origin.get(o) >= tree_duration) {
+							remove_this_branch = true;
+							extant_at_this_age = true;
+						} else if (branch_termination.get(o) < sampling_gap) {
+							remove_this_branch = true;
+						} else {
+							if (branch_termination.get(o) >= tree_duration) {
+								branch_termination.set(o,tree_duration);
+								extant_at_this_age = true;
+							}
+							if (branch_origin.get(o) < sampling_gap) {
+								branch_origin.set(o,sampling_gap); 
+							}
+						}
+						if (remove_this_branch == true) {
+							branch_origin.remove(o);
+							branch_termination.remove(o);
+						}
+					} // for (int o = branch_origin.size()-1; o >= 0; o--)
+					
+					// If at least one species is extant at this age, get the sum of lineage durations, excluding the sampling gap.
+					if (extant_at_this_age == true) {
+						double sum_of_species_duration = 0;
+						for (int o = 0; o < branch_origin.size(); o++) {
+							if (branch_termination.get(o) > sampling_gap) {
+								if (branch_origin.get(o) > sampling_gap) {
+									sum_of_species_duration += branch_termination.get(o) - branch_origin.get(o);
+								} else {
+									sum_of_species_duration += branch_termination.get(o) - sampling_gap;
+								}
+							}
+						}
+						// Draw a value for the sampling rate psi.
+						for (int pp = 0; pp < psi_sample_size; pp++) {
+							double psi = psi_min + Math.random()*(psi_max-psi_min);
+							if (tree_duration > sampling_gap) {
+								raw_probabilities[i] += (psi*Math.exp(-psi*sum_of_species_duration))/(double) psi_sample_size;
+							}
+						}
+						successful_simulations[i] += 1;
+					} // if (extant_at_this_age == true)
+				} else {
+					successful_simulations[i] += 1;
+				} // if (tree_duration > 0)
+				
+			} // for (int i = 0; i < ages.length; i++)
+			
+		} // while (successful_simulations[0] < bd_sample_size)
+
+		for (int i = 0; i < raw_probabilities.length; i ++) {
+			probabilities[i] = raw_probabilities[i]/(double) successful_simulations[i];
+		}
 	} // public void bd_simulate(...)
 
 	public ContinuousDistribution fitExponential() {
@@ -341,28 +297,22 @@ public class CladeAgeProbabilities {
 					// vertex0
 					vertex0Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = (1/vertex0mean) * Math.exp(-(1/vertex0mean)*(ages[i]-offset));
-							vertex0Y += Math.pow(probabilities[i]-vertex0c___*temp, 2);
-						}
+						double temp = (1/vertex0mean) * Math.exp(-(1/vertex0mean)*(ages[i]-offset));
+						vertex0Y += Math.pow(probabilities[i]-vertex0c___*temp, 2);
 					}
 
 					// vertex1
 					vertex1Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = (1/vertex1mean) * Math.exp(-(1/vertex1mean)*(ages[i]-offset));
-							vertex1Y += Math.pow(probabilities[i]-vertex1c___*temp, 2);
-						}
+						double temp = (1/vertex1mean) * Math.exp(-(1/vertex1mean)*(ages[i]-offset));
+						vertex1Y += Math.pow(probabilities[i]-vertex1c___*temp, 2);
 					}
 
 					// vertex2
 					vertex2Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = (1/vertex2mean) * Math.exp(-(1/vertex2mean)*(ages[i]-offset));
-							vertex2Y += Math.pow(probabilities[i]-vertex2c___*temp, 2);
-						}
+						double temp = (1/vertex2mean) * Math.exp(-(1/vertex2mean)*(ages[i]-offset));
+						vertex2Y += Math.pow(probabilities[i]-vertex2c___*temp, 2);
 					}
 					
 					// Find the best (=lowest) y value.
@@ -438,10 +388,8 @@ public class CladeAgeProbabilities {
 					// Calculate the y value of the reflection.
 					double reflectionY = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = (1/reflectionmean) * Math.exp(-(1/reflectionmean)*(ages[i]-offset));
-							reflectionY += Math.pow(probabilities[i]-reflectionc___*temp, 2);
-						}
+						double temp = (1/reflectionmean) * Math.exp(-(1/reflectionmean)*(ages[i]-offset));
+						reflectionY += Math.pow(probabilities[i]-reflectionc___*temp, 2);
 					}
 
 					// Consider the three cases:
@@ -459,10 +407,8 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the extension.
 						double extensionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double temp = (1/extensionmean) * Math.exp(-(1/extensionmean)*(ages[i]-offset));
-								reflectionY += Math.pow(probabilities[i]-extensionc___*temp, 2);
-							}
+							double temp = (1/extensionmean) * Math.exp(-(1/extensionmean)*(ages[i]-offset));
+							reflectionY += Math.pow(probabilities[i]-extensionc___*temp, 2);
 						}
 						
 						// Figure out which values to use as replacement for the values of the worst vertex.
@@ -512,10 +458,8 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the contraction.
 						double contractionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double temp = (1/contractionmean) * Math.exp(-(1/contractionmean)*(ages[i]-offset));
-								contractionY += Math.pow(probabilities[i]-contractionc___*temp, 2);
-							}
+							double temp = (1/contractionmean) * Math.exp(-(1/contractionmean)*(ages[i]-offset));
+							contractionY += Math.pow(probabilities[i]-contractionc___*temp, 2);
 						}
 						
 						// Consider two subcases of case iii:
@@ -559,16 +503,16 @@ public class CladeAgeProbabilities {
 
 					// Stop the loop when all parameter values are identical in the first 10 decimals.
 					keepGoing = false;
-					if (Math.abs(vertex0c___- vertex1c___) > 0.000000001) {
+					if (Math.abs(vertex0c___- vertex1c___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0mean- vertex1mean) > 0.000000001) {
+					} else if (Math.abs(vertex0mean- vertex1mean) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c___- vertex2c___) > 0.000000001) {
+					} else if (Math.abs(vertex0c___- vertex2c___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0mean- vertex2mean) > 0.000000001) {
+					} else if (Math.abs(vertex0mean- vertex2mean) > 0.0000001) {
 						keepGoing = true;
 					}
-					if (stepCounter > 100000) {
+					if (stepCounter > 1000) {
 						keepGoing = false;
 					}
 					// if (cancel2 == true) {
@@ -598,7 +542,7 @@ public class CladeAgeProbabilities {
 			
 			double expConstant = cs[index];
 			double expMean = means[index];
-			double expRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1-number_of_ages_with_trees_that_are_too_large));
+			double expRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 			
 			// Fill arrays approx_ages and approx_probabilities.
 			approx_ages = new double[1001];
@@ -615,7 +559,7 @@ public class CladeAgeProbabilities {
 		
 		// }
 		
-		// XXX needs to be changed so that an object of class ParameterDistribution is returned.
+		// XXX this is just here for tests.
 		System.out.println("Distribution type: " + approx_distribution_type);
 		System.out.println("Mean: " + approx_distribution_parameters[0]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
@@ -678,52 +622,44 @@ public class CladeAgeProbabilities {
 					// vertex0
 					vertex0Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = 0;
-							if (ages[i]-offset > 0) {
-								temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex0sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex0mu___),2)/(2*Math.pow(vertex0sigma,2)) ));
-							}
-							vertex0Y += Math.pow((probabilities[i]-vertex0c____*temp),2);
+						double temp = 0;
+						if (ages[i]-offset > 0) {
+							temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex0sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex0mu___),2)/(2*Math.pow(vertex0sigma,2)) ));
 						}
+						vertex0Y += Math.pow((probabilities[i]-vertex0c____*temp),2);
 					}
 
 					// Calculate the y value of each vertex.
 					// vertex1
 					vertex1Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = 0;
-							if (ages[i]-offset > 0) {
-								temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex1sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex1mu___),2)/(2*Math.pow(vertex1sigma,2)) ));
-							}
-							vertex1Y += Math.pow((probabilities[i]-vertex1c____*temp),2);
+						double temp = 0;
+						if (ages[i]-offset > 0) {
+							temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex1sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex1mu___),2)/(2*Math.pow(vertex1sigma,2)) ));
 						}
+						vertex1Y += Math.pow((probabilities[i]-vertex1c____*temp),2);
 					}
 
 					// Calculate the y value of each vertex.
 					// vertex2
 					vertex2Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = 0;
-							if (ages[i]-offset > 0) {
-								temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex2sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex2mu___),2)/(2*Math.pow(vertex2sigma,2)) ));
-							}
-							vertex2Y += Math.pow((probabilities[i]-vertex2c____*temp),2);
+						double temp = 0;
+						if (ages[i]-offset > 0) {
+							temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex2sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex2mu___),2)/(2*Math.pow(vertex2sigma,2)) ));
 						}
+						vertex2Y += Math.pow((probabilities[i]-vertex2c____*temp),2);
 					}
 
 					// Calculate the y value of each vertex.
 					// vertex3
 					vertex3Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = 0;
-							if (ages[i]-offset > 0) {
-								temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex3sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex3mu___),2)/(2*Math.pow(vertex3sigma,2)) ));
-							}
-							vertex3Y += Math.pow((probabilities[i]-vertex3c____*temp),2);
+						double temp = 0;
+						if (ages[i]-offset > 0) {
+							temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(vertex3sigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-vertex3mu___),2)/(2*Math.pow(vertex3sigma,2)) ));
 						}
+						vertex3Y += Math.pow((probabilities[i]-vertex3c____*temp),2);
 					}
 
 					// Find the best (=lowest) y value.
@@ -833,13 +769,11 @@ public class CladeAgeProbabilities {
 					// Calculate the y value of the reflection.
 					double reflectionY = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp = 0;
-							if (ages[i]-offset > 0) {
-								temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(reflectionsigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-reflectionmu___),2)/(2*Math.pow(reflectionsigma,2)) ));
-							}
-							reflectionY += Math.pow((probabilities[i]-reflectionc____*temp),2);
+						double temp = 0;
+						if (ages[i]-offset > 0) {
+							temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(reflectionsigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-reflectionmu___),2)/(2*Math.pow(reflectionsigma,2)) ));
 						}
+						reflectionY += Math.pow((probabilities[i]-reflectionc____*temp),2);
 					}
 					
 					// Consider the three cases:
@@ -864,13 +798,11 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the extension.
 						double extensionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double temp = 0;
-								if (ages[i]-offset > 0) {
-									temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(extensionsigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-extensionmu___),2)/(2*Math.pow(extensionsigma,2)) ));
-								}
-								extensionY += Math.pow((probabilities[i]-extensionc____*temp),2);
+							double temp = 0;
+							if (ages[i]-offset > 0) {
+								temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(extensionsigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-extensionmu___),2)/(2*Math.pow(extensionsigma,2)) ));
 							}
+							extensionY += Math.pow((probabilities[i]-extensionc____*temp),2);
 						}
 						
 						// Figure out which values to use as replacement for the values of the worst vertex.
@@ -938,13 +870,11 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the contraction.
 						double contractionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double temp = 0;
-								if (ages[i]-offset > 0) {
-									temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(contractionsigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-contractionmu___),2)/(2*Math.pow(contractionsigma,2)) ));
-								}
-								contractionY += Math.pow((probabilities[i]-contractionc____*temp),2);
+							double temp = 0;
+							if (ages[i]-offset > 0) {
+								temp = (1.0/((ages[i]-offset)*Math.sqrt(2*Math.PI*Math.pow(contractionsigma,2))))*(Math.exp( -Math.pow((Math.log(ages[i]-offset)-contractionmu___),2)/(2*Math.pow(contractionsigma,2)) ));
 							}
+							contractionY += Math.pow((probabilities[i]-contractionc____*temp),2);
 						}
 
 						// Consider two subcases of case iii:
@@ -1004,26 +934,26 @@ public class CladeAgeProbabilities {
 					
 					// Stop the loop when all parameter values are identical in the first 10 decimals.
 					keepGoing = false;
-					if (Math.abs(vertex0c____- vertex1c____) > 0.000000001) {
+					if (Math.abs(vertex0c____- vertex1c____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0mu___- vertex1mu___) > 0.000000001) {
+					} else if (Math.abs(vertex0mu___- vertex1mu___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0sigma- vertex1sigma) > 0.000000001) {
+					} else if (Math.abs(vertex0sigma- vertex1sigma) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c____- vertex2c____) > 0.000000001) {
+					} else if (Math.abs(vertex0c____- vertex2c____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0mu___- vertex2mu___) > 0.000000001) {
+					} else if (Math.abs(vertex0mu___- vertex2mu___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0sigma- vertex2sigma) > 0.000000001) {
+					} else if (Math.abs(vertex0sigma- vertex2sigma) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c____- vertex3c____) > 0.000000001) {
+					} else if (Math.abs(vertex0c____- vertex3c____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0mu___- vertex3mu___) > 0.000000001) {
+					} else if (Math.abs(vertex0mu___- vertex3mu___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0sigma- vertex3sigma) > 0.000000001) {
+					} else if (Math.abs(vertex0sigma- vertex3sigma) > 0.0000001) {
 						keepGoing = true;
 					}
-					if (stepCounter > 100000) {
+					if (stepCounter > 1000) {
 						keepGoing = false;
 					}
 					// if (cancel2 == true) {
@@ -1057,7 +987,7 @@ public class CladeAgeProbabilities {
 			double logConstant = cs[index];
 			double logMean = mus[index];
 			double logStdev = sigmas[index];
-			double logRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1-number_of_ages_with_trees_that_are_too_large));
+			double logRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 
 			// Fill arrays approx_ages and approx_probabilities.
 			approx_ages = new double[1001];
@@ -1069,7 +999,6 @@ public class CladeAgeProbabilities {
 				} else {
 					approx_probabilities[x] = logConstant * (1.0/((approx_ages[x]-offset)*Math.sqrt(2*Math.PI*Math.pow(logStdev,2))))*(Math.exp( -Math.pow((Math.log(approx_ages[x]-offset)-logMean),2)/(2*Math.pow(logStdev,2)) ));
 				}
-				
 			}
 			
 			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
@@ -1079,7 +1008,7 @@ public class CladeAgeProbabilities {
 			
 		// }
 
-		// XXX needs to be changed so that an object of class ParameterDistribution is returned.
+		// XXX this is just here for tests.
 		System.out.println("Distribution type: " + approx_distribution_type);
 		System.out.println("Mean (log): " + approx_distribution_parameters[0]);
 		System.out.println("Stdev (log): " + approx_distribution_parameters[1]);
@@ -1187,37 +1116,29 @@ public class CladeAgeProbabilities {
 					// vertex0
 					vertex0Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp =  (1.0/(Math.pow(vertex0theta,vertex0k____)))*(1/vertex0gammaK)*(Math.pow((ages[i]-offset),(vertex0k____-1)))*(Math.exp(-(ages[i]-offset)/vertex0theta));
-							vertex0Y += Math.pow((probabilities[i]-vertex0c____*temp),2);
-						}
+						double temp =  (1.0/(Math.pow(vertex0theta,vertex0k____)))*(1/vertex0gammaK)*(Math.pow((ages[i]-offset),(vertex0k____-1)))*(Math.exp(-(ages[i]-offset)/vertex0theta));
+						vertex0Y += Math.pow((probabilities[i]-vertex0c____*temp),2);
 					}
 					
 					// vertex1
 					vertex1Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp =  (1.0/(Math.pow(vertex1theta,vertex1k____)))*(1/vertex1gammaK)*(Math.pow((ages[i]-offset),(vertex1k____-1)))*(Math.exp(-(ages[i]-offset)/vertex1theta));
-							vertex1Y += Math.pow((probabilities[i]-vertex1c____*temp),2);
-						}
+						double temp =  (1.0/(Math.pow(vertex1theta,vertex1k____)))*(1/vertex1gammaK)*(Math.pow((ages[i]-offset),(vertex1k____-1)))*(Math.exp(-(ages[i]-offset)/vertex1theta));
+						vertex1Y += Math.pow((probabilities[i]-vertex1c____*temp),2);
 					}
 					
 					// vertex2
 					vertex2Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp =  (1.0/(Math.pow(vertex2theta,vertex2k____)))*(1/vertex2gammaK)*(Math.pow((ages[i]-offset),(vertex2k____-1)))*(Math.exp(-(ages[i]-offset)/vertex2theta));
-							vertex2Y += Math.pow((probabilities[i]-vertex2c____*temp),2);
-						}
+						double temp =  (1.0/(Math.pow(vertex2theta,vertex2k____)))*(1/vertex2gammaK)*(Math.pow((ages[i]-offset),(vertex2k____-1)))*(Math.exp(-(ages[i]-offset)/vertex2theta));
+						vertex2Y += Math.pow((probabilities[i]-vertex2c____*temp),2);
 					}
 
 					// vertex3
 					vertex3Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp =  (1.0/(Math.pow(vertex3theta,vertex3k____)))*(1/vertex3gammaK)*(Math.pow((ages[i]-offset),(vertex3k____-1)))*(Math.exp(-(ages[i]-offset)/vertex3theta));
-							vertex3Y += Math.pow((probabilities[i]-vertex3c____*temp),2);
-						}
+						double temp =  (1.0/(Math.pow(vertex3theta,vertex3k____)))*(1/vertex3gammaK)*(Math.pow((ages[i]-offset),(vertex3k____-1)))*(Math.exp(-(ages[i]-offset)/vertex3theta));
+						vertex3Y += Math.pow((probabilities[i]-vertex3c____*temp),2);
 					}
 
 					// Find the best (=lowest) y value.
@@ -1339,10 +1260,8 @@ public class CladeAgeProbabilities {
 					// Calculate the y value of the reflection.
 					double reflectionY = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double temp =  (1.0/(Math.pow(reflectiontheta,reflectionk____)))*(1/reflectiongammaK)*(Math.pow((ages[i]-offset),(reflectionk____-1)))*(Math.exp(-(ages[i]-offset)/reflectiontheta));
-							reflectionY += Math.pow((probabilities[i]-reflectionc____*temp),2);
-						}
+						double temp =  (1.0/(Math.pow(reflectiontheta,reflectionk____)))*(1/reflectiongammaK)*(Math.pow((ages[i]-offset),(reflectionk____-1)))*(Math.exp(-(ages[i]-offset)/reflectiontheta));
+						reflectionY += Math.pow((probabilities[i]-reflectionc____*temp),2);
 					}
 
 					// Consider the three cases:
@@ -1378,10 +1297,8 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the reflection.
 						double extensionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double temp =  (1.0/(Math.pow(extensiontheta,extensionk____)))*(1/extensiongammaK)*(Math.pow((ages[i]-offset),(extensionk____-1)))*(Math.exp(-(ages[i]-offset)/extensiontheta));
-								extensionY += Math.pow((probabilities[i]-extensionc____*temp),2);
-							}
+							double temp =  (1.0/(Math.pow(extensiontheta,extensionk____)))*(1/extensiongammaK)*(Math.pow((ages[i]-offset),(extensionk____-1)))*(Math.exp(-(ages[i]-offset)/extensiontheta));
+							extensionY += Math.pow((probabilities[i]-extensionc____*temp),2);
 						}
 
 						// Figure out which values to use as replacement for the values of the worst vertex.
@@ -1471,10 +1388,8 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the contraction.
 						double contractionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double temp =  (1.0/(Math.pow(contractiontheta,contractionk____)))*(1/contractiongammaK)*(Math.pow((ages[i]-offset),(contractionk____-1)))*(Math.exp(-(ages[i]-offset)/contractiontheta));
-								contractionY += Math.pow((probabilities[i]-contractionc____*temp),2);
-							}
+							double temp =  (1.0/(Math.pow(contractiontheta,contractionk____)))*(1/contractiongammaK)*(Math.pow((ages[i]-offset),(contractionk____-1)))*(Math.exp(-(ages[i]-offset)/contractiontheta));
+							contractionY += Math.pow((probabilities[i]-contractionc____*temp),2);
 						}
 
 						// Consider two subcases of case iii:
@@ -1581,31 +1496,28 @@ public class CladeAgeProbabilities {
 					
 					// Stop the loop when all parameter values are identical in the first 10 decimals.
 					keepGoing = false;
-					if (Math.abs(vertex0c____- vertex1c____) > 0.000000001) {
+					if (Math.abs(vertex0c____- vertex1c____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0k____- vertex1k____) > 0.000000001) {
+					} else if (Math.abs(vertex0k____- vertex1k____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0theta- vertex1theta) > 0.000000001) {
+					} else if (Math.abs(vertex0theta- vertex1theta) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c____- vertex2c____) > 0.000000001) {
+					} else if (Math.abs(vertex0c____- vertex2c____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0k____- vertex2k____) > 0.000000001) {
+					} else if (Math.abs(vertex0k____- vertex2k____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0theta- vertex2theta) > 0.000000001) {
+					} else if (Math.abs(vertex0theta- vertex2theta) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c____- vertex3c____) > 0.000000001) {
+					} else if (Math.abs(vertex0c____- vertex3c____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0k____- vertex3k____) > 0.000000001) {
+					} else if (Math.abs(vertex0k____- vertex3k____) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0theta- vertex3theta) > 0.000000001) {
+					} else if (Math.abs(vertex0theta- vertex3theta) > 0.0000001) {
 						keepGoing = true;
 					}
-					if (stepCounter > 100000) {
+					if (stepCounter > 1000) {
 						keepGoing = false;
 					}
-					// if (cancel2 == true) {
-					// 	keepGoing = false;
-					// }
 					
 				} // while (keepGoing == true) 
 
@@ -1634,7 +1546,7 @@ public class CladeAgeProbabilities {
 			double gamShape = ks[index];
 			double gamScale = thetas[index];
 			double gamGammaK = gammaKs[index];
-			double gamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1-number_of_ages_with_trees_that_are_too_large));
+			double gamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 		
 			// Fill arrays approx_ages and approx_probabilities.
 			approx_ages = new double[1001];
@@ -1651,7 +1563,7 @@ public class CladeAgeProbabilities {
 			
 		// }
 
-		// XXX needs to be changed so that an object of class ParameterDistribution is returned.
+		// XXX this is just here for tests.
 		System.out.println("Distribution type: " + approx_distribution_type);
 		System.out.println("Shape: " + approx_distribution_parameters[0]);
 		System.out.println("Scale: " + approx_distribution_parameters[1]);
@@ -1714,44 +1626,36 @@ public class CladeAgeProbabilities {
 					// vertex0
 					vertex0Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double exp_part = Math.exp(-(1/vertex0mean_)*(ages[i]-offset));
-							double gamma_part = (1.0/(Math.pow(vertex0theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex0theta));
-							vertex0Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex0c2___*gamma_part)),2);
-						}
+						double exp_part = Math.exp(-(1/vertex0mean_)*(ages[i]-offset));
+						double gamma_part = (1.0/(Math.pow(vertex0theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex0theta));
+						vertex0Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex0c2___*gamma_part)),2);
 					}
 					
 					// Calculate the y value of each vertex.
 					// vertex1
 					vertex1Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double exp_part = Math.exp(-(1/vertex1mean_)*(ages[i]-offset));
-							double gamma_part = (1.0/(Math.pow(vertex1theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex1theta));
-							vertex1Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex1c2___*gamma_part)),2);
-						}
+						double exp_part = Math.exp(-(1/vertex1mean_)*(ages[i]-offset));
+						double gamma_part = (1.0/(Math.pow(vertex1theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex1theta));
+						vertex1Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex1c2___*gamma_part)),2);
 					}
 					
 					// Calculate the y value of each vertex.
 					// vertex2
 					vertex2Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double exp_part = Math.exp(-(1/vertex2mean_)*(ages[i]-offset));
-							double gamma_part = (1.0/(Math.pow(vertex2theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex2theta));
-							vertex2Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex2c2___*gamma_part)),2);
-						}
+						double exp_part = Math.exp(-(1/vertex2mean_)*(ages[i]-offset));
+						double gamma_part = (1.0/(Math.pow(vertex2theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex2theta));
+						vertex2Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex2c2___*gamma_part)),2);
 					}
 					
 					// Calculate the y value of each vertex.
 					// vertex3
 					vertex3Y = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double exp_part = Math.exp(-(1/vertex3mean_)*(ages[i]-offset));
-							double gamma_part = (1.0/(Math.pow(vertex3theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex3theta));
-							vertex3Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex3c2___*gamma_part)),2);
-						}
+						double exp_part = Math.exp(-(1/vertex3mean_)*(ages[i]-offset));
+						double gamma_part = (1.0/(Math.pow(vertex3theta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/vertex3theta));
+						vertex3Y += Math.pow((probabilities[i]-(mean_psi*exp_part+vertex3c2___*gamma_part)),2);
 					}
 															
 					// Find the best (=lowest) y value.
@@ -1861,11 +1765,9 @@ public class CladeAgeProbabilities {
 					// Calculate the y value of the reflection.
 					double reflectionY = 0;
 					for (int i = 0; i < ages.length; i++) {
-						if (one_of_the_trees_too_large[i] == false) {
-							double exp_part = Math.exp(-(1/reflectionmean_)*(ages[i]-offset));
-							double gamma_part = (1.0/(Math.pow(reflectiontheta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/reflectiontheta));
-							reflectionY += Math.pow((probabilities[i]-(mean_psi*exp_part+reflectionc2___*gamma_part)),2);
-						}
+						double exp_part = Math.exp(-(1/reflectionmean_)*(ages[i]-offset));
+						double gamma_part = (1.0/(Math.pow(reflectiontheta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/reflectiontheta));
+						reflectionY += Math.pow((probabilities[i]-(mean_psi*exp_part+reflectionc2___*gamma_part)),2);
 					}
 					
 					// Consider the three cases:
@@ -1890,11 +1792,9 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the extension.
 						double extensionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double exp_part = Math.exp(-(1/extensionmean_)*(ages[i]-offset));
-								double gamma_part = (1.0/(Math.pow(extensiontheta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/extensiontheta));
-								extensionY += Math.pow((probabilities[i]-(mean_psi*exp_part+extensionc2___*gamma_part)),2);
-							}
+							double exp_part = Math.exp(-(1/extensionmean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(extensiontheta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/extensiontheta));
+							extensionY += Math.pow((probabilities[i]-(mean_psi*exp_part+extensionc2___*gamma_part)),2);
 						}
 						
 						// Figure out which values to use as replacement for the values of the worst vertex.
@@ -1962,11 +1862,9 @@ public class CladeAgeProbabilities {
 						// Calculate the y value of the contraction.
 						double contractionY = 0;
 						for (int i = 0; i < ages.length; i++) {
-							if (one_of_the_trees_too_large[i] == false) {
-								double exp_part = Math.exp(-(1/contractionmean_)*(ages[i]-offset));
-								double gamma_part = (1.0/(Math.pow(contractiontheta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/contractiontheta));
-								contractionY += Math.pow((probabilities[i]-(mean_psi*exp_part+contractionc2___*gamma_part)),2);
-							}
+							double exp_part = Math.exp(-(1/contractionmean_)*(ages[i]-offset));
+							double gamma_part = (1.0/(Math.pow(contractiontheta,2.0)))*((ages[i]-offset))*(Math.exp(-(ages[i]-offset)/contractiontheta));
+							contractionY += Math.pow((probabilities[i]-(mean_psi*exp_part+contractionc2___*gamma_part)),2);
 						}
 		
 						// Consider two subcases of case iii:
@@ -2025,23 +1923,23 @@ public class CladeAgeProbabilities {
 		
 					// Stop the loop when all parameter values are identical in the first 10 decimals.
 					keepGoing = false;
-					if (Math.abs(vertex0mean_ - vertex1mean_) > 0.000000001) {
+					if (Math.abs(vertex0mean_ - vertex1mean_) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c2___ - vertex1c2___) > 0.000000001) {
+					} else if (Math.abs(vertex0c2___ - vertex1c2___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0theta - vertex1theta) > 0.000000001) {
+					} else if (Math.abs(vertex0theta - vertex1theta) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0mean_ - vertex2mean_) > 0.000000001) {
+					} else if (Math.abs(vertex0mean_ - vertex2mean_) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c2___ - vertex2c2___) > 0.000000001) {
+					} else if (Math.abs(vertex0c2___ - vertex2c2___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0theta - vertex2theta) > 0.000000001) {
+					} else if (Math.abs(vertex0theta - vertex2theta) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0mean_ - vertex3mean_) > 0.000000001) {
+					} else if (Math.abs(vertex0mean_ - vertex3mean_) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0c2___ - vertex3c2___) > 0.000000001) {
+					} else if (Math.abs(vertex0c2___ - vertex3c2___) > 0.0000001) {
 						keepGoing = true;
-					} else if (Math.abs(vertex0theta - vertex3theta) > 0.000000001) {
+					} else if (Math.abs(vertex0theta - vertex3theta) > 0.0000001) {
 						keepGoing = true;
 					}
 					if (stepCounter > 1000) {
@@ -2077,7 +1975,7 @@ public class CladeAgeProbabilities {
 			double expGamConstant1 = expGamMean * mean_psi;
 			double expGamConstant2 = c2s[index];
 			double expGamScale = thetas[index];
-			double expGamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1-number_of_ages_with_trees_that_are_too_large));
+			double expGamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 
 			// Fill arrays approx_ages and approx_probabilities.
 			approx_ages = new double[1001];
@@ -2096,7 +1994,7 @@ public class CladeAgeProbabilities {
 			
 		// }
 		
-		// XXX needs to be changed so that an object of class ParameterDistribution is returned.
+		// XXX this is just here for tests.
 		System.out.println("Distribution type: " + approx_distribution_type);
 		System.out.println("Mean: " + approx_distribution_parameters[0]);
 		System.out.println("Ratio: " + approx_distribution_parameters[1]);
@@ -2113,9 +2011,12 @@ public class CladeAgeProbabilities {
 	
 	public static void main(String[] args) {
 
+		System.out.println(System.currentTimeMillis());
 		CladeAgeProbabilities cladeAgeProbabilities = new CladeAgeProbabilities();
-		cladeAgeProbabilities.bd_simulate(10.0,10.0,0.03,0.03,0.4,0.4,0.01,0.01,0,0,1000,100000,10, new JProgressBar());
-		cladeAgeProbabilities.fitExpGamma();
+		cladeAgeProbabilities.bd_simulate(10.0,20.0,0.03,0.06,0.1,0.4,0.01,0.02,0,2,200,100000,10, new JProgressBar());
+		System.out.println(System.currentTimeMillis());
+		cladeAgeProbabilities.fitGamma();
+		System.out.println(System.currentTimeMillis());
 
   }
 
