@@ -1,6 +1,8 @@
 package beast.app.ca;
 
 
+import jam.framework.DocumentFrame;
+
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
@@ -19,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -32,8 +35,11 @@ import javax.swing.ToolTipManager;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 import java.awt.Component;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.net.URL;
 
 import javax.swing.Box;
 import javax.swing.border.TitledBorder;
@@ -44,6 +50,7 @@ import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 import beast.app.beauti.BeautiPanel;
+import beast.app.draw.ModelBuilder;
 import beast.app.draw.SmallButton;
 import beast.app.draw.SmallButton.ButtonType;
 import beast.app.draw.SmallButtonOld;
@@ -150,6 +157,12 @@ public class CAPanel extends JPanel {
 "of unobserved lineage durations. The default of 10 sampling <br/>"+
 "replicates per tree usually works well.</html>";
 
+	final public static String ABOUT_HELP = "<html>CladeAge<br/><br/>" +
+			"Written by Michael Matschiner michaelmatschiner@mac.com<br/>" +
+			"and <br/>" +
+			"Remco Bouckaert remco@cs.auckland.ac.nz<br/>" +
+			"</html>";
+	
     // GUI components
 	private JTextField textField_maxOccuranceAge;
 	private JTextField textField_maxDivRate;
@@ -1208,7 +1221,7 @@ public class CAPanel extends JPanel {
 	    }
 	}
 
-	private void showHelp(String text) {
+	static void showHelp(String text) {
 //		JTextPane k = new JTextPane();
 //		k.setContentType("text/html");
 //		k.setText(text);
@@ -1293,9 +1306,61 @@ public class CAPanel extends JPanel {
         return writer.toString();
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		JFrame frame = new JFrame();
         Utils.loadUIManager();
+
+        if (Utils.isMac()) {
+            // set up application about-menu for Mac
+            // Mac-only stuff
+        	try {
+            URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beauti.png");
+            Icon icon = null;
+            if (url != null) {
+                icon = new ImageIcon(url);
+            } else {
+                System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
+            }
+            jam.framework.Application application = new jam.framework.MultiDocApplication(null, "CladeAge", "about" , icon) {
+
+                @Override
+                protected JFrame getDefaultFrame() {
+                    return null;
+                }
+
+                @Override
+                public void doQuit() {
+                    System.exit(0);
+                }
+
+                @Override
+                public void doAbout() {
+                    showHelp(ABOUT_HELP);
+                }
+
+				@Override
+                public DocumentFrame doOpenFile(File file) {
+                    return null;
+                }
+
+                @Override
+                public DocumentFrame doNew() {
+                    return null;
+                }
+            };
+            jam.mac.Utils.macOSXRegistration(application);
+        	} catch (Exception e) {
+        		// ignore
+        	}
+            try {
+            	Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
+                Method method = class_.getMethod("enablePrefs", boolean.class);
+                method.invoke(null, false);
+            } catch (java.lang.Exception e) {
+            	// ignore
+            }
+        }
+        
 		frame.setSize(1024, 728);
         ImageIcon icon = BeautiPanel.getIcon(CA_ICON);
         if (icon != null) {
