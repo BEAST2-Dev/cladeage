@@ -43,27 +43,27 @@ public class ExpGamma implements ContinuousDistribution {
     
 	@Override
 	public double cumulativeProbability(double x0, double x1) throws MathException {
-		return (weight * dist1.cumulativeProbability(x0, x1) + (1.0-weight) * dist2.cumulativeProbability(x0, x1)) / 2.0;
+		return (weight * dist1.cumulativeProbability(x0, x1) + (1.0-weight) * dist2.cumulativeProbability(x0, x1));
 	}
 	
 	@Override
 	public double cumulativeProbability(double x) throws MathException {
-		return (weight * dist1.cumulativeProbability(x) + (1.0-weight) * dist2.cumulativeProbability(x))/ 2.0;
+		return (weight * dist1.cumulativeProbability(x) + (1.0-weight) * dist2.cumulativeProbability(x));
 	}
 	
 	@Override
 	public double logDensity(double x) {
-		return (weight * dist1.logDensity(x) + (1.0-weight) * dist2.logDensity(x))/ 2.0;
+		return (weight * dist1.logDensity(x) + (1.0-weight) * dist2.logDensity(x));
 	}
 	
 	@Override
 	public double inverseCumulativeProbability(double p) throws MathException {
-		return (weight * dist1.inverseCumulativeProbability(p) + (1.0-weight) * dist2.inverseCumulativeProbability(p))/ 2.0;
+		return (weight * dist1.inverseCumulativeProbability(p) + (1.0-weight) * dist2.inverseCumulativeProbability(p));
 	}
 	
 	@Override
 	public double density(double x) {
-		return (weight * dist1.density(x) + (1.0-weight) * dist2.density(x))/ 2.0;
+		return (weight * dist1.density(x) + (1.0-weight) * dist2.density(x));
 	}
 	
 
