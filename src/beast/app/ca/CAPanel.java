@@ -758,6 +758,7 @@ public class CAPanel extends JPanel {
 		            int nPoints = ages.length;
 		            int[] xPoints = new int[nPoints];
 		            int[] yPoints = new int[nPoints];
+		            int[] xPoints2 = new int[nPoints];
 		            int[] yPoints2 = new int[nPoints];
 		            double[] fyPoints = new double[nPoints];
 		            double[] fyPoints2 = new double[nPoints];
@@ -803,22 +804,23 @@ public class CAPanel extends JPanel {
 
 		            double fYMax = 0;
 		            for (int i = 0; i < nPoints; i++) {
-		                xPoints[i] = graphoffset + nGraphWidth * i / nPoints;
+		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints;  
+		                xPoints[i] = (int)(graphoffset + nGraphWidth * (ages[ages.length - 1 - i] - f2)/fXRange);  
 
 // XXX
-for (int ccc = 0; ccc < probabilities.length; ccc++) {
-	System.out.println("Age: " + ages[ccc] + "\tProbability: " + probabilities[ccc]);
-}
+//for (int ccc = 0; ccc < probabilities.length; ccc++) {
+//	System.out.println("Age: " + ages[ccc] + "\tProbability: " + probabilities[ccc]);
+//}
 
 // XXX
-System.out.println("Normaliser from CAPanel: " + probs.getNormaliser());
+//System.out.println("Normaliser from CAPanel: " + probs.getNormaliser());
 
 		                fyPoints[i] = probabilities[nPoints - i - 1]/probs.getNormaliser();
 
 // XXX
-for (int ccc = 0; ccc < probabilities.length; ccc++) {
-	System.out.println("FYPoints: " + fyPoints[ccc]);
-}
+//for (int ccc = 0; ccc < probabilities.length; ccc++) {
+//	System.out.println("FYPoints: " + fyPoints[ccc]);
+//}
 
 		                if (m_distr != null) {
 		                    try {
@@ -832,9 +834,9 @@ for (int ccc = 0; ccc < probabilities.length; ccc++) {
 		                }
 
  // XXX
-for (int ccc = 0; ccc < probabilities.length; ccc++) {
-	System.out.println("FYPoints2: " + fyPoints2[ccc]);
-}
+//for (int ccc = 0; ccc < probabilities.length; ccc++) {
+//	System.out.println("FYPoints2: " + fyPoints2[ccc]);
+//}
 
 		                
 		                if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
@@ -855,7 +857,7 @@ for (int ccc = 0; ccc < probabilities.length; ccc++) {
 		                g.drawLine(xPoints[i], yPoints[i]-2, xPoints[i], yPoints[i]+2);
 		            }
 		            if (m_distr != null) {
-		            	g.drawPolyline(xPoints, yPoints2, nPoints);
+		            	g.drawPolyline(xPoints2, yPoints2, nPoints);
 		            }
 		            
 
