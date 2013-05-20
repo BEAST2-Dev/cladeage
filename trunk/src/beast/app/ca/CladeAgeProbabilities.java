@@ -200,7 +200,7 @@ public class CladeAgeProbabilities {
 				double tree_duration = ages[i] - first_occurrence_age;
 				
 				// Trim the tree so that no branches are older than @ages[i] - first_occurrence_age. While trimming, make sure the tree contains at least one extant species.
-				if (tree_duration > 0) {
+				if (tree_duration >= 0) {
 					for (int o = branch_origin.size()-1; o >= 0; o--) {
 						boolean remove_this_branch = false;
 						if (branch_origin.get(o) >= tree_duration) {
@@ -238,7 +238,7 @@ public class CladeAgeProbabilities {
 						// Draw a value for the sampling rate psi.
 						for (int pp = 0; pp < psi_sample_size; pp++) {
 							double psi = psi_min + Math.random()*(psi_max-psi_min);
-							if (tree_duration > sampling_gap) {
+							if (tree_duration >= sampling_gap) {
 								raw_probabilities[i] += (psi*Math.exp(-psi*sum_of_species_duration))/(double) psi_sample_size;
 							}
 						}
@@ -251,10 +251,18 @@ public class CladeAgeProbabilities {
 			} // for (int i = 0; i < ages.length; i++)
 			
 		} // while (successful_simulations[0] < bd_sample_size)
-
+		
 		for (int i = 0; i < raw_probabilities.length; i ++) {
 			probabilities[i] = raw_probabilities[i]/(double) successful_simulations[i];
 		}
+
+		/// XXX
+		System.out.println("From CladeAgeProbabilities:");
+		for (int ccc = 0; ccc < probabilities.length; ccc++) {
+			System.out.println("Age: " + ages[ccc] + "\tProbability: " + probabilities[ccc]);
+		}
+
+		
 	} // public void bd_simulate(...)
 
 	public ContinuousDistribution fitExponential() {
@@ -566,6 +574,10 @@ public class CladeAgeProbabilities {
 
 		
 		normaliser = expConstant;
+
+// XXX
+System.out.println("Normaliser: " + normaliser);
+
 		return new ExponentialDistributionImpl(approx_distribution_parameters[0]);		
 	
 	}
@@ -1986,6 +1998,10 @@ public class CladeAgeProbabilities {
 				double gamma_part = (1.0/(Math.pow(expGamScale,2.0)))*((approx_ages[x]-offset))*(Math.exp(-(approx_ages[x]-offset)/expGamScale));
 				approx_probabilities[x] = mean_psi*exp_part + expGamConstant2*gamma_part;
 			}
+// XXX			
+for (int ccc = 0; ccc < approx_probabilities.length; ccc++) {
+	System.out.println("Approx ages: " + approx_ages[ccc] + "\tApprox probabilities: " + approx_probabilities[ccc]);
+}
 
 			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
 			String approx_distribution_type = "ExpGamma";
@@ -2013,9 +2029,9 @@ public class CladeAgeProbabilities {
 
 		System.out.println(System.currentTimeMillis());
 		CladeAgeProbabilities cladeAgeProbabilities = new CladeAgeProbabilities();
-		cladeAgeProbabilities.bd_simulate(10.0,20.0,0.03,0.06,0.1,0.4,0.01,0.02,0,2,200,100000,10, new JProgressBar());
+		cladeAgeProbabilities.bd_simulate(10.0,10.0,0.01,0.01,0.1,0.1,0.01,0.01,0,0,1000,100000,10, new JProgressBar());
 		System.out.println(System.currentTimeMillis());
-		cladeAgeProbabilities.fitGamma();
+		cladeAgeProbabilities.fitExponential();
 		System.out.println(System.currentTimeMillis());
 
   }

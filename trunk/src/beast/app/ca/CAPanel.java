@@ -627,6 +627,7 @@ public class CAPanel extends JPanel {
 			    	return;
 			    }
 		        
+			    // XXX todo
 				ages = probs.getAges();
 				probabilities =  probs.getProbabilities();
 				// normalize
@@ -803,7 +804,22 @@ public class CAPanel extends JPanel {
 		            double fYMax = 0;
 		            for (int i = 0; i < nPoints; i++) {
 		                xPoints[i] = graphoffset + nGraphWidth * i / nPoints;
-		                fyPoints[i] = probabilities[nPoints - i - 1];
+
+// XXX
+for (int ccc = 0; ccc < probabilities.length; ccc++) {
+	System.out.println("Age: " + ages[ccc] + "\tProbability: " + probabilities[ccc]);
+}
+
+// XXX
+System.out.println("Normaliser from CAPanel: " + probs.getNormaliser());
+
+		                fyPoints[i] = probabilities[nPoints - i - 1]/probs.getNormaliser();
+
+// XXX
+for (int ccc = 0; ccc < probabilities.length; ccc++) {
+	System.out.println("FYPoints: " + fyPoints[ccc]);
+}
+
 		                if (m_distr != null) {
 		                    try {
 		                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints);
@@ -814,6 +830,13 @@ public class CAPanel extends JPanel {
 		                        fyPoints2[i] = 0;
 		                    }
 		                }
+
+ // XXX
+for (int ccc = 0; ccc < probabilities.length; ccc++) {
+	System.out.println("FYPoints2: " + fyPoints2[ccc]);
+}
+
+		                
 		                if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
 		                    fyPoints[i] = 0;
 		                }
@@ -966,58 +989,58 @@ public class CAPanel extends JPanel {
 				if (type.equals("Best fit")) {
 					m_distr = probs.fitExponential();
 					m_rmsd = probs.getApprox_distribution_rmsd();
-					normalise();
+//					normalise();
 					ContinuousDistribution tmp = probs.fitGamma();
 					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
 						m_rmsd = probs.getApprox_distribution_rmsd();
 						m_distr = tmp;
-						normalise();
+//						normalise();
 					}
 					tmp = probs.fitLognormal();
 					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
 						m_rmsd = probs.getApprox_distribution_rmsd();
 						m_distr = tmp;
-						normalise();
+//						normalise();
 					}
 					tmp = probs.fitExpGamma();
 					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
 						m_rmsd = probs.getApprox_distribution_rmsd();
 						m_distr = tmp;
-						normalise();
+//						normalise();
 					}
 				}
 				if (type.equals("Exponential")) {
 					m_distr = probs.fitExponential();
 					m_rmsd = probs.getApprox_distribution_rmsd();
-					normalise();
+//					normalise();
 				}
 				if (type.equals("Gamma")) {
 					m_distr = probs.fitGamma();
 					m_rmsd = probs.getApprox_distribution_rmsd();
-					normalise();
+//					normalise();
 				}
 				if (type.equals("Log Normal")) {
 					m_distr = probs.fitLognormal();
 					m_rmsd = probs.getApprox_distribution_rmsd();
-					normalise();
+//					normalise();
 				}
 				if (type.equals("Exp Gamma")) {
 					m_distr = probs.fitExpGamma();
 					m_rmsd = probs.getApprox_distribution_rmsd();
-					normalise();
+//					normalise();
 				}
 				panel_1.repaint();
 			}
 
-			private void normalise() {
-				
-				double [] probabilities = probs.getProbabilities();
-				double sum = probs.getNormaliser();
-				for (int i = 0; i < probabilities.length; i++) {
-					probabilities[i] /= sum;
-				}
-			
-			}
+//			private void normalise() {
+//				
+//				double [] probabilities = probs.getProbabilities();
+//				double sum = probs.getNormaliser();
+//				for (int i = 0; i < probabilities.length; i++) {
+//					probabilities[i] /= sum;
+//				}
+//			
+//			}
 		});
 		GridBagConstraints gbc_btnFindApproximation = new GridBagConstraints();
 		gbc_btnFindApproximation.insets = new Insets(0, 0, 0, 5);
