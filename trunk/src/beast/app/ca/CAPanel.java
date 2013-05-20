@@ -1,11 +1,14 @@
 package beast.app.ca;
 
 
+
 import jam.framework.DocumentFrame;
 
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -18,17 +21,24 @@ import java.awt.Insets;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.ToolTipManager;
 
@@ -51,14 +61,10 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 import beast.app.beauti.BeautiPanel;
 import beast.app.draw.ModelBuilder;
-import beast.app.draw.SmallButton;
-import beast.app.draw.SmallButton.ButtonType;
-import beast.app.draw.SmallButtonOld;
+import beast.app.draw.MyAction;
 import beast.app.util.Utils;
 import beast.math.distributions.ExpGamma;
-import beast.math.distributions.Exponential;
 import beast.math.distributions.LogNormalImpl;
-import beast.math.distributions.ParametricDistribution;
 
 public class CAPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -135,7 +141,9 @@ public class CAPanel extends JPanel {
 "clade given the net diversification rate and the turnover rate. The <br/>"+
 "higher this number, the better the estimates of the unobserved history, <br/>"+
 "and thus of clade age probabilities. The default of 1000 <br/>"+
-"tree simulations usually works well.</html>";
+"tree simulations usually works well. But, if the simulated distribution <br/>" +
+"looks bumpy, increasing this may help. If the calculation time is too long <br/>" +
+"decreasing this number may help.</html>";
 
 	final public static String MAX_NR_TREES_HELP = "<html>Maximum number of trees:<br/>"+
 "<br/>"+
@@ -155,12 +163,13 @@ public class CAPanel extends JPanel {
 "this number specifies how often rates will be drawn at random <br/>"+
 "from this range for each simulated tree to estimate the probabilities <br/>"+
 "of unobserved lineage durations. The default of 10 sampling <br/>"+
-"replicates per tree usually works well.</html>";
+"replicates per tree usually works well.<br/></html>";
 
-	final public static String ABOUT_HELP = "<html>CladeAge<br/><br/>" +
-			"Written by Michael Matschiner michaelmatschiner@mac.com<br/>" +
-			"and <br/>" +
-			"Remco Bouckaert remco@cs.auckland.ac.nz<br/>" +
+	final public static String ABOUT_HELP = "<html>CladeAge:<br/><br/>" +
+			"Copyright 2013<br/><br/>" +
+			"Michael Matschiner<br/>michaelmatschiner@mac.com<br/>" +
+			"<br/>and <br/><br/>" +
+			"Remco Bouckaert<br/>remco@cs.auckland.ac.nz<br/>" +
 			"</html>";
 	
     // GUI components
@@ -179,7 +188,10 @@ public class CAPanel extends JPanel {
 	private JTextField textField_SamplingReplicatesPerTree;
 	JButton btnFindApproximation;
 	JComboBox comboBox;
+	JPanel panel;
+	JPanel panel2;
 	JPanel panel_1;
+	GridBagConstraints gbc_panel2;
 	
 	CladeAgeProbabilities probs = null;
 	
@@ -206,16 +218,18 @@ public class CAPanel extends JPanel {
 	double m_rmsd = 0;
 
 
+	GridBagLayout gridBagLayout = new GridBagLayout();
 	
 	public CAPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{525, 375, 100};
-		gridBagLayout.rowHeights = new int[]{170, 450, 40};
-		gridBagLayout.columnWeights = new double[]{1.0, 1.0, 1.0};
+		//gridBagLayout.columnWidths = new int[]{525, 375, 100};
+		gridBagLayout.columnWidths = new int[]{800, 100, 200};
+		gridBagLayout.rowHeights = new int[]{180, 450};
+		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
 		setLayout(gridBagLayout);
 		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Model parameters", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.fill = GridBagConstraints.BOTH;
@@ -511,82 +525,34 @@ public class CAPanel extends JPanel {
 			}
 		});
 		
-		JPanel panel2 = new JPanel();
+		panel2 = new JPanel();
 		panel2.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Simulation settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		GridBagConstraints gbc_panel2 = new GridBagConstraints();
+		gbc_panel2 = new GridBagConstraints();
 		gbc_panel2.fill = GridBagConstraints.BOTH;
 		gbc_panel2.gridx = 1;
 		gbc_panel2.gridy = 0;
-		add(panel2, gbc_panel2);
+		//add(panel2, gbc_panel2);
+		
 		GridBagLayout gbl_panel2 = new GridBagLayout();
 		gbl_panel2.columnWidths = new int[]{0, 0, 0};
 		gbl_panel2.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
 		gbl_panel2.columnWeights = new double[]{0, 1.0, 0};
 		gbl_panel2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		panel2.setLayout(gbl_panel2);
-
+		
+		JPanel panel2b = new JPanel();
+		panel2b.setLayout(new BorderLayout());
 		
 		JLabel lblIcon = new MyJLabel(BeautiPanel.getIcon(CA_ICON));
 		lblIcon.setMinimumSize(new Dimension(160,160));
 		lblIcon.setPreferredSize(new Dimension(128,128));
-		GridBagConstraints gbc_lblIcon = new GridBagConstraints();
-		gbc_lblIcon.insets = new Insets(5, 0, 5, 5);
-		gbc_lblIcon.anchor = GridBagConstraints.EAST;
-		gbc_lblIcon.gridx = 2;
-		gbc_lblIcon.gridy = 0;
-		gbc_lblIcon.gridwidth = 2;
-		add(lblIcon, gbc_lblIcon);
+		panel2b.add(lblIcon, BorderLayout.NORTH);
 		
-		textField_NumberOfTreeSimulations = new JTextField();
-		textField_NumberOfTreeSimulations.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 1;
-		panel2.add(textField_NumberOfTreeSimulations, gbc_textField);
-		textField_NumberOfTreeSimulations.setColumns(10);
-		
-		textField_MaxNrOfBranches = new JTextField();
-		textField_MaxNrOfBranches.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_MaxNrOfBranches.setColumns(10);
-		GridBagConstraints gbc_textField_12 = new GridBagConstraints();
-		gbc_textField_12.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_12.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_12.gridx = 1;
-		gbc_textField_12.gridy = 2;
-		panel2.add(textField_MaxNrOfBranches, gbc_textField_12);
-		
-		JLabel lblSamplingReplicatesPer = new JLabel("Sampling replicates per tree:");
-		GridBagConstraints gbc_lblSamplingReplicatesPer = new GridBagConstraints();
-		gbc_lblSamplingReplicatesPer.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSamplingReplicatesPer.anchor = GridBagConstraints.EAST;
-		gbc_lblSamplingReplicatesPer.gridx = 0;
-		gbc_lblSamplingReplicatesPer.gridy = 3;
-		panel2.add(lblSamplingReplicatesPer, gbc_lblSamplingReplicatesPer);
-		
-		textField_SamplingReplicatesPerTree = new JTextField();
-		textField_SamplingReplicatesPerTree.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_SamplingReplicatesPerTree.setColumns(10);
-		GridBagConstraints gbc_textField_13 = new GridBagConstraints();
-		gbc_textField_13.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_13.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_13.gridx = 1;
-		gbc_textField_13.gridy = 3;
-		panel2.add(textField_SamplingReplicatesPerTree, gbc_textField_13);
-		
-		JButton btnCalculate = new JButton("Estimate clade age probabilities");
+		JButton btnCalculate = new JButton("Run");
+		btnCalculate.setMinimumSize(new Dimension(128, 20));
 		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				guiToData();
 				probs = new CladeAgeProbabilities();
 				
@@ -643,30 +609,75 @@ public class CAPanel extends JPanel {
 			    // XXX todo
 				ages = probs.getAges();
 				probabilities =  probs.getProbabilities();
-				// normalize
-//				double sum = probabilities[0] * (ages[1] - ages[0] + 300);
-//				for (int i = 1; i < probabilities.length-1; i++) {
-//					sum += probabilities[i] * (ages[i-1] - ages[i+1])/2.0;
-//				}
-//				sum += probabilities[probabilities.length-1] * (ages[probabilities.length-2] - ages[probabilities.length-1]);
-//				
-//				for (int i = 0; i < probabilities.length; i++) {
-//					probabilities[i] /= sum;
-//				}
-				
 
-				btnFindApproximation.setEnabled(true);
-				comboBox.setEnabled(true);
+				calcFit();
 				panel_1.repaint();
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));				
 			}
 		});
-		GridBagConstraints gbc_btnCalculate = new GridBagConstraints();
-		gbc_btnCalculate.gridwidth = 2;
-		gbc_btnCalculate.insets = new Insets(0, 0, 5, 0);
-		gbc_btnCalculate.gridx = 0;
-		gbc_btnCalculate.gridy = 4;
-		panel2.add(btnCalculate, gbc_btnCalculate);
+//		GridBagConstraints gbc_btnCalculate = new GridBagConstraints();
+//		gbc_btnCalculate.gridwidth = 2;
+//		gbc_btnCalculate.insets = new Insets(0, 0, 5, 0);
+//		gbc_btnCalculate.gridx = 0;
+//		gbc_btnCalculate.gridy = 4;
+		panel2b.add(btnCalculate, BorderLayout.SOUTH);
 		
+		GridBagConstraints gbc_lblIcon = new GridBagConstraints();
+		gbc_lblIcon.insets = new Insets(5, 0, 5, 5);
+		gbc_lblIcon.anchor = GridBagConstraints.EAST;
+		gbc_lblIcon.gridx = 2;
+		gbc_lblIcon.gridy = 0;
+		gbc_lblIcon.gridwidth = 2;
+		
+		add(panel2b, gbc_lblIcon);
+		
+		textField_NumberOfTreeSimulations = new JTextField();
+		textField_NumberOfTreeSimulations.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.insets = new Insets(0, 0, 5, 0);
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 1;
+		gbc_textField.gridy = 1;
+		panel2.add(textField_NumberOfTreeSimulations, gbc_textField);
+		textField_NumberOfTreeSimulations.setColumns(10);
+		
+		textField_MaxNrOfBranches = new JTextField();
+		textField_MaxNrOfBranches.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		textField_MaxNrOfBranches.setColumns(10);
+		GridBagConstraints gbc_textField_12 = new GridBagConstraints();
+		gbc_textField_12.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_12.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_12.gridx = 1;
+		gbc_textField_12.gridy = 2;
+		panel2.add(textField_MaxNrOfBranches, gbc_textField_12);
+		
+		JLabel lblSamplingReplicatesPer = new JLabel("Sampling replicates per tree:");
+		GridBagConstraints gbc_lblSamplingReplicatesPer = new GridBagConstraints();
+		gbc_lblSamplingReplicatesPer.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSamplingReplicatesPer.anchor = GridBagConstraints.EAST;
+		gbc_lblSamplingReplicatesPer.gridx = 0;
+		gbc_lblSamplingReplicatesPer.gridy = 3;
+		panel2.add(lblSamplingReplicatesPer, gbc_lblSamplingReplicatesPer);
+		
+		textField_SamplingReplicatesPerTree = new JTextField();
+		textField_SamplingReplicatesPerTree.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		textField_SamplingReplicatesPerTree.setColumns(10);
+		GridBagConstraints gbc_textField_13 = new GridBagConstraints();
+		gbc_textField_13.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_13.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_13.gridx = 1;
+		gbc_textField_13.gridy = 3;
+		panel2.add(textField_SamplingReplicatesPerTree, gbc_textField_13);
+				
 		JLabel lblMaximumNumberOf = new JLabel("Maximum number of branches:");
 		GridBagConstraints gbc_lblMaximumNumberOf = new GridBagConstraints();
 		gbc_lblMaximumNumberOf.anchor = GridBagConstraints.EAST;
@@ -728,7 +739,13 @@ public class CAPanel extends JPanel {
 			}
 		});
 
-		
+		comboBox = new JComboBox(new String[]{"Best fit","Exponential","Gamma","Log Normal", "Exp Gamma"});
+		GridBagConstraints gbc_comboBox = new GridBagConstraints();
+		gbc_comboBox.insets = new Insets(0, 0, 0, 5);
+		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox.gridx = 1;
+		gbc_comboBox.gridy = 5;
+		panel2.add(comboBox, gbc_comboBox);
 		
 		JPanel panel3 = new JPanel();
 		panel3.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Clade age probabilities", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -964,110 +981,93 @@ public class CAPanel extends JPanel {
 		gbc_panel_1.gridy = 1;
 		panel3.add(panel_1, gbc_panel_1);
 
-		JPanel panel4 = new JPanel();
-		panel4.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Approximation", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		GridBagConstraints gbc_panel4 = new GridBagConstraints();
-		gbc_panel4.fill = GridBagConstraints.BOTH;
-		gbc_panel4.gridx = 0;
-		gbc_panel4.gridy = 2;
-		gbc_panel4.gridwidth = 3;
-		add(panel4, gbc_panel4);
-		GridBagLayout gbl_panel4 = new GridBagLayout();
-		gbl_panel4.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_panel4.rowHeights = new int[]{0, 0, 0};
-		gbl_panel4.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0};
-		gbl_panel4.rowWeights = new double[]{Double.MIN_VALUE, 0.0, 0.0};
-		panel4.setLayout(gbl_panel4);
-		
-		JLabel lblDistributionType = new JLabel("Distribution type:");
-		GridBagConstraints gbc_lblDistributionType = new GridBagConstraints();
-		gbc_lblDistributionType.insets = new Insets(0, 0, 0, 5);
-		gbc_lblDistributionType.anchor = GridBagConstraints.EAST;
-		gbc_lblDistributionType.gridx = 0;
-		gbc_lblDistributionType.gridy = 2;
-		panel4.add(lblDistributionType, gbc_lblDistributionType);
-		
-		comboBox = new JComboBox(new String[]{"Best fit","Exponential","Gamma","Log Normal", "Exp Gamma"});
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.insets = new Insets(0, 0, 0, 5);
-		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox.gridx = 1;
-		gbc_comboBox.gridy = 2;
-		panel4.add(comboBox, gbc_comboBox);
-		
-		btnFindApproximation = new JButton("Find approximation");
-		btnFindApproximation.setEnabled(false);
-		comboBox.setEnabled(false);
-		btnFindApproximation.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String type = (String) comboBox.getSelectedItem();
-				if (type.equals("Best fit")) {
-					m_distr = probs.fitExponential();
-					m_rmsd = probs.getApprox_distribution_rmsd();
-//					normalise();
-					ContinuousDistribution tmp = probs.fitGamma();
-					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-						m_rmsd = probs.getApprox_distribution_rmsd();
-						m_distr = tmp;
-//						normalise();
-					}
-					tmp = probs.fitLognormal();
-					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-						m_rmsd = probs.getApprox_distribution_rmsd();
-						m_distr = tmp;
-//						normalise();
-					}
-					tmp = probs.fitExpGamma();
-					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-						m_rmsd = probs.getApprox_distribution_rmsd();
-						m_distr = tmp;
-//						normalise();
-					}
-				}
-				if (type.equals("Exponential")) {
-					m_distr = probs.fitExponential();
-					m_rmsd = probs.getApprox_distribution_rmsd();
-//					normalise();
-				}
-				if (type.equals("Gamma")) {
-					m_distr = probs.fitGamma();
-					m_rmsd = probs.getApprox_distribution_rmsd();
-//					normalise();
-				}
-				if (type.equals("Log Normal")) {
-					m_distr = probs.fitLognormal();
-					m_rmsd = probs.getApprox_distribution_rmsd();
-//					normalise();
-				}
-				if (type.equals("Exp Gamma")) {
-					m_distr = probs.fitExpGamma();
-					m_rmsd = probs.getApprox_distribution_rmsd();
-//					normalise();
-				}
-				panel_1.repaint();
-			}
-
-//			private void normalise() {
-//				
-//				double [] probabilities = probs.getProbabilities();
-//				double sum = probs.getNormaliser();
-//				for (int i = 0; i < probabilities.length; i++) {
-//					probabilities[i] /= sum;
+//		JPanel panel4 = new JPanel();
+//		panel4.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Approximation", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+//		GridBagConstraints gbc_panel4 = new GridBagConstraints();
+//		gbc_panel4.fill = GridBagConstraints.BOTH;
+//		gbc_panel4.gridx = 0;
+//		gbc_panel4.gridy = 2;
+//		gbc_panel4.gridwidth = 3;
+//		add(panel4, gbc_panel4);
+//		GridBagLayout gbl_panel4 = new GridBagLayout();
+//		gbl_panel4.columnWidths = new int[]{0, 0, 0, 0};
+//		gbl_panel4.rowHeights = new int[]{0, 0, 0};
+//		gbl_panel4.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+//		gbl_panel4.rowWeights = new double[]{Double.MIN_VALUE, 0.0, 0.0};
+//		panel4.setLayout(gbl_panel4);
+//		
+//		JLabel lblDistributionType = new JLabel("Distribution type:");
+//		GridBagConstraints gbc_lblDistributionType = new GridBagConstraints();
+//		gbc_lblDistributionType.insets = new Insets(0, 0, 0, 5);
+//		gbc_lblDistributionType.anchor = GridBagConstraints.EAST;
+//		gbc_lblDistributionType.gridx = 0;
+//		gbc_lblDistributionType.gridy = 2;
+//		panel4.add(lblDistributionType, gbc_lblDistributionType);
+//		
+//		
+//		btnFindApproximation = new JButton("Find approximation");
+//		btnFindApproximation.setEnabled(false);
+//		btnFindApproximation.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				String type = (String) comboBox.getSelectedItem();
+//				if (type.equals("Best fit")) {
+//					m_distr = probs.fitExponential();
+//					m_rmsd = probs.getApprox_distribution_rmsd();
+////					normalise();
+//					ContinuousDistribution tmp = probs.fitGamma();
+//					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+//						m_rmsd = probs.getApprox_distribution_rmsd();
+//						m_distr = tmp;
+////						normalise();
+//					}
+//					tmp = probs.fitLognormal();
+//					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+//						m_rmsd = probs.getApprox_distribution_rmsd();
+//						m_distr = tmp;
+////						normalise();
+//					}
+//					tmp = probs.fitExpGamma();
+//					if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+//						m_rmsd = probs.getApprox_distribution_rmsd();
+//						m_distr = tmp;
+////						normalise();
+//					}
 //				}
-//			
+//				if (type.equals("Exponential")) {
+//					m_distr = probs.fitExponential();
+//					m_rmsd = probs.getApprox_distribution_rmsd();
+////					normalise();
+//				}
+//				if (type.equals("Gamma")) {
+//					m_distr = probs.fitGamma();
+//					m_rmsd = probs.getApprox_distribution_rmsd();
+////					normalise();
+//				}
+//				if (type.equals("Log Normal")) {
+//					m_distr = probs.fitLognormal();
+//					m_rmsd = probs.getApprox_distribution_rmsd();
+////					normalise();
+//				}
+//				if (type.equals("Exp Gamma")) {
+//					m_distr = probs.fitExpGamma();
+//					m_rmsd = probs.getApprox_distribution_rmsd();
+////					normalise();
+//				}
+//				panel_1.repaint();
 //			}
-		});
-		GridBagConstraints gbc_btnFindApproximation = new GridBagConstraints();
-		gbc_btnFindApproximation.insets = new Insets(0, 0, 0, 5);
-		gbc_btnFindApproximation.gridx = 2;
-		gbc_btnFindApproximation.gridy = 2;
-		panel4.add(btnFindApproximation, gbc_btnFindApproximation);
-		
-		Component horizontalGlue = Box.createHorizontalGlue();
-		GridBagConstraints gbc_horizontalGlue = new GridBagConstraints();
-		gbc_horizontalGlue.gridx = 3;
-		gbc_horizontalGlue.gridy = 2;
-		panel4.add(horizontalGlue, gbc_horizontalGlue);
+//
+//		});
+//		GridBagConstraints gbc_btnFindApproximation = new GridBagConstraints();
+//		gbc_btnFindApproximation.insets = new Insets(0, 0, 0, 5);
+//		gbc_btnFindApproximation.gridx = 2;
+//		gbc_btnFindApproximation.gridy = 2;
+//		panel4.add(btnFindApproximation, gbc_btnFindApproximation);
+//		
+//		Component horizontalGlue = Box.createHorizontalGlue();
+//		GridBagConstraints gbc_horizontalGlue = new GridBagConstraints();
+//		gbc_horizontalGlue.gridx = 3;
+//		gbc_horizontalGlue.gridy = 2;
+//		panel4.add(horizontalGlue, gbc_horizontalGlue);
 		
 		dataToGUI();
 
@@ -1098,6 +1098,54 @@ public class CAPanel extends JPanel {
 		return new HelpButton("?",true);
 	}
 
+	
+	public void calcFit() {
+		String type = (String) comboBox.getSelectedItem();
+		if (type.equals("Best fit")) {
+			m_distr = probs.fitExponential();
+			m_rmsd = probs.getApprox_distribution_rmsd();
+//			normalise();
+			ContinuousDistribution tmp = probs.fitGamma();
+			if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+				m_rmsd = probs.getApprox_distribution_rmsd();
+				m_distr = tmp;
+//				normalise();
+			}
+			tmp = probs.fitLognormal();
+			if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+				m_rmsd = probs.getApprox_distribution_rmsd();
+				m_distr = tmp;
+//				normalise();
+			}
+			tmp = probs.fitExpGamma();
+			if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+				m_rmsd = probs.getApprox_distribution_rmsd();
+				m_distr = tmp;
+//				normalise();
+			}
+		}
+		if (type.equals("Exponential")) {
+			m_distr = probs.fitExponential();
+			m_rmsd = probs.getApprox_distribution_rmsd();
+//			normalise();
+		}
+		if (type.equals("Gamma")) {
+			m_distr = probs.fitGamma();
+			m_rmsd = probs.getApprox_distribution_rmsd();
+//			normalise();
+		}
+		if (type.equals("Log Normal")) {
+			m_distr = probs.fitLognormal();
+			m_rmsd = probs.getApprox_distribution_rmsd();
+//			normalise();
+		}
+		if (type.equals("Exp Gamma")) {
+			m_distr = probs.fitExpGamma();
+			m_rmsd = probs.getApprox_distribution_rmsd();
+//			normalise();
+		}
+	}
+	
 	void dataToGUI() {
 		textField_minOccuranceAge.setText(minOccuranceAge + "");
 		textField_minDivRate.setText(minDivRate + "");
@@ -1181,8 +1229,6 @@ public class CAPanel extends JPanel {
 		SamplingReplicatesPerTree = parseInt(textField_SamplingReplicatesPerTree.getText());
 
 		// something changed, so the probabilities are not valid any more
-		btnFindApproximation.setEnabled(false);
-		comboBox.setEnabled(false);
 		m_distr = null;
 		dataToGUI();
 	}
@@ -1263,7 +1309,7 @@ public class CAPanel extends JPanel {
         distr = distr.substring(distr.lastIndexOf('.') + 1);
         distr = distr.replace("Impl", "");
         distr = distr.replaceAll("([A-Z])", " $1").trim();
-        text += distr +"\n";
+        text += distr +"\n\n";
         text += "RMDS: " + format(m_rmsd,5) +"\n";
         if (m_distr instanceof ExponentialDistributionImpl) {
         	double mean = ((ExponentialDistributionImpl) m_distr).getMean();
@@ -1290,6 +1336,13 @@ public class CAPanel extends JPanel {
             text += "alpha: " + format(alpha,5) + "\n";
             text += "beta: " + format(beta,5) + "\n";
             text += "weight: " + format(weight,5) + "\n";
+        }
+        try {
+	        text += "\nmedian: " + format(m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
+	        text += "\n95% HPD: " + format(m_distr.inverseCumulativeProbability(0.025), 5) + "\n" +
+	        " to " + format(m_distr.inverseCumulativeProbability(0.975)) + "\n";
+        } catch (Exception e) {
+        	// ignore
         }
         return text;
 	}
@@ -1362,14 +1415,109 @@ public class CAPanel extends JPanel {
         }
         
 		frame.setSize(1024, 728);
+		
+
         ImageIcon icon = BeautiPanel.getIcon(CA_ICON);
         if (icon != null) {
             frame.setIconImage(icon.getImage());
         }
 		CAPanel pane = new CAPanel();
+        JMenuBar menuBar = pane.makeMenuBar();
+        frame.setJMenuBar(menuBar);
 		frame.getContentPane().add(pane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		frame.setVisible(true);
+	}
+    
+    boolean bAdvancedFeatures = false;
+
+	private JMenuBar makeMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic('F');
+        menuBar.add(fileMenu);
+        fileMenu.add(new MyAction("New", "Start new Clade Age", "new", KeyEvent.VK_N) {
+        	public void actionPerformed(ActionEvent ae) {
+                main(new String[0]);
+            }
+        });
+
+        if (!Utils.isMac()) {
+            fileMenu.addSeparator();
+            fileMenu.add(new MyAction("Close", "Close Window", "close", KeyEvent.VK_W) {
+			    public void actionPerformed(ActionEvent ae) {
+			        JMenuItem menuItem = (JMenuItem) ae.getSource();
+			        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
+			        Component invoker = popupMenu.getInvoker();
+			        JComponent invokerAsJComponent = (JComponent) invoker;
+			        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
+			        if (topLevel != null) {
+			            ((JFrame) topLevel).dispose();
+			        }
+			    }
+			});
+            
+            fileMenu.add(new MyAction("Exit", "Exit Program", "exit", KeyEvent.VK_F4) {
+            	public void actionPerformed(ActionEvent ae) {
+            		System.exit(0);
+            	}
+            });
+        }
+        
+        JMenu modeMenu = new JMenu("Mode");
+        menuBar.add(modeMenu);
+        modeMenu.setMnemonic('M');
+
+        JCheckBoxMenuItem advancedMode = new JCheckBoxMenuItem("Show advanced settings", bAdvancedFeatures);
+        advancedMode.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+            	JCheckBoxMenuItem advancedMode = (JCheckBoxMenuItem) ae.getSource();
+                bAdvancedFeatures = advancedMode.getState();
+//                panel2.setVisible(bAdvancedFeatures);
+                if (bAdvancedFeatures) {
+                	gridBagLayout.columnWidths = new int[]{525, 375, 100};
+            		add(panel2, gbc_panel2);
+                	
+                } else {
+                    gridBagLayout.columnWidths = new int[]{800, 0, 100};
+            		remove(panel2);
+                	gridBagLayout.removeLayoutComponent(panel2);
+//                    panel2.setMinimumSize(new Dimension(0,0));
+//                    panel2.setSize(new Dimension(0,0));
+//                    panel2.setMaximumSize(new Dimension(0,0));
+//                    gridBagLayout.removeLayoutComponent(panel2);
+                }
+                
+		        JMenuItem menuItem = (JMenuItem) ae.getSource();
+		        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
+		        Component invoker = popupMenu.getInvoker();
+		        JComponent invokerAsJComponent = (JComponent) invoker;
+		        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
+		        if (topLevel != null) {
+		        	JFrame frame = (JFrame) topLevel;
+		        	Dimension size = frame.getSize(); 
+		            ((JFrame) topLevel).setSize(new Dimension(size.width, size.height - 1));
+		            ((JFrame) topLevel).setSize(size);
+		        }
+
+                repaint();
+            }
+        });
+        modeMenu.add(advancedMode);
+        
+        if (!Utils.isMac()) {
+            JMenu helpMenu = new JMenu("Help");
+            helpMenu.setMnemonic('H');
+            menuBar.add(helpMenu);
+            helpMenu.add(new MyAction("About", "Help about", "help", -1) {
+		        public void actionPerformed(ActionEvent ae) {
+		        	showHelp(ABOUT_HELP);
+		        }
+            });
+        }
+
+        
+		return menuBar;
 	}
 	
 }
