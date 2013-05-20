@@ -2021,7 +2021,7 @@ for (int ccc = 0; ccc < approx_probabilities.length; ccc++) {
 
 		return new ExpGamma(expGamConstant1/(expGamConstant1+expGamConstant2), 
 				approx_distribution_parameters[0], 
-				approx_distribution_parameters[1], 
+				2.0, 
 				approx_distribution_parameters[2]); 
 	}
 	
