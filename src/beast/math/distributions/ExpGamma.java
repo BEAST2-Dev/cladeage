@@ -4,6 +4,7 @@ import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
+import org.apache.commons.math.special.Gamma;
 
 import beast.core.Description;
 
@@ -63,6 +64,10 @@ public class ExpGamma implements ContinuousDistribution {
 	
 	@Override
 	public double density(double x) {
+		if (x == 0) {
+        	return weight * dist1.density(x);
+		}
+
 		return (weight * dist1.density(x) + (1.0-weight) * dist2.density(x));
 	}
 	
