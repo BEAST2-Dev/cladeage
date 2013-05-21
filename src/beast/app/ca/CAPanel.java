@@ -554,11 +554,13 @@ public class CAPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				guiToData();
+				ages = null;
 				probs = new CladeAgeProbabilities();
 				
 				Frame parentFrame = Frame.getFrames()[0];
 			    final JDialog dlg = new JDialog(parentFrame, "Progress Dialog", true);
-			    final JProgressBar dpb = new JProgressBar(0, NumberOfTreeSimulations);
+			    int k = (((String) comboBox.getSelectedItem()).equals("Best fit") ? 2 : 1);
+			    final JProgressBar dpb = new JProgressBar(0, NumberOfTreeSimulations + CladeAgeProbabilities.DELTA_PROGRESS * CladeAgeProbabilities.nmRepetitions * k);
 			    final JButton cancelButton = new JButton("Cancel");
 			    cancelButton.addActionListener(new ActionListener() {
 					@Override
@@ -589,6 +591,7 @@ public class CAPanel extends JPanel {
 							minSamplingRate, maxSamplingRate,
 							minSamplingGap, maxSamplingGap,
 							NumberOfTreeSimulations, MaxNrOfBranches, SamplingReplicatesPerTree, dpb);
+					calcFit(dpb);
 			        dlg.setVisible(false);
 			      }
 			    });
@@ -603,6 +606,8 @@ public class CAPanel extends JPanel {
 			    	}
 			    }
 			    if (probs.getCancel1()) {
+					panel_1.repaint();
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			    	return;
 			    }
 		        
@@ -610,7 +615,6 @@ public class CAPanel extends JPanel {
 				ages = probs.getAges();
 				probabilities =  probs.getProbabilities();
 
-				calcFit();
 				panel_1.repaint();
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));				
 			}
@@ -1099,48 +1103,52 @@ public class CAPanel extends JPanel {
 	}
 
 	
-	public void calcFit() {
+	public void calcFit(JProgressBar progress) {
 		String type = (String) comboBox.getSelectedItem();
 		if (type.equals("Best fit")) {
-			m_distr = probs.fitExponential();
-			m_rmsd = probs.getApprox_distribution_rmsd();
-//			normalise();
-			ContinuousDistribution tmp = probs.fitGamma();
-			if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+			if (maxOccuranceAge == minOccuranceAge) {
+				ContinuousDistribution bestFit = probs.fitExponential(progress);
 				m_rmsd = probs.getApprox_distribution_rmsd();
-				m_distr = tmp;
-//				normalise();
-			}
-			tmp = probs.fitLognormal();
-			if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+				if (probs.getCancel1()) {
+					return;
+				}
+				ContinuousDistribution tmp = probs.fitExpGamma(progress);
+				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+					m_rmsd = probs.getApprox_distribution_rmsd();
+					bestFit = tmp;
+				}
+				m_distr = bestFit;
+			} else {
+				ContinuousDistribution bestFit = probs.fitGamma(progress);
 				m_rmsd = probs.getApprox_distribution_rmsd();
-				m_distr = tmp;
-//				normalise();
-			}
-			tmp = probs.fitExpGamma();
-			if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-				m_rmsd = probs.getApprox_distribution_rmsd();
-				m_distr = tmp;
-//				normalise();
+				if (probs.getCancel1()) {
+					return;
+				}
+				ContinuousDistribution tmp = probs.fitLognormal(progress);
+				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+					 m_rmsd = probs.getApprox_distribution_rmsd();
+					 bestFit = tmp;
+				}
+				m_distr = bestFit;
 			}
 		}
 		if (type.equals("Exponential")) {
-			m_distr = probs.fitExponential();
+			m_distr = probs.fitExponential(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
 //			normalise();
 		}
 		if (type.equals("Gamma")) {
-			m_distr = probs.fitGamma();
+			m_distr = probs.fitGamma(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
 //			normalise();
 		}
 		if (type.equals("Log Normal")) {
-			m_distr = probs.fitLognormal();
+			m_distr = probs.fitLognormal(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
 //			normalise();
 		}
 		if (type.equals("Exp Gamma")) {
-			m_distr = probs.fitExpGamma();
+			m_distr = probs.fitExpGamma(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
 //			normalise();
 		}
