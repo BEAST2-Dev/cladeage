@@ -40,6 +40,9 @@ public class CladeAgeProbabilities {
 	
 	// normaliser for simulated probablities
 	private double normaliser = 1.0;
+	
+	final static int DELTA_PROGRESS = 10;
+	final static int nmRepetitions = 10;
 
 	public double getOffset() {
 		return offset;
@@ -265,8 +268,7 @@ public class CladeAgeProbabilities {
 		
 	} // public void bd_simulate(...)
 
-	public ContinuousDistribution fitExponential() {
-		int nmRepetitions = 10;
+	public ContinuousDistribution fitExponential(JProgressBar progress) {
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
 		double[] cs = new double[nmRepetitions];
@@ -274,7 +276,12 @@ public class CladeAgeProbabilities {
 		double[] ys = new double[nmRepetitions];
 		
 		for (int x = 0; x < nmRepetitions; x++) {
-			// if (cancel2 == false) {
+			if (progress != null) {
+				progress.setValue(progress.getValue() + DELTA_PROGRESS);
+			}
+			if (cancel1 != false) {
+				return null;
+			}
 				
 				// Initiate the simplex, find 3 vertices.
 				// vertex0
@@ -582,8 +589,7 @@ System.out.println("Normaliser: " + normaliser);
 	
 	}
 	
-	public ContinuousDistribution fitLognormal() {
-		int nmRepetitions = 10;
+	public ContinuousDistribution fitLognormal(JProgressBar progress) {
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
 		double[] cs = new double[nmRepetitions];
@@ -593,7 +599,12 @@ System.out.println("Normaliser: " + normaliser);
 		
 		for (int x = 0; x < nmRepetitions; x++) {
 			
-			// if (cancel2 == false) {
+			if (progress != null) {
+				progress.setValue(progress.getValue() + DELTA_PROGRESS);
+			}
+			if (cancel1 != false) {
+				return null;
+			}
 
 				// Initiate the simplex, find 4 verteces.
 				// vertex0
@@ -1031,8 +1042,7 @@ System.out.println("Normaliser: " + normaliser);
 		return new LogNormalImpl(approx_distribution_parameters[0], approx_distribution_parameters[1]);
 	}
 
-	public ContinuousDistribution fitGamma() {
-		int nmRepetitions = 10;
+	public ContinuousDistribution fitGamma(JProgressBar progress) {
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
 		double[] cs = new double[nmRepetitions];
@@ -1043,7 +1053,12 @@ System.out.println("Normaliser: " + normaliser);
 		
 		for (int x = 0; x < nmRepetitions; x++) {
 			
-			// if (cancel2 == false) {
+			if (progress != null) {
+				progress.setValue(progress.getValue() + DELTA_PROGRESS);
+			}
+			if (cancel1 != false) {
+				return null;
+			}
 				
 				// Initiate the simplex, find 4 vertices.
 				// vertex0
@@ -1586,8 +1601,7 @@ System.out.println("Normaliser: " + normaliser);
 		return new GammaDistributionImpl(approx_distribution_parameters[0], approx_distribution_parameters[1]);			
 	}
 	
-	public ContinuousDistribution fitExpGamma() {
-		int nmRepetitions = 10;
+	public ContinuousDistribution fitExpGamma(JProgressBar progress) {
 		
 		// Prepare arrays for parameters that are to be filled with each Nelder-Mead Downhill Simplex run.
 		double[] means = new double[nmRepetitions];
@@ -1597,7 +1611,12 @@ System.out.println("Normaliser: " + normaliser);
 		
 		for (int x = 0; x < nmRepetitions; x++) {
 			
-			// if (cancel2 == false) {
+			if (progress != null) {
+				progress.setValue(progress.getValue() + DELTA_PROGRESS);
+			}
+			if (cancel1 != false) {
+				return null;
+			}
 			
 				// Initiate the simplex, find 4 vertices.
 				// vertex0
@@ -2031,7 +2050,7 @@ for (int ccc = 0; ccc < approx_probabilities.length; ccc++) {
 		CladeAgeProbabilities cladeAgeProbabilities = new CladeAgeProbabilities();
 		cladeAgeProbabilities.bd_simulate(10.0,10.0,0.01,0.01,0.1,0.1,0.01,0.01,0,0,1000,100000,10, new JProgressBar());
 		System.out.println(System.currentTimeMillis());
-		cladeAgeProbabilities.fitExponential();
+		cladeAgeProbabilities.fitExponential(null);
 		System.out.println(System.currentTimeMillis());
 
   }
