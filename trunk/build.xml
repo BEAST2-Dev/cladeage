@@ -22,12 +22,13 @@
 
     <import file="${beast2path}/build.xml" />
 
-	<property name="main_class_BEAST" value="beast.app.BeastMCMC" />
+	<property name="main_class_CladeAge" value="beast.app.ca.CAPanel" />
 	<property name="report" value="${buildCA}/junitreport"/>
 
 	<path id="classpath">
         <pathelement path="${buildCA}"/>
 		<fileset dir="${libBeast2}" includes="junit-4.8.2.jar"/>
+		<fileset dir="${libBeast2}" includes="jam.jar"/>
         <pathelement path="${beast2classpath}"/>
 	</path>
 
@@ -76,6 +77,9 @@
 			<!-- compile JUnit test classes -->
 			<include name="test/beast/**" />
 		</javac>
+		<copy todir="${buildCA}">
+			<fileset dir="${srcCA}" includes="**/*.png" />
+		</copy>
 		<echo message="Successfully compiled." />
 	</target>
 
@@ -85,13 +89,14 @@
 		<mkdir dir="${distCA}" />
 
 		<!-- Put everything in ${buildCA} into the beast.jar file -->
-		<jar jarfile="${distCA}/CA.jar">
+		<jar jarfile="${distCA}/cladeage.jar">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="${main_class_BEAST}" />
+				<attribute name="Main-Class" value="${main_class_CladeAge}" />
 			</manifest>
 			<fileset dir="${buildCA}">
 				<include name="beast/**/*.class" />
+				<include name="beast/**/*.png" />
 			</fileset>
 			<fileset dir="${beast2classpath}">
 				<include name="beast/**/*.class" />
@@ -100,8 +105,9 @@
 				<include name="beagle/**/*.class" />
 				<include name="org/**/*.class" />
 			</fileset>
+			<zipgroupfileset dir="${libBeast2}" includes="jam.jar" />
 		</jar>
-		<jar jarfile="${distCA}/CA.src.jar">
+		<jar jarfile="${distCA}/cladeage.src.jar">
 			<fileset dir="${srcCA}">
 				<include name="beast/**/*.java" />
 				<include name="beast/**/*.png" />
@@ -193,5 +199,142 @@
         </jar>
 		<echo message="Add-on version v${version} release is finished." />
 	</target>
+
+
+
+
+
+	<!-- Release -->
+	<property name="version" value="1.0.0" />
+	<property name="version_number" value="1.0.0" />
+	<property name="release_dirCA" value="release" />
+	<property name="copyright" value="CladeAge development team 2013" />
+
+	<property name="CladeAge_name" value="CladeAge" />
+
+	<property name="common_dirCA" value="${release_dirCA}/common" />
+	<property name="Mac_dirCA" value="${release_dirCA}/Mac" />
+	<property name="Linux_dirCA" value="${release_dirCA}/Linux" />
+	<property name="Windows_dirCA" value="${release_dirCA}/Windows" />
+
+	<property name="Mac_package_dirCA" value="${Mac_dirCA}/${CladeAge_name}" />
+	<property name="Linux_package_dirCA" value="${Linux_dirCA}/${CladeAge_name}" />
+	<property name="Windows_package_dirCA" value="${Windows_dirCA}/${CladeAge_name}" />
+
+	<!-- Need to either install Launch4j under {CladeAge workspace}/${release}
+                 or install it in the default directory and change the location of launch4j.dir -->
+	<target name="windows"
+	        depends="build_jar_all_CA_NoJUnitTest"
+	        description="release Windows version of CladeAge">
+
+		<delete dir="${Windows_package_dirCA}" />
+		<!-- Create the release directory -->
+		<mkdir dir="${Windows_package_dirCA}" />
+
+		<property name="launch4j.dir" location="${Windows_dirCA}/launch4j" />
+		<taskdef name="launch4j"
+		         classname="net.sf.launch4j.ant.Launch4jTask"
+		         classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
+
+		<copy file="${distCA}/cladeage.src.jar" todir="${Windows_package_dirCA}/lib" />
+		<copy file="${common_dirCA}/VERSION HISTORY.txt" todir="${Windows_package_dirCA}" />
+		<copy file="${common_dirCA}/README.txt" todir="${Windows_package_dirCA}" />
+		<copy file="${common_dirCA}/LICENSE.txt" todir="${Windows_package_dirCA}" />
+
+		<!-- CladeAge v?.?.?.exe -->
+		<launch4j configFile="${Windows_dirCA}/CladeAge_launch4j.xml"
+		          jar="${distCA}/cladeage.jar"
+		          outfile="${Windows_package_dirCA}/${CladeAge_name}.exe"
+		          fileVersion="${version_number}.0"
+		          txtFileVersion="${version}"
+		          productVersion="${version_number}.0"
+		          txtProductVersion="${version}" />
+
+		<copy todir="${Windows_package_dirCA}/templates/">
+			<fileset dir="templates/" />
+		</copy>
+
+		<zip destfile="${Windows_dirCA}/${CladeAge_name} v${version}.zip">
+			<zipfileset dir="${Windows_package_dirCA}" prefix="${CladeAge_name}" />
+		</zip>
+
+		<echo message="Windows version release is finished." />
+	</target>
+
+	<target name="linux"
+	        depends="build_jar_all_CA_NoJUnitTest"
+	        description="release Linux/Unix version of CladeAge">
+		<delete dir="${Linux_package_dirCA}" />
+		<!-- Create the release directory -->
+		<mkdir dir="${Linux_package_dirCA}" />
+
+		<copy todir="${Linux_package_dirCA}/bin">
+			<fileset dir="${Linux_dirCA}/bin" />
+		</copy>
+		<chmod dir="${Linux_package_dirCA}/bin" perm="755" includes="**/**" />
+
+		<copy file="${distCA}/cladeage.jar" todir="${Linux_package_dirCA}/lib" />
+		<copy file="${distCA}/cladeage.src.jar" todir="${Linux_package_dirCA}/lib" />
+		<copy file="${common_dirCA}/icons/cladeage.png" todir="${Linux_package_dirCA}/images" />
+
+		<copy file="${common_dirCA}/VERSION HISTORY.txt" todir="${Linux_package_dirCA}" />
+		<copy file="${common_dirCA}/README.txt" todir="${Linux_package_dirCA}" />
+		<copy file="${common_dirCA}/LICENSE.txt" todir="${Linux_package_dirCA}" />
+
+		<echo message="Have to tar manaully, because [ANT Bug 550] the tar task change the mode of the executables files." />
+		<echo message="Linux/Unix version release is finished." />
+	</target>
+
+	<property name="jarbundler_dir" value="/Applications/eclipse/plugins/org.apache.ant_1.8.2.v20110505-1300/lib" />
+	<target name="mac"
+	        depends="build_jar_all_CA_NoJUnitTest"
+	        description="release Mac version of CladeAge">
+		<delete dir="${Mac_package_dirCA}" />
+		<delete file="${Mac_dirCA}/pack.temp.dmg"/>
+		<delete file="${Mac_dirCA}/CladeAge v${version}.dmg"/>
+		<!-- Create the release directory -->
+		<mkdir dir="${Mac_package_dirCA}" />
+
+		<copy todir="${Mac_package_dirCA}/bin">
+			<fileset dir="${Linux_dirCA}/bin" />
+		</copy>
+		<chmod dir="${Mac_package_dirCA}/bin" perm="755" includes="**/**" />
+
+		<copy file="${distCA}/cladeage.jar" todir="${Mac_package_dirCA}/lib" />
+		<copy file="${distCA}/cladeage.src.jar" todir="${Mac_package_dirCA}/lib" />
+
+		<copy file="${common_dir}CA/VERSION HISTORY.txt" todir="${Mac_package_dirCA}" />
+		<copy file="${common_dirCA}/README.txt" todir="${Mac_package_dirCA}" />
+		<copy file="${common_dirCA}/LICENSE.txt" todir="${Mac_package_dirCA}" />
+
+		<taskdef name="jarbundler"
+		         classname="net.sourceforge.jarbundler.JarBundler"
+		         classpath="${jarbundler_dir}/jarbundler-2.2.0.jar" />
+
+		<!-- create a jar bundle for the mac -->
+		<jarbundler dir="${Mac_package_dirCA}"
+		            name="${CladeAge_name}"
+		            mainclass="${main_class_CladeAge}"
+		            icon="${common_dirCA}/icons/cladeage.icns"
+		            jvmversion="1.6+"
+		            vmoptions="-Xmx1024M"
+		            arguments="-window -working -options"
+		            version="${version}"
+		            infostring="${CladeAge_name}, ${copyright}"
+		            bundleid="${main_class_CladeAge}">
+			<jarfileset dir="${Mac_package_dirCA}/lib">
+				<include name="**/cladeage.jar" />
+			</jarfileset>
+			<javaproperty name="apple.laf.useScreenMenuBar" value="true" />
+			<javaproperty name="java.library.path" value="$JAVAROOT:/usr/local/lib" />
+		</jarbundler>
+
+		<echo message="Building disk image." />
+		<exec executable='release/Mac/createdmg.sh'/>
+		<echo message="Mac version release is finished." />
+	</target>
+
+
+
 
 </project>

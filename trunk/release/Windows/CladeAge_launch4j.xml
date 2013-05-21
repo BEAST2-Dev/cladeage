@@ -1,0 +1,21 @@
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <icon>../common/icons/cladeage.ico</icon>
+  <classPath>
+  	<mainClass>beast.app.ca.CAPanel</mainClass>
+  	<cp>./lib/cladeage.jar</cp>
+  </classPath>
+  <cmdLine></cmdLine>
+  <jre>
+    <minVersion>1.6.0</minVersion>
+    <initialHeapSize>256</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>    
+  <versionInfo>
+    <fileDescription>CladeAge</fileDescription>    
+    <copyright>CladeAge 2 development team 2013</copyright>
+    <productName>CladeAge</productName>
+    <internalName>CladeAge</internalName>
+    <originalFilename>CladeAge.exe</originalFilename>    
+  </versionInfo>
+</launch4jConfig>
