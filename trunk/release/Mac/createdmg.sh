@@ -1,17 +1,17 @@
 #!/bin/sh
 cd release/Mac
 
-export source=BEAST
-export applicationName=BEAST
+export source=CladeAge
+export applicationName=CladeAge
 export version=`perl -e 'while($s=<>) {if ($s=~/"version"/) {$s =~ /value="([^"]*)"/; print $1;}}' < ../../build.xml`
-export title="BEAST v${version}"
+export title="CladeAge v${version}"
 export size=30000
 export backgroundPictureName=install.png
 export finalDMGName=${title}
 
 
-mkdir "BEAST/BEAST ${version}"
-mv BEAST/* "BEAST/BEAST ${version}"
+mkdir "CladeAge/CladeAge ${version}"
+mv CladeAge/* "CladeAge/CladeAge ${version}"
 
 cp install.png ${source}/${backgroundPictureName}
 
