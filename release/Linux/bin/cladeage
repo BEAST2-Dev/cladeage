@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ -z "$CLADEAGE" ]; then
+	## resolve links - $0 may be a link to application
+	PRG="$0"
+
+	# need this for relative symlinks
+	while [ -h "$PRG" ] ; do
+	    ls=`ls -ld "$PRG"`
+	    link=`expr "$ls" : '.*-> \(.*\)$'`
+	    if expr "$link" : '/.*' > /dev/null; then
+		PRG="$link"
+	    else
+		PRG="`dirname "$PRG"`/$link"
+	    fi
+	done
+
+	# make it fully qualified
+	saveddir=`pwd`
+	CLADEAGE0=`dirname "$PRG"`/..
+	CLADEAGE=`cd "$CLADEAGE0" && pwd`
+	cd "$saveddir"
+fi
+
+CLADEAGE_LIB="$CLADEAGE/lib"
+java -Xms256m -Xmx1024m -Djava.library.path="$CLADEAGE_LIB" -cp "$CLADEAGE_LIB/cladeage.jar" beast.app.ca.CAPanel $*
