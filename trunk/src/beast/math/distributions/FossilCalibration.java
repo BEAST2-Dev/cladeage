@@ -1,10 +1,9 @@
 package beast.math.distributions;
 
-import javax.swing.JProgressBar;
+
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
-import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 
 import beast.app.ca.CAPanel;
 import beast.app.ca.CladeAgeProbabilities;
@@ -89,8 +88,23 @@ public class FossilCalibration extends ParametricDistribution {
 				minTurnoverRate, maxTurnoverRate,
 				minSamplingRate, maxSamplingRate,
 				minSamplingGap, maxSamplingGap,
-				NumberOfTreeSimulations, MaxNrOfBranches, SamplingReplicatesPerTree, new JProgressBar());
-		m_dist = probs.fitExponential();
+				NumberOfTreeSimulations, MaxNrOfBranches, SamplingReplicatesPerTree, null);
+		
+		if (maxOccuranceAge == minOccuranceAge) {
+			m_dist = probs.fitExponential(null);
+			double rmsd = probs.getApprox_distribution_rmsd();
+			ContinuousDistribution tmp = probs.fitExpGamma(null);
+			if (probs.getApprox_distribution_rmsd() < rmsd) {
+				m_dist = tmp;
+			}
+		} else {
+			m_dist = probs.fitGamma(null);
+			double rmsd = probs.getApprox_distribution_rmsd();
+			ContinuousDistribution tmp = probs.fitLognormal(null);
+			if (probs.getApprox_distribution_rmsd() < rmsd) {
+				 m_dist = tmp;
+			}
+		}
 	}
 
 }
