@@ -22,19 +22,40 @@
 </mergewith>
 -->
 
+
+
+<mergewith point='parametricDistributions'>
+<!-- Parametric distributions, all without hyperpriors -->
+
+<!-- CalibratedDistribution -->
+        <subtemplate id='FossilCalibration' class='beast.math.distributions.FossilCalibration' mainid='[top]'>
+<![CDATA[
+        <distr spec="beast.math.distributions.FossilCalibration"/>
+]]>
+        </subtemplate>
+
+</mergewith>
+
 <mergewith point='aux-partitiontemplate'>
 <![CDATA[
+<!--
         <distribution spec="beast.math.distributions.CompoundFossilPrior" id="fossilCalibrations"/>	
+-->
+
+        <distribution spec="CompoundDistribution" id="fossilCalibrations"/>	
 ]]>
-         <connect srcID='fossilCalibrations'               targetID='prior' inputName='distribution' if="isInitializing"/>
+         <connect srcID='fossilCalibrations'               targetID='posterior' inputName='distribution' if="isInitializing"/>
 	
 </mergewith>
 
 
 <mergewith point='aux-priors-panels'>
 
-	<panel spec='BeautiPanelConfig' panelname="Fossil Priors" tiptext="Priors based on fossil record"
+<!--
             path='distribution/distribution[id="prior"]/distribution[id="fossilCalibrations"]/fossilPrior'
+-->
+	<panel spec='BeautiPanelConfig' panelname="Fossil Priors" tiptext="Priors based on fossil record"
+            path='distribution/distribution[id="fossilCalibrations"]/distribution'
             hasPartitions="none" icon='7.png.x' forceExpansion='TRUE_START_COLLAPSED'
             type='beast.math.distributions.FossilPrior'
         />
