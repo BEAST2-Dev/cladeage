@@ -45,7 +45,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         Box itemBox = Box.createHorizontalBox();
 
         MRCAPrior prior = (MRCAPrior) plugin;
-        String sText = prior.getID();
+        String sText = prior.m_taxonset.get().getID();
 
         JButton taxonButton = new JButton(sText);
         taxonButton.setMinimumSize(PriorInputEditor.PREFERRED_SIZE);
@@ -62,10 +62,10 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
                     Set<Taxon> candidates = getTaxonCandidates(prior);
                     TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates, doc);
                     if (dlg.showDialog()) {
-                        prior.setID(dlg.taxonSet.getID());
+                        prior.setID(dlg.taxonSet.getID()+".fossilprior");
                         prior.m_taxonset.setValue(dlg.taxonSet, prior);
                     }
-                } catch (Exception e1) {
+                    } catch (Exception e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
