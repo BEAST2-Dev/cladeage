@@ -14,6 +14,7 @@ import beast.core.State;
 import beast.core.StateNode;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Tree;
+import beast.math.distributions.CompoundFossilPrior;
 import beast.math.distributions.FossilCalibration;
 import beast.math.distributions.FossilPrior;
 import beast.math.distributions.OneOnX;
@@ -75,7 +76,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor {
 	            taxonSet = dlg.taxonSet;
 	            PluginPanel.addPluginToMap(taxonSet, doc);
 	            prior.m_taxonset.setValue(taxonSet, prior);
-	            prior.setID(taxonSet.getID() + ".prior");
+	            prior.setID(taxonSet.getID() + ".fossilprior");
 	            // this sets up the type
 	            prior.m_distInput.setValue(new OneOnX(), prior);
 	            // this removes the parametric distribution
@@ -83,12 +84,15 @@ public class FossilPriorListInputEditor extends PriorListInputEditor {
 
 	            Logger logger = (Logger) doc.pluginmap.get("tracelog");
 	            logger.m_pLoggers.setValue(prior, logger);
+	            CompoundFossilPrior compoundPrior = (CompoundFossilPrior) doc.pluginmap.get("fossilCalibrations");
+	            compoundPrior.distributionsInput.setValue(prior, compoundPrior);
+
 	        } catch (Exception e) {
 	            // TODO: handle exception
 	        }
 	        List<Plugin> selectedPlugins = new ArrayList<Plugin>();
 	        selectedPlugins.add(prior);
-	        g_collapsedIDs.add(prior.getID());
+	        g_collapsedIDs.add(prior.getID());	        
 	        return selectedPlugins;
 	    }
 

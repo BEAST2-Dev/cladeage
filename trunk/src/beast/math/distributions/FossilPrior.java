@@ -9,7 +9,7 @@ public class FossilPrior extends MRCAPrior {
 	public Input<FossilCalibration> callibrationDistr = new Input<FossilCalibration>("fossilDistr", "", Validate.REQUIRED);
 
 	public FossilPrior() {
-		m_distInput.setRule(Validate.FORBIDDEN);
+		m_distInput.setRule(Validate.OPTIONAL);
 	}
 	
 	public void initAndValidate() throws Exception {

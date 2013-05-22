@@ -1,19 +1,26 @@
 <beast version='2.0'
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
+<!--
 <mergewith point='parametricDistributions'>
+-->
 <!-- Parametric distributions, all without hyperpriors -->
 
 <!-- CalibratedDistribution -->
-        <subtemplate id='FossilCalibration' class='beast.math.distributions.FossilCalibration' mainid='[top]'
-			suppressInputs='beast.math.distributions.FossilPrior.tree,beast.math.distributions.FossilPrior.monophyletic,beast.math.distributions.FossilPrior.taxonset,beast.math.distributions.FossilCalibration.offset'
-		>
+<!--
+        <subtemplate id='ExpGamma' class='beast.math.distributions.ExpGamma' mainid='[top]'>
 <![CDATA[
-        <distr spec="beast.math.distributions.FossilCalibration"/>
+        <distr spec="beast.math.distributions.ExpGamma">
+            <parameter name='weight' value="0" estimate='false'/>
+            <parameter name='mean' value="1" estimate='false'/>
+            <parameter name='alpha' value="0" estimate='false'/>
+            <parameter name='beta' value="1" estimate='false'/>
+		</distr>
 ]]>
         </subtemplate>
 
 </mergewith>
+-->
 
 <mergewith point='aux-partitiontemplate'>
 <![CDATA[
@@ -33,11 +40,5 @@
         />
 
 </mergewith>
-
-<!--
-<mergewith point='aux-priors'>
-        <distribution spec="beast.math.distributions.CompoundFossilPrior" id="fossilCalibrations"/>	
-</mergewith>
--->
 
 </beast>

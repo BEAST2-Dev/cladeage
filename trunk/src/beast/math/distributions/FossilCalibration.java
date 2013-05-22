@@ -9,6 +9,9 @@ import beast.app.ca.CAPanel;
 import beast.app.ca.CladeAgeProbabilities;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Plugin;
+import beast.evolution.likelihood.TreeLikelihood;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 
 @Description("Distribution based on fossil information")
 public class FossilCalibration extends ParametricDistribution {
@@ -30,6 +33,17 @@ public class FossilCalibration extends ParametricDistribution {
 	public Input<Integer> NumberOfTreeSimulationsInput = new Input<Integer>("numberOfTreeSimulations", CAPanel.NR_SIMULATIONS_HELP, 1000);
 	public Input<Integer> MaxNrOfBranchesInput = new Input<Integer>("maxNrOfBranches", CAPanel.MAX_NR_TREES_HELP, 100000);
 	public Input<Integer> SamplingReplicatesPerTreeInput = new Input<Integer>("samplingReplicatesPerTree", CAPanel.REPS_PER_TREE_HELP, 10);
+	
+	public boolean canSetMinOccuranceAge(Object o) throws Exception {
+        final Double value = Double.parseDouble((String) o);
+        return (value <= maxOccuranceAgeInput.get());
+		
+	}
+	public boolean canSetMaxOccuranceAge(Object o) throws Exception {
+        final Double value = Double.parseDouble((String) o);
+        return (value >= minOccuranceAgeInput.get());
+		
+	}
 	
     ContinuousDistribution m_dist = null;
 

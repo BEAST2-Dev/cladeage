@@ -50,10 +50,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
@@ -70,6 +74,7 @@ public class CAPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	static final String CA_ICON = "beast/app/ca/icons/cladeage_256x256px.png";
+	static final String CA_ICON2 = "beast/app/ca/icons/cladeage_128x128px.png";
 
 	final public static String OCCURRENCE_AGE_HELP = "<html>First occurrence age:<br/>"+
 "<br/>"+
@@ -187,6 +192,8 @@ public class CAPanel extends JPanel {
 	private JTextField textField_MaxNrOfBranches;
 	private JTextField textField_SamplingReplicatesPerTree;
 	JButton btnFindApproximation;
+	JButton btnCalculate;
+	public void setCalculateButtonText(String text) {btnCalculate.setText(text);}
 	JComboBox comboBox;
 	JPanel panel;
 	JPanel panel2;
@@ -210,12 +217,45 @@ public class CAPanel extends JPanel {
 	private int MaxNrOfBranches = 100000;
 	private int SamplingReplicatesPerTree = 10;
 
+	public double getMinOccuranceAge() { return	minOccuranceAge;}
+	public double getMinDivRate() { return	minDivRate;}
+	public double getMinTurnoverRate() { return	minTurnoverRate;}
+	public double getMinSamplingRate() { return	minSamplingRate;}
+	public double getMinSamplingGap() { return	minSamplingGap;}
+
+	public double getMaxOccuranceAge() { return	maxOccuranceAge;}
+	public double getMaxDivRate() { return	maxDivRate;}
+	public double getMaxTurnoverRate() { return	maxTurnoverRate;}
+	public double getMaxSamplingRate() { return	maxSamplingRate;}
+	public double getMaxSamplingGap() { return	maxSamplingGap;}
+	public int getNumberOfTreeSimulations() { return	NumberOfTreeSimulations;}
+	public int getMaxNrOfBranches() { return	MaxNrOfBranches;}
+	public int getSamplingReplicatesPerTree() { return	SamplingReplicatesPerTree;}
+	
+	public void setMinOccuranceAge(double minOccuranceAge) {this.minOccuranceAge = minOccuranceAge;}
+	public void setMinDivRate(double minDivRate) {this.minDivRate = minDivRate;}
+	public void setMinTurnoverRate(double minTurnoverRate) {this.minTurnoverRate = minTurnoverRate;}
+	public void setMinSamplingRate(double minSamplingRate) {this.minSamplingRate = minSamplingRate;}
+	public void setMinSamplingGap(double minSamplingGap) {this.minSamplingGap = minSamplingGap;}
+	   	
+	public void setMaxOccuranceAge(double maxOccuranceAge) {this.maxOccuranceAge = maxOccuranceAge;}
+	public void setMaxDivRate(double maxDivRate) {this.maxDivRate = maxDivRate;}
+	public void setMaxTurnoverRate(double maxTurnoverRate) {this.maxTurnoverRate = maxTurnoverRate;}
+	public void setMaxSamplingRate(double maxSamplingRate) {this.maxSamplingRate = maxSamplingRate;}
+	public void setMaxSamplingGap(double maxSamplingGap) {this.maxSamplingGap = maxSamplingGap;}
+	public void setNumberOfTreeSimulations(int NumberOfTreeSimulations) {this.NumberOfTreeSimulations = NumberOfTreeSimulations;}
+	public void setMaxNrOfBranches(int MaxNrOfBranches) {this.MaxNrOfBranches = MaxNrOfBranches;}
+	public void setSamplingReplicatesPerTree(int SamplingReplicatesPerTree) {this.SamplingReplicatesPerTree = SamplingReplicatesPerTree;}
+	
+	boolean processingDataToGui = false;
+
 	// used for graphing
 	double [] ages;
 	double [] probabilities;
 	
 	ContinuousDistribution m_distr = null;
 	double m_rmsd = 0;
+	
 
 
 	GridBagLayout gridBagLayout = new GridBagLayout();
@@ -224,6 +264,9 @@ public class CAPanel extends JPanel {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		//gridBagLayout.columnWidths = new int[]{525, 375, 100};
 		gridBagLayout.columnWidths = new int[]{800, 100, 200};
+		gridBagLayout.columnWidths = new int[]{450, 80, 200};
+		gridBagLayout.columnWidths = new int[]{350, 40, 150};
+		gridBagLayout.columnWidths = new int[]{0};
 		gridBagLayout.rowHeights = new int[]{180, 450};
 		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
@@ -266,7 +309,7 @@ public class CAPanel extends JPanel {
 		gbc_lblBirt.gridy = 1;
 		panel.add(lblBirt, gbc_lblBirt);
 		
-		textField_minOccuranceAge = new JTextField();
+		textField_minOccuranceAge = newTextField();
 		textField_minOccuranceAge.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -287,7 +330,7 @@ public class CAPanel extends JPanel {
 		gbc_label.gridy = 1;
 		panel.add(label, gbc_label);
 		
-		textField_maxOccuranceAge = new JTextField();
+		textField_maxOccuranceAge = newTextField();
 		textField_maxOccuranceAge.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -308,7 +351,7 @@ public class CAPanel extends JPanel {
 		gbc_lblNetDiversificationRate.gridy = 2;
 		panel.add(lblNetDiversificationRate, gbc_lblNetDiversificationRate);
 		
-		textField_minDivRate = new JTextField();
+		textField_minDivRate = newTextField();
 		textField_minDivRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -328,7 +371,7 @@ public class CAPanel extends JPanel {
 		gbc_label_1.gridy = 2;
 		panel.add(label_1, gbc_label_1);
 		
-		textField_maxDivRate = new JTextField();
+		textField_maxDivRate = newTextField();
 		textField_maxDivRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -349,7 +392,7 @@ public class CAPanel extends JPanel {
 		gbc_lblRurnoverRateDb.gridy = 3;
 		panel.add(lblRurnoverRateDb, gbc_lblRurnoverRateDb);
 		
-		textField_minTurnoverRate = new JTextField();
+		textField_minTurnoverRate = newTextField();
 		textField_minTurnoverRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -369,7 +412,7 @@ public class CAPanel extends JPanel {
 		gbc_label_2.gridy = 3;
 		panel.add(label_2, gbc_label_2);
 		
-		textField_maxTurnoverRate = new JTextField();
+		textField_maxTurnoverRate = newTextField();
 		textField_maxTurnoverRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -390,7 +433,7 @@ public class CAPanel extends JPanel {
 		gbc_lblSamplingRate.gridy = 4;
 		panel.add(lblSamplingRate, gbc_lblSamplingRate);
 		
-		textField_minSamplingRate = new JTextField();
+		textField_minSamplingRate = newTextField();
 		textField_minSamplingRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -410,7 +453,7 @@ public class CAPanel extends JPanel {
 		gbc_label_3.gridy = 4;
 		panel.add(label_3, gbc_label_3);
 		
-		textField_maxSamplingRate = new JTextField();
+		textField_maxSamplingRate = newTextField();
 		textField_maxSamplingRate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -431,7 +474,7 @@ public class CAPanel extends JPanel {
 		gbc_lblNewLabel.gridy = 5;
 		panel.add(lblNewLabel, gbc_lblNewLabel);
 		
-		textField_minSamplginGap = new JTextField();
+		textField_minSamplginGap = newTextField();
 		textField_minSamplginGap.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -451,7 +494,7 @@ public class CAPanel extends JPanel {
 		gbc_label_4.gridy = 5;
 		panel.add(label_4, gbc_label_4);
 		
-		textField_maxSamplingGap = new JTextField();
+		textField_maxSamplingGap = newTextField();
 		textField_maxSamplingGap.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -548,12 +591,13 @@ public class CAPanel extends JPanel {
 		lblIcon.setPreferredSize(new Dimension(128,128));
 		panel2b.add(lblIcon, BorderLayout.NORTH);
 		
-		JButton btnCalculate = new JButton("Run");
+		btnCalculate = new JButton("Run");
 		btnCalculate.setMinimumSize(new Dimension(128, 20));
 		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				guiToData();
+				dataToGUI();
 				ages = null;
 				probs = new CladeAgeProbabilities();
 				
@@ -635,7 +679,7 @@ public class CAPanel extends JPanel {
 		
 		add(panel2b, gbc_lblIcon);
 		
-		textField_NumberOfTreeSimulations = new JTextField();
+		textField_NumberOfTreeSimulations = newTextField();
 		textField_NumberOfTreeSimulations.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -648,7 +692,7 @@ public class CAPanel extends JPanel {
 		panel2.add(textField_NumberOfTreeSimulations, gbc_textField);
 		textField_NumberOfTreeSimulations.setColumns(10);
 		
-		textField_MaxNrOfBranches = new JTextField();
+		textField_MaxNrOfBranches = newTextField();
 		textField_MaxNrOfBranches.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -669,7 +713,7 @@ public class CAPanel extends JPanel {
 		gbc_lblSamplingReplicatesPer.gridy = 3;
 		panel2.add(lblSamplingReplicatesPer, gbc_lblSamplingReplicatesPer);
 		
-		textField_SamplingReplicatesPerTree = new JTextField();
+		textField_SamplingReplicatesPerTree = newTextField();
 		textField_SamplingReplicatesPerTree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -858,7 +902,7 @@ public class CAPanel extends JPanel {
 
 		                if (m_distr != null) {
 		                    try {
-		                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints);
+		                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints - minOccuranceAge);
 		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
 		                        	fyPoints2[i] = 0;
 		                        }
@@ -1150,7 +1194,8 @@ public class CAPanel extends JPanel {
 		}
 	}
 	
-	void dataToGUI() {
+	public void dataToGUI() {
+		processingDataToGui = true;
 		textField_minOccuranceAge.setText(minOccuranceAge + "");
 		textField_minDivRate.setText(minDivRate + "");
 		textField_minTurnoverRate.setText(minTurnoverRate + "");
@@ -1184,6 +1229,7 @@ public class CAPanel extends JPanel {
 		} else {
 			textField_maxSamplingGap.setText("As minimum");
 		}
+		processingDataToGui = false;
 	}
 	
 	void guiToData() {
@@ -1234,7 +1280,11 @@ public class CAPanel extends JPanel {
 
 		// something changed, so the probabilities are not valid any more
 		m_distr = null;
-		dataToGUI();
+		
+		for (CAPanelListener listener : listeners) {
+			listener.update();
+		}
+		//dataToGUI();
 	}
 
 	private int parseInt(String text) {
@@ -1300,7 +1350,7 @@ public class CAPanel extends JPanel {
 		    String title = text.substring(0, text.indexOf(":"));
 		    title = title.replaceAll("<html>", "");
 			//JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE);
-			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE, BeautiPanel.getIcon(CA_ICON));
+			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE, BeautiPanel.getIcon(CA_ICON2));
 		
 	}
 
@@ -1363,6 +1413,127 @@ public class CAPanel extends JPanel {
         return writer.toString();
     }
 
+    
+    boolean bAdvancedFeatures = false;
+
+	private JMenuBar makeMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic('F');
+        menuBar.add(fileMenu);
+        fileMenu.add(new MyAction("New", "Start new Clade Age", "new", KeyEvent.VK_N) {
+        	public void actionPerformed(ActionEvent ae) {
+                main(new String[0]);
+            }
+        });
+
+        if (!Utils.isMac()) {
+            fileMenu.addSeparator();
+            fileMenu.add(new MyAction("Close", "Close Window", "close", KeyEvent.VK_W) {
+			    public void actionPerformed(ActionEvent ae) {
+			        JMenuItem menuItem = (JMenuItem) ae.getSource();
+			        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
+			        Component invoker = popupMenu.getInvoker();
+			        JComponent invokerAsJComponent = (JComponent) invoker;
+			        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
+			        if (topLevel != null) {
+			            ((JFrame) topLevel).dispose();
+			        }
+			    }
+			});
+            
+            fileMenu.add(new MyAction("Exit", "Exit Program", "exit", KeyEvent.VK_F4) {
+            	public void actionPerformed(ActionEvent ae) {
+            		System.exit(0);
+            	}
+            });
+        }
+        
+        JMenu modeMenu = new JMenu("Mode");
+        menuBar.add(modeMenu);
+        modeMenu.setMnemonic('M');
+
+        JCheckBoxMenuItem advancedMode = new JCheckBoxMenuItem("Show advanced settings", bAdvancedFeatures);
+        advancedMode.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+            	JCheckBoxMenuItem advancedMode = (JCheckBoxMenuItem) ae.getSource();
+                bAdvancedFeatures = advancedMode.getState();
+//                panel2.setVisible(bAdvancedFeatures);
+                if (bAdvancedFeatures) {
+                	//gridBagLayout.columnWidths = new int[]{525, 375, 100};
+            		add(panel2, gbc_panel2);
+                	
+                } else {
+                    //gridBagLayout.columnWidths = new int[]{800, 0, 100};
+            		remove(panel2);
+                	gridBagLayout.removeLayoutComponent(panel2);
+//                    panel2.setMinimumSize(new Dimension(0,0));
+//                    panel2.setSize(new Dimension(0,0));
+//                    panel2.setMaximumSize(new Dimension(0,0));
+//                    gridBagLayout.removeLayoutComponent(panel2);
+                }
+                
+		        JMenuItem menuItem = (JMenuItem) ae.getSource();
+		        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
+		        Component invoker = popupMenu.getInvoker();
+		        JComponent invokerAsJComponent = (JComponent) invoker;
+		        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
+		        if (topLevel != null) {
+		        	JFrame frame = (JFrame) topLevel;
+		        	Dimension size = frame.getSize(); 
+		            ((JFrame) topLevel).setSize(new Dimension(size.width, size.height - 1));
+		            ((JFrame) topLevel).setSize(size);
+		        }
+
+                repaint();
+            }
+        });
+        modeMenu.add(advancedMode);
+        
+        if (!Utils.isMac()) {
+            JMenu helpMenu = new JMenu("Help");
+            helpMenu.setMnemonic('H');
+            menuBar.add(helpMenu);
+            helpMenu.add(new MyAction("About", "Help about", "help", -1) {
+		        public void actionPerformed(ActionEvent ae) {
+		        	showHelp(ABOUT_HELP);
+		        }
+            });
+        }
+
+        
+		return menuBar;
+	}
+
+	List<CAPanelListener> listeners = new ArrayList<CAPanelListener>();
+	public void addChangeListener(CAPanelListener o) {
+		listeners.add(o);
+	}
+
+	JTextField newTextField() {
+		JTextField entry = new JTextField();
+	    entry.getDocument().addDocumentListener(new DocumentListener() {
+	        @Override
+	        public void removeUpdate(DocumentEvent e) {
+	        	if (!processingDataToGui) 
+	        		guiToData();
+	        }
+	
+	        @Override
+	        public void insertUpdate(DocumentEvent e) {
+	        	if (!processingDataToGui) 
+	        		guiToData();
+	        }
+	
+	        @Override
+	        public void changedUpdate(DocumentEvent e) {
+	        	if (!processingDataToGui) 
+	        		guiToData();
+	        }
+	    });
+	    return entry;
+	}
+	
     public static void main(String[] args) {
 		JFrame frame = new JFrame();
         Utils.loadUIManager();
@@ -1431,97 +1602,6 @@ public class CAPanel extends JPanel {
 		frame.getContentPane().add(pane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		frame.setVisible(true);
-	}
-    
-    boolean bAdvancedFeatures = false;
+	} // main
 
-	private JMenuBar makeMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
-        fileMenu.setMnemonic('F');
-        menuBar.add(fileMenu);
-        fileMenu.add(new MyAction("New", "Start new Clade Age", "new", KeyEvent.VK_N) {
-        	public void actionPerformed(ActionEvent ae) {
-                main(new String[0]);
-            }
-        });
-
-        if (!Utils.isMac()) {
-            fileMenu.addSeparator();
-            fileMenu.add(new MyAction("Close", "Close Window", "close", KeyEvent.VK_W) {
-			    public void actionPerformed(ActionEvent ae) {
-			        JMenuItem menuItem = (JMenuItem) ae.getSource();
-			        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
-			        Component invoker = popupMenu.getInvoker();
-			        JComponent invokerAsJComponent = (JComponent) invoker;
-			        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
-			        if (topLevel != null) {
-			            ((JFrame) topLevel).dispose();
-			        }
-			    }
-			});
-            
-            fileMenu.add(new MyAction("Exit", "Exit Program", "exit", KeyEvent.VK_F4) {
-            	public void actionPerformed(ActionEvent ae) {
-            		System.exit(0);
-            	}
-            });
-        }
-        
-        JMenu modeMenu = new JMenu("Mode");
-        menuBar.add(modeMenu);
-        modeMenu.setMnemonic('M');
-
-        JCheckBoxMenuItem advancedMode = new JCheckBoxMenuItem("Show advanced settings", bAdvancedFeatures);
-        advancedMode.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-            	JCheckBoxMenuItem advancedMode = (JCheckBoxMenuItem) ae.getSource();
-                bAdvancedFeatures = advancedMode.getState();
-//                panel2.setVisible(bAdvancedFeatures);
-                if (bAdvancedFeatures) {
-                	gridBagLayout.columnWidths = new int[]{525, 375, 100};
-            		add(panel2, gbc_panel2);
-                	
-                } else {
-                    gridBagLayout.columnWidths = new int[]{800, 0, 100};
-            		remove(panel2);
-                	gridBagLayout.removeLayoutComponent(panel2);
-//                    panel2.setMinimumSize(new Dimension(0,0));
-//                    panel2.setSize(new Dimension(0,0));
-//                    panel2.setMaximumSize(new Dimension(0,0));
-//                    gridBagLayout.removeLayoutComponent(panel2);
-                }
-                
-		        JMenuItem menuItem = (JMenuItem) ae.getSource();
-		        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
-		        Component invoker = popupMenu.getInvoker();
-		        JComponent invokerAsJComponent = (JComponent) invoker;
-		        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
-		        if (topLevel != null) {
-		        	JFrame frame = (JFrame) topLevel;
-		        	Dimension size = frame.getSize(); 
-		            ((JFrame) topLevel).setSize(new Dimension(size.width, size.height - 1));
-		            ((JFrame) topLevel).setSize(size);
-		        }
-
-                repaint();
-            }
-        });
-        modeMenu.add(advancedMode);
-        
-        if (!Utils.isMac()) {
-            JMenu helpMenu = new JMenu("Help");
-            helpMenu.setMnemonic('H');
-            menuBar.add(helpMenu);
-            helpMenu.add(new MyAction("About", "Help about", "help", -1) {
-		        public void actionPerformed(ActionEvent ae) {
-		        	showHelp(ABOUT_HELP);
-		        }
-            });
-        }
-
-        
-		return menuBar;
-	}
-	
 }
