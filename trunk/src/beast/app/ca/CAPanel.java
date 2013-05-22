@@ -655,7 +655,6 @@ public class CAPanel extends JPanel {
 			    	return;
 			    }
 		        
-			    // XXX todo
 				ages = probs.getAges();
 				probabilities =  probs.getProbabilities();
 
@@ -899,26 +898,7 @@ public class CAPanel extends JPanel {
 		            for (int i = 0; i < nPoints; i++) {
 		                xPoints[i] = (int)(graphoffset + nGraphWidth * (ages[ages.length - 1 - i] - f2)/fXRange);  
 
-// XXX
-//for (int ccc = 0; ccc < probabilities.length; ccc++) {
-//	System.out.println("Age: " + ages[ccc] + "\tProbability: " + probabilities[ccc]);
-//}
-
-// XXX
-//System.out.println("Normaliser from CAPanel: " + probs.getNormaliser());
-
 		                fyPoints[i] = probabilities[nPoints - i - 1]/probs.getNormaliser();
-
-// XXX
-//for (int ccc = 0; ccc < probabilities.length; ccc++) {
-//	System.out.println("FYPoints: " + fyPoints[ccc]);
-//}
-
-
- // XXX
-//for (int ccc = 0; ccc < probabilities.length; ccc++) {
-//	System.out.println("FYPoints2: " + fyPoints2[ccc]);
-//}
 
 		                
 		                if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {

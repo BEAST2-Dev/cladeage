@@ -198,7 +198,6 @@ public class CladeAgeProbabilities {
 			
 			// Set extant_at_this_age to false before looping through all ages. This can be done because we start with the oldest age, and as soon as we
 			// find an age for which extant_at_this_age is true, this will also be true for all younger ages.
-			boolean extant_at_this_age = false;
 			for (int i = 0; i < ages.length; i++) {
 				
 				// For each age, determine the tree length.
@@ -206,20 +205,23 @@ public class CladeAgeProbabilities {
 				
 				// Trim the tree so that no branches are older than @ages[i] - first_occurrence_age. While trimming, make sure the tree contains at least one extant species.
 				if (tree_duration >= 0) {
+					double sum_of_species_durations = 0.0;
+					int number_of_extant_taxa = 0;
 					for (int o = branch_origin.size()-1; o >= 0; o--) {
 						boolean remove_this_branch = false;
 						if (branch_origin.get(o) >= tree_duration) {
 							remove_this_branch = true;
-							extant_at_this_age = true;
-						} else if (branch_termination.get(o) < sampling_gap) {
-							remove_this_branch = true;
 						} else {
 							if (branch_termination.get(o) >= tree_duration) {
 								branch_termination.set(o,tree_duration);
-								extant_at_this_age = true;
+								number_of_extant_taxa += 1;
 							}
-							if (branch_origin.get(o) < sampling_gap) {
-								branch_origin.set(o,sampling_gap); 
+							if (branch_termination.get(o) > sampling_gap) {
+								if (branch_origin.get(o) > sampling_gap) {
+									sum_of_species_durations += branch_termination.get(o)-branch_origin.get(o);
+								} else {
+									sum_of_species_durations += branch_termination.get(o)-sampling_gap;
+								}
 							}
 						}
 						if (remove_this_branch == true) {
@@ -229,22 +231,12 @@ public class CladeAgeProbabilities {
 					} // for (int o = branch_origin.size()-1; o >= 0; o--)
 					
 					// If at least one species is extant at this age, get the sum of lineage durations, excluding the sampling gap.
-					if (extant_at_this_age == true) {
-						double sum_of_species_duration = 0;
-						for (int o = 0; o < branch_origin.size(); o++) {
-							if (branch_termination.get(o) > sampling_gap) {
-								if (branch_origin.get(o) > sampling_gap) {
-									sum_of_species_duration += branch_termination.get(o) - branch_origin.get(o);
-								} else {
-									sum_of_species_duration += branch_termination.get(o) - sampling_gap;
-								}
-							}
-						}
+					if (number_of_extant_taxa > 0) {
 						// Draw a value for the sampling rate psi.
 						for (int pp = 0; pp < psi_sample_size; pp++) {
 							double psi = psi_min + Math.random()*(psi_max-psi_min);
 							if (tree_duration >= sampling_gap) {
-								raw_probabilities[i] += (psi*Math.exp(-psi*sum_of_species_duration))/(double) psi_sample_size;
+								raw_probabilities[i] += (Math.pow(psi,2)*Math.exp(-psi*sum_of_species_durations)*number_of_extant_taxa)/(double) psi_sample_size;
 							}
 						}
 						successful_simulations[i] += 1;
@@ -260,13 +252,6 @@ public class CladeAgeProbabilities {
 		for (int i = 0; i < raw_probabilities.length; i ++) {
 			probabilities[i] = raw_probabilities[i]/(double) successful_simulations[i];
 		}
-
-		/// XXX
-		System.out.println("From CladeAgeProbabilities:");
-		for (int ccc = 0; ccc < probabilities.length; ccc++) {
-			System.out.println("Age: " + ages[ccc] + "\tProbability: " + probabilities[ccc]);
-		}
-
 		
 	} // public void bd_simulate(...)
 
@@ -583,9 +568,6 @@ public class CladeAgeProbabilities {
 
 		
 		normaliser = expConstant;
-
-// XXX
-System.out.println("Normaliser: " + normaliser);
 
 		return new ExponentialDistributionImpl(approx_distribution_parameters[0]);		
 	
@@ -2019,10 +2001,6 @@ System.out.println("Normaliser: " + normaliser);
 				double gamma_part = (1.0/(Math.pow(expGamScale,2.0)))*((approx_ages[x]-offset))*(Math.exp(-(approx_ages[x]-offset)/expGamScale));
 				approx_probabilities[x] = mean_psi*exp_part + expGamConstant2*gamma_part;
 			}
-// XXX			
-for (int ccc = 0; ccc < approx_probabilities.length; ccc++) {
-	System.out.println("Approx ages: " + approx_ages[ccc] + "\tApprox probabilities: " + approx_probabilities[ccc]);
-}
 
 			// Fill variables approx_distribution_type, approx_distribution_parameters, and approx_distribution_rmsd
 			String approx_distribution_type = "ExpGamma";
@@ -2037,8 +2015,14 @@ for (int ccc = 0; ccc < approx_probabilities.length; ccc++) {
 		System.out.println("Ratio: " + approx_distribution_parameters[1]);
 		System.out.println("Scale: " + approx_distribution_parameters[2]);
 		System.out.println("RMSD: " + approx_distribution_rmsd);
-		
+
 		normaliser = expGamConstant1 + expGamConstant2;
+		
+		// XXX
+		System.out.println("ExpGamConstant1: " + expGamConstant1);
+		System.out.println("ExpGamConstant2: " + expGamConstant2);
+		System.out.println("Weigth: " + expGamConstant2/(expGamConstant1+expGamConstant2));
+		System.out.println("Normaliser: " + normaliser);
 
 		return new ExpGamma(expGamConstant1/(expGamConstant1+expGamConstant2), 
 				approx_distribution_parameters[0], 
