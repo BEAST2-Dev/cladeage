@@ -1135,22 +1135,18 @@ public class CAPanel extends JPanel {
 		if (type.equals("Exponential")) {
 			m_distr = probs.fitExponential(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
-//			normalise();
 		}
 		if (type.equals("Gamma")) {
 			m_distr = probs.fitGamma(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
-//			normalise();
 		}
 		if (type.equals("Log Normal")) {
 			m_distr = probs.fitLognormal(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
-//			normalise();
 		}
 		if (type.equals("Exp Gamma")) {
 			m_distr = probs.fitExpGamma(progress);
 			m_rmsd = probs.getApprox_distribution_rmsd();
-//			normalise();
 		}
 	}
 	

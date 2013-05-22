@@ -1,0 +1,43 @@
+<beast version='2.0'
+       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+
+<mergewith point='parametricDistributions'>
+<!-- Parametric distributions, all without hyperpriors -->
+
+<!-- CalibratedDistribution -->
+        <subtemplate id='FossilCalibration' class='beast.math.distributions.FossilCalibration' mainid='[top]'
+			suppressInputs='beast.math.distributions.FossilPrior.tree,beast.math.distributions.FossilPrior.monophyletic,beast.math.distributions.FossilPrior.taxonset,beast.math.distributions.FossilCalibration.offset'
+		>
+<![CDATA[
+        <distr spec="beast.math.distributions.FossilCalibration"/>
+]]>
+        </subtemplate>
+
+</mergewith>
+
+<mergewith point='aux-partitiontemplate'>
+<![CDATA[
+        <distribution spec="beast.math.distributions.CompoundFossilPrior" id="fossilCalibrations"/>	
+]]>
+         <connect srcID='fossilCalibrations'               targetID='prior' inputName='distribution' if="isInitializing"/>
+	
+</mergewith>
+
+
+<mergewith point='aux-priors-panels'>
+
+	<panel spec='BeautiPanelConfig' panelname="Fossil Priors" tiptext="Priors based on fossil record"
+            path='distribution/distribution[id="prior"]/distribution[id="fossilCalibrations"]/fossilPrior'
+            hasPartitions="none" icon='7.png.x' forceExpansion='TRUE_START_COLLAPSED'
+            type='beast.math.distributions.FossilPrior'
+        />
+
+</mergewith>
+
+<!--
+<mergewith point='aux-priors'>
+        <distribution spec="beast.math.distributions.CompoundFossilPrior" id="fossilCalibrations"/>	
+</mergewith>
+-->
+
+</beast>

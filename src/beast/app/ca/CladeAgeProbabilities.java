@@ -136,7 +136,9 @@ public class CladeAgeProbabilities {
 				return;
 			}
 			// Update the progress bar.
-			dpb.setValue(successful_simulations[0]);
+			if (dpb != null) {
+				dpb.setValue(successful_simulations[0]);
+			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
 			double ndr = ndr_min + Math.random() * (ndr_max-ndr_min);
@@ -2048,7 +2050,7 @@ for (int ccc = 0; ccc < approx_probabilities.length; ccc++) {
 
 		System.out.println(System.currentTimeMillis());
 		CladeAgeProbabilities cladeAgeProbabilities = new CladeAgeProbabilities();
-		cladeAgeProbabilities.bd_simulate(10.0,10.0,0.01,0.01,0.1,0.1,0.01,0.01,0,0,1000,100000,10, new JProgressBar());
+		cladeAgeProbabilities.bd_simulate(10.0,10.0,0.01,0.01,0.1,0.1,0.01,0.01,0,0,1000,100000,10, null);
 		System.out.println(System.currentTimeMillis());
 		cladeAgeProbabilities.fitExponential(null);
 		System.out.println(System.currentTimeMillis());
