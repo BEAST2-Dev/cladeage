@@ -834,12 +834,13 @@ public class CAPanel extends JPanel {
 //		                // ignore
 //		            }
 		            int nPoints = ages.length;
+		            int nPoints2 = getWidth();
 		            int[] xPoints = new int[nPoints];
 		            int[] yPoints = new int[nPoints];
-		            int[] xPoints2 = new int[nPoints];
-		            int[] yPoints2 = new int[nPoints];
+		            int[] xPoints2 = new int[nPoints2];
+		            int[] yPoints2 = new int[nPoints2];
 		            double[] fyPoints = new double[nPoints];
-		            double[] fyPoints2 = new double[nPoints];
+		            double[] fyPoints2 = new double[nPoints2];
 		            Font font = g.getFont();
 		            double fMinValue = 0.1;
 		            double fMaxValue = 1;
@@ -881,8 +882,21 @@ public class CAPanel extends JPanel {
 		            fMinValue = f2; //fXRange = fAdjXRange;
 
 		            double fYMax = 0;
+		            for (int i = 0; i < nPoints2; i++) {
+		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints2;  
+		                if (m_distr != null) {
+		                    try {
+		                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2 - minOccuranceAge);
+		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
+		                        	fyPoints2[i] = 0;
+		                        }
+		                    } catch (Exception e) {
+		                        fyPoints2[i] = 0;
+		                    }
+		                }
+		            }
+		            
 		            for (int i = 0; i < nPoints; i++) {
-		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints;  
 		                xPoints[i] = (int)(graphoffset + nGraphWidth * (ages[ages.length - 1 - i] - f2)/fXRange);  
 
 // XXX
@@ -900,16 +914,6 @@ public class CAPanel extends JPanel {
 //	System.out.println("FYPoints: " + fyPoints[ccc]);
 //}
 
-		                if (m_distr != null) {
-		                    try {
-		                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints - minOccuranceAge);
-		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
-		                        	fyPoints2[i] = 0;
-		                        }
-		                    } catch (Exception e) {
-		                        fyPoints2[i] = 0;
-		                    }
-		                }
 
  // XXX
 //for (int ccc = 0; ccc < probabilities.length; ccc++) {
@@ -930,12 +934,14 @@ public class CAPanel extends JPanel {
 		            
 		            for (int i = 0; i < nPoints; i++) {
 		                yPoints[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
-		                yPoints2[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints2[i] / fYMax);
 		                g.drawLine(xPoints[i]+2, yPoints[i], xPoints[i]-2, yPoints[i]);
 		                g.drawLine(xPoints[i], yPoints[i]-2, xPoints[i], yPoints[i]+2);
 		            }
+		            for (int i = 0; i < nPoints2; i++) {
+		                yPoints2[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints2[i] / fYMax);
+		            }
 		            if (m_distr != null) {
-		            	g.drawPolyline(xPoints2, yPoints2, nPoints);
+		            	g.drawPolyline(xPoints2, yPoints2, nPoints2);
 		            }
 		            
 
@@ -1392,9 +1398,10 @@ public class CAPanel extends JPanel {
             text += "weight: " + format(weight,5) + "\n";
         }
         try {
-	        text += "\nmedian: " + format(m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
-	        text += "\n95% HPD: " + format(m_distr.inverseCumulativeProbability(0.025), 5) + "\n" +
-	        " to " + format(m_distr.inverseCumulativeProbability(0.975)) + "\n";
+	        text += "\nmedian: " + format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
+	        text += "\n95% HPD: " + "\n" + 
+	        		format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.025), 5) + 
+	        		" to " + format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.975)) + "\n";
         } catch (Exception e) {
         	// ignore
         }
