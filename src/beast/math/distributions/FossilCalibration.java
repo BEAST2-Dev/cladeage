@@ -30,7 +30,7 @@ public class FossilCalibration extends ParametricDistribution {
 	public Input<Double> minSamplingGapInput = new Input<Double>("minSamplingGap", CAPanel.SAMPLING_GAP_HELP, 0.0);
 	public Input<Double> maxSamplingGapInput = new Input<Double>("maxSamplingGap", CAPanel.SAMPLING_GAP_HELP, 0.0);
 	
-	public Input<Integer> NumberOfTreeSimulationsInput = new Input<Integer>("numberOfTreeSimulations", CAPanel.NR_SIMULATIONS_HELP, 1000);
+	public Input<Integer> NumberOfTreeSimulationsInput = new Input<Integer>("numberOfTreeSimulations", CAPanel.NR_SIMULATIONS_HELP, 10000);
 	public Input<Integer> MaxNrOfBranchesInput = new Input<Integer>("maxNrOfBranches", CAPanel.MAX_NR_TREES_HELP, 100000);
 	public Input<Integer> SamplingReplicatesPerTreeInput = new Input<Integer>("samplingReplicatesPerTree", CAPanel.REPS_PER_TREE_HELP, 10);
 	
@@ -104,20 +104,27 @@ public class FossilCalibration extends ParametricDistribution {
 				minSamplingGap, maxSamplingGap,
 				NumberOfTreeSimulations, MaxNrOfBranches, SamplingReplicatesPerTree, null);
 		
-		if (maxOccuranceAge == minOccuranceAge) {
-			m_dist = probs.fitExponential(null);
-			double rmsd = probs.getApprox_distribution_rmsd();
-			ContinuousDistribution tmp = probs.fitExpGamma(null);
-			if (probs.getApprox_distribution_rmsd() < rmsd) {
-				m_dist = tmp;
-			}
-		} else {
-			m_dist = probs.fitGamma(null);
-			double rmsd = probs.getApprox_distribution_rmsd();
-			ContinuousDistribution tmp = probs.fitLognormal(null);
-			if (probs.getApprox_distribution_rmsd() < rmsd) {
-				 m_dist = tmp;
-			}
+//		if (maxOccuranceAge == minOccuranceAge) {
+//			m_dist = probs.fitExponential(null);
+//			double rmsd = probs.getApprox_distribution_rmsd();
+//			ContinuousDistribution tmp = probs.fitExpGamma(null);
+//			if (probs.getApprox_distribution_rmsd() < rmsd) {
+//				m_dist = tmp;
+//			}
+//		} else {
+//			m_dist = probs.fitGamma(null);
+//			double rmsd = probs.getApprox_distribution_rmsd();
+//			ContinuousDistribution tmp = probs.fitLognormal(null);
+//			if (probs.getApprox_distribution_rmsd() < rmsd) {
+//				 m_dist = tmp;
+//			}
+//		}
+		try {
+			EmpiricalDistribution dist = new EmpiricalDistribution();
+			dist.setup(probs.getAges(), probs.getProbabilities(), true);
+			m_dist = dist;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 

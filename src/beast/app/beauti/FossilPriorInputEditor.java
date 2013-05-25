@@ -34,6 +34,8 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.tree");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.distr");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.monophyletic");
+		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.useOriginate");
+		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.tipsonly");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.taxonset");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilCalibration.offset");
 
