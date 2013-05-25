@@ -90,27 +90,50 @@ public class CAPanel extends JPanel {
 "to express ages in millions of years. <br/>" +
 "</html>";
 
+	final static String RATE_HELP = 
+	"See e.g. Alfaro et al. (2009), Santini et al. (2009), Jetz et al. <br/>" +
+	"(2012), and Stadler (2011) for rate estimates for vertebrates, <br/>" +
+	"teleost fishes, birds, and mammals.<br/>" +
+	"<br/>---<br/>" +
+	"Alfaro ME, Santini F, Brock CD et al. (2009) Nine exceptional <br/>" +
+	"radiations plus high turnover explain species diversity in jawed <br/>" +
+	"vertebrates. Proceedings of the National Academy of Sciences USA, <br/>" +
+	"106, 13410–13414.<br/>" +
+	"<br/>" +
+	"Jetz W, Thomas GH, Joy JB, Hartmann K, Mooers AØ (2012) The global <br/>" +
+	"diversity of birds in space and time. Nature, 491, 444–448.<br/>" +
+	"<br/>" +
+	"Santini F, Harmon LJ, Carnevale G, Alfaro ME (2009) Did genome <br/>" +
+	"duplication drive the origin of teleosts? A comparative study of <br/>" +
+	"diversification in ray-finned fishes. BMC Evolutionary Biology, <br/>" +
+	"9, 194.<br/>" +
+	"<br/>" +
+	"Stadler T (2011) Mammalian phylogeny reveals recent diversification <br/>" +
+	"rate shifts. Proceedings of the National Academy of Sciences, <br/>" +
+	"108, 6187–6192.<br/>";
+	
 	final public static String DIV_RATE_HELP = "<html>Net diversification rate:<br/>"+
 "<br/>"+
 "The net diversification rate is the difference between <br/>"+
-"speciation and extinction rate. Estimates can be obtained <br/>"+
-"e.g. with MEDUSA (Alfaro et al. 2009) or TreePar (Stadler 2011).<br/>"+
-"-<br/>"+
-"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
-"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
+"speciation and extinction rate.<br/>" + RATE_HELP + "</html>";
+//"e.g. with MEDUSA (Alfaro et al. 2009) or TreePar (Stadler 2011).<br/>"+
+//"-<br/>"+
+//"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
+//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
+//"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
+//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a>
 
 	final public static String TURNOVER_RATE_HELP = "<html>Turnover rate:<br/>"+
 "<br/>"+
-"The turnover rate is the ratio of extinction and speciation <br/>"+
-"rate. Estimates can be obtained e.g. with MEDUSA (Alfaro et al. <br/>"+
-"2009) or TreePar (Stadler 2011).<br/>"+
-"-<br/>"+
-"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
-"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
+"The turnover rate is the ratio of extinction and speciation rate.<br/>"+
+RATE_HELP + "</html>";
+//"Estimates can be obtained e.g. with MEDUSA (Alfaro et al. <br/>"+
+//"2009) or TreePar (Stadler 2011).<br/>"+
+//"-<br/>"+
+//"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
+//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
+//"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
+//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
 
 	final public static String SAMPLING_RATE_HELP = "<html>Sampling rate:<br/>"+
 "<br/>"+
@@ -887,7 +910,11 @@ public class CAPanel extends JPanel {
 		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints2;  
 		                if (m_distr != null) {
 		                    try {
-		                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2 - minOccuranceAge);
+		                    	if (m_distr instanceof EmpiricalDistribution) {
+			                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);
+		                    	} else {
+		                    		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2 - minOccuranceAge);
+		                    	}
 		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
 		                        	fyPoints2[i] = 0;
 		                        }
@@ -1392,10 +1419,17 @@ public class CAPanel extends JPanel {
             text += "weight: " + format(weight,5) + "\n";
         }
         try {
-	        text += "\nmedian: " + format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
-	        text += "\n95% HPD: " + "\n" + 
-	        		format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.025), 5) + 
-	        		" to " + format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.975)) + "\n";
+        	if (m_distr instanceof EmpiricalDistribution) {
+    	        text += "\nmedian: " + format(m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
+    	        text += "\n95% HPD: " + "\n" + 
+    	        		format(m_distr.inverseCumulativeProbability(0.025), 5) + 
+    	        		" to " + format(m_distr.inverseCumulativeProbability(0.975)) + "\n";
+        	} else {
+		        text += "\nmedian: " + format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
+		        text += "\n95% HPD: " + "\n" + 
+		        		format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.025), 5) + 
+		        		" to " + format(minOccuranceAge + m_distr.inverseCumulativeProbability(0.975)) + "\n";
+        	}
         } catch (Exception e) {
         	// ignore
         }
