@@ -13,6 +13,11 @@ public class FossilPrior extends MRCAPrior {
 	}
 	
 	public void initAndValidate() throws Exception {
+		// this only makes sense as a prior on the parent of a clade,
+		// so tipsonly and useOriginate will be set to reflect this.
+		m_bOnlyUseTipsInput.setValue(false, this);
+		m_bUseOriginateInput.setValue(true, this);
+		
 		m_distInput.setValue(callibrationDistr.get(), this);
 		super.initAndValidate();
 		m_distInput.setValue(null, this);

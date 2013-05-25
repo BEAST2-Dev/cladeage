@@ -53,6 +53,7 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
         panel.addChangeListener(this);
         Dimension size = new Dimension(panel.getPreferredSize().width - 40, panel.getPreferredSize().height);
 
+        panel.getComboBox().setSelectedItem("Empirical");
         panel.setSize(size);
         panel.setPreferredSize(size);
         panel.setMinimumSize(size);
@@ -62,7 +63,7 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
 
 	@Override
 	public void update() {
-		setValue(calibration.m_offset, panel.getMinOccuranceAge());
+		//setValue(calibration.m_offset, panel.getMinOccuranceAge());
 		setValue(calibration.minOccuranceAgeInput, panel.getMinOccuranceAge());
 		setValue(calibration.maxOccuranceAgeInput, panel.getMaxOccuranceAge());
 		setValue(calibration.minDivRateInput, panel.getMinDivRate());

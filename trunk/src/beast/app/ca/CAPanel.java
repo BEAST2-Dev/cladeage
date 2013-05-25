@@ -67,6 +67,7 @@ import beast.app.beauti.BeautiPanel;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.util.Utils;
+import beast.math.distributions.EmpiricalDistribution;
 import beast.math.distributions.ExpGamma;
 import beast.math.distributions.LogNormalImpl;
 
@@ -195,6 +196,7 @@ public class CAPanel extends JPanel {
 	JButton btnCalculate;
 	public void setCalculateButtonText(String text) {btnCalculate.setText(text);}
 	JComboBox comboBox;
+	public JComboBox getComboBox() {return comboBox;}
 	JPanel panel;
 	JPanel panel2;
 	JPanel panel_1;
@@ -786,7 +788,7 @@ public class CAPanel extends JPanel {
 			}
 		});
 
-		comboBox = new JComboBox(new String[]{"Best fit","Exponential","Gamma","Log Normal", "Exp Gamma"});
+		comboBox = new JComboBox(new String[]{"Best fit","Exponential","Gamma","Log Normal", "Exp Gamma", "Empirical"});
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 0, 5);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -1135,6 +1137,18 @@ public class CAPanel extends JPanel {
 	
 	public void calcFit(JProgressBar progress) {
 		String type = (String) comboBox.getSelectedItem();
+		if (type.equals("Empirical")) {
+			EmpiricalDistribution fit = new EmpiricalDistribution();
+			try {
+				fit.setup(probs.getAges(), probs.getProbabilities(), true);
+			} catch (Exception e) {
+				return;
+			}
+			m_distr = fit;
+			m_rmsd = 0;
+			return;
+		}
+		
 		if (type.equals("Best fit")) {
 			if (maxOccuranceAge == minOccuranceAge) {
 				ContinuousDistribution bestFit = probs.fitExponential(progress);
