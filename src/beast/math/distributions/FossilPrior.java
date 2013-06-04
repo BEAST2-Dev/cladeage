@@ -1,5 +1,7 @@
 package beast.math.distributions;
 
+import java.io.PrintStream;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -22,4 +24,21 @@ public class FossilPrior extends MRCAPrior {
 		super.initAndValidate();
 		m_distInput.setValue(null, this);
 	};
+	
+	
+    /**
+     * Loggable interface implementation follows *
+     */
+    @Override
+    public void init(final PrintStream out) throws Exception {
+    	String id = (m_taxonset.get() != null ? m_taxonset.get().getID() : null);
+    	if (id == null) {
+    		id = getID();
+    	}
+        if (m_dist != null || m_bIsMonophyleticInput.get()) {
+            out.print("logP(mrca(" + id + "))\t");
+        }
+        out.print("mrcatime(" + id + ")\t");
+    }
+
 }

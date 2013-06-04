@@ -13,7 +13,7 @@
 	<property name="libCA" location="lib" />
 	<property name="release_dir" value="release" />
 	<property name="distCA" location="${buildCA}/dist" />
-	<property name="beast2path" location="../beast2" />
+	<property name="beast2path" location="../beast2"/>
 	<property name="libBeast2" location="${beast2path}/lib" />
 	<property name="srcBeast2" location="${beast2path}/src" />
 	<property name="beast2classpath" location="${beast2path}/build" />
@@ -185,10 +185,10 @@
 			<fileset dir="${distCA}" includes="CA.addon.jar" />
 		</copy>
 		<copy todir="${Add_on_dir}">
-			<fileset dir="${distCA}" includes="CA.src.jar" />
+			<fileset dir="${distCA}" includes="cladeage.src.jar" />
 		</copy>
 		<copy todir="${Add_on_dir}/templates">
-			<fileset file="templates/CA.xml" />
+			<fileset file="templates/FossilCalibration.xml" />
 		</copy>
 
 		<jar jarfile="${distCA}/CA.addon.v${version}.zip">
