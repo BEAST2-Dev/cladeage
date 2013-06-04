@@ -1,5 +1,6 @@
 package beast.app.ca;
 
+
 import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
@@ -10,6 +11,7 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 import beast.math.distributions.ExpGamma;
 import beast.math.distributions.LogNormalImpl;
+import beast.util.Randomizer;
 
 public class CladeAgeProbabilities {
 
@@ -108,6 +110,7 @@ public class CladeAgeProbabilities {
 	// public ??? getCancel2()
 
 	public void bd_simulate(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, int bd_sample_size, int max_tree_size, int psi_sample_size, JProgressBar dpb) {
+		long start = System.currentTimeMillis();
 		cancel1 = false;
 
 		// Reset arrays.
@@ -141,16 +144,16 @@ public class CladeAgeProbabilities {
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
-			double ndr = ndr_min + Math.random() * (ndr_max-ndr_min);
-			double epsilon = epsilon_min + Math.random() * (epsilon_max-epsilon_min);
+			double ndr = ndr_min + Randomizer.nextDouble() * (ndr_max-ndr_min);
+			double epsilon = epsilon_min + Randomizer.nextDouble() * (epsilon_max-epsilon_min);
 			double mu = (ndr*epsilon)/(1.0 - epsilon);
 			double lambda = ndr + mu;
 
 			// Draw a duration t for this simulation.
-			double first_occurrence_age = first_occurrence_age_min + Math.random()*(first_occurrence_age_max-first_occurrence_age_min);
+			double first_occurrence_age = first_occurrence_age_min + Randomizer.nextDouble()*(first_occurrence_age_max-first_occurrence_age_min);
 			
 			// Draw a sampling gap.
-			double sampling_gap = sampling_gap_min + Math.random()*(sampling_gap_max-sampling_gap_min);
+			double sampling_gap = sampling_gap_min + Randomizer.nextDouble()*(sampling_gap_max-sampling_gap_min);
 			
 			// Determine the maximum tree duration.
 			double max_tree_duration = ages[0] - first_occurrence_age;
@@ -167,7 +170,7 @@ public class CladeAgeProbabilities {
 
 				// For each new origin, add a new termination.
 				for (int o = 0; o < new_branch_origin.size(); o++) {
-					new_branch_termination.add(new_branch_origin.get(o) + (Math.log(Math.random())/(-(lambda+mu))));
+					new_branch_termination.add(new_branch_origin.get(o) + (Math.log(Randomizer.nextDouble())/(-(lambda+mu))));
 				}
 
 				// Add new origin and termination to the old collection.
@@ -184,7 +187,7 @@ public class CladeAgeProbabilities {
 				// For each new termination, add it to the new origin array if it is < max_tree_duration and rand < lambda/(lambda+mu) - this represents a speciation event.
 				for (int t = 0; t < new_branch_termination.size(); t++) {										
 					if (new_branch_termination.get(t) < max_tree_duration) {
-						if (Math.random() < lambda/(lambda+mu)) {
+						if (Randomizer.nextDouble() < lambda/(lambda+mu)) {
 							new_branch_origin.add(new_branch_termination.get(t));
 							new_branch_origin.add(new_branch_termination.get(t));
 						}
@@ -234,7 +237,7 @@ public class CladeAgeProbabilities {
 					if (number_of_extant_taxa > 0) {
 						// Draw a value for the sampling rate psi.
 						for (int pp = 0; pp < psi_sample_size; pp++) {
-							double psi = psi_min + Math.random()*(psi_max-psi_min);
+							double psi = psi_min + Randomizer.nextDouble()*(psi_max-psi_min);
 							if (tree_duration >= sampling_gap) {
 								raw_probabilities[i] += (Math.pow(psi,2)*Math.exp(-psi*sum_of_species_durations)*number_of_extant_taxa)/(double) psi_sample_size;
 							}
@@ -253,6 +256,8 @@ public class CladeAgeProbabilities {
 			probabilities[i] = raw_probabilities[i]/(double) successful_simulations[i];
 		}
 		
+		long end= System.currentTimeMillis();
+		System.err.println("Simulation took " + (end - start)/1000.0 + " seconds");
 	} // public void bd_simulate(...)
 
 	public ContinuousDistribution fitExponential(JProgressBar progress) {
@@ -272,18 +277,18 @@ public class CladeAgeProbabilities {
 				
 				// Initiate the simplex, find 3 vertices.
 				// vertex0
-				double vertex0c___ = 0.5 + Math.random();
-				double vertex0mean = 10 + Math.random()*50;
+				double vertex0c___ = 0.5 + Randomizer.nextDouble();
+				double vertex0mean = 10 + Randomizer.nextDouble()*50;
 				double vertex0Y = 0;
 			
 				// vertex1
-				double vertex1c___ = 0.5 + Math.random();
-				double vertex1mean = 10 + Math.random()*50;
+				double vertex1c___ = 0.5 + Randomizer.nextDouble();
+				double vertex1mean = 10 + Randomizer.nextDouble()*50;
 				double vertex1Y = 0;
 			
 				// vertex2
-				double vertex2c___ = 0.5 + Math.random();
-				double vertex2mean = 10 + Math.random()*50;
+				double vertex2c___ = 0.5 + Randomizer.nextDouble();
+				double vertex2mean = 10 + Randomizer.nextDouble()*50;
 				double vertex2Y = 0;
 				
                 // Prepare for the Nelder-Mead loop.
@@ -592,27 +597,27 @@ public class CladeAgeProbabilities {
 
 				// Initiate the simplex, find 4 verteces.
 				// vertex0
-				double vertex0c____ = 0.5 + Math.random();
-				double vertex0mu___ = 1 + Math.random()*2;
-				double vertex0sigma = 1 + Math.random()*3;
+				double vertex0c____ = 0.5 + Randomizer.nextDouble();
+				double vertex0mu___ = 1 + Randomizer.nextDouble()*2;
+				double vertex0sigma = 1 + Randomizer.nextDouble()*3;
 				double vertex0Y = 0;
 			
 				// vertex1
-				double vertex1c____ = 0.5 + Math.random();
-				double vertex1mu___ = 1 + Math.random()*2;
-				double vertex1sigma = 1 + Math.random()*3;
+				double vertex1c____ = 0.5 + Randomizer.nextDouble();
+				double vertex1mu___ = 1 + Randomizer.nextDouble()*2;
+				double vertex1sigma = 1 + Randomizer.nextDouble()*3;
 				double vertex1Y = 0;
 
 				// vertex2
-				double vertex2c____ = 0.5 + Math.random();
-				double vertex2mu___ = 1 + Math.random()*2;
-				double vertex2sigma = 1 + Math.random()*3;
+				double vertex2c____ = 0.5 + Randomizer.nextDouble();
+				double vertex2mu___ = 1 + Randomizer.nextDouble()*2;
+				double vertex2sigma = 1 + Randomizer.nextDouble()*3;
 				double vertex2Y = 0;
 
 				// vertex3
-				double vertex3c____ = 0.5 + Math.random();
-				double vertex3mu___ = 1 + Math.random()*2;
-				double vertex3sigma = 1 + Math.random()*3;
+				double vertex3c____ = 0.5 + Randomizer.nextDouble();
+				double vertex3mu___ = 1 + Randomizer.nextDouble()*2;
+				double vertex3sigma = 1 + Randomizer.nextDouble()*3;
 				double vertex3Y = 0;
 
 				// Prepare for the Nelder-Mead loop.
@@ -766,11 +771,11 @@ public class CladeAgeProbabilities {
 					double reflectionc____ = centroidc____ + alph * (centroidc____ - worstc____);
 					double reflectionmu___ = centroidmu___ + alph * (centroidmu___ - worstmu___);
 					if (reflectionmu___ <= 0) {
-						reflectionmu___ = 1 + Math.random()*2;
+						reflectionmu___ = 1 + Randomizer.nextDouble()*2;
 					}
 					double reflectionsigma = centroidsigma + alph * (centroidsigma - worstsigma);
 					if (reflectionsigma <= 0) {
-						reflectionsigma = 1 + Math.random()*3;
+						reflectionsigma = 1 + Randomizer.nextDouble()*3;
 					}
 					
 					// Calculate the y value of the reflection.
@@ -795,11 +800,11 @@ public class CladeAgeProbabilities {
 						double extensionc____ = centroidc____ + gamm * (centroidc____ - worstc____);
 						double extensionmu___ = centroidmu___ + gamm * (centroidmu___ - worstmu___);
 						if (extensionmu___ <= 0) {
-							extensionmu___ = 1 + Math.random()*2;
+							extensionmu___ = 1 + Randomizer.nextDouble()*2;
 						}
 						double extensionsigma = centroidsigma + gamm * (centroidsigma - worstsigma);
 						if (extensionsigma <= 0) {
-							extensionsigma = 1 + Math.random()*3;
+							extensionsigma = 1 + Randomizer.nextDouble()*3;
 						}
 						
 						// Calculate the y value of the extension.
@@ -1046,9 +1051,9 @@ public class CladeAgeProbabilities {
 				
 				// Initiate the simplex, find 4 vertices.
 				// vertex0
-				double vertex0c____ = 0.5 + Math.random();
-				double vertex0k____ = 1 + Math.random()*3;
-				double vertex0theta = (Math.random()*90 + 10)/vertex0k____;
+				double vertex0c____ = 0.5 + Randomizer.nextDouble();
+				double vertex0k____ = 1 + Randomizer.nextDouble()*3;
+				double vertex0theta = (Randomizer.nextDouble()*90 + 10)/vertex0k____;
 				// Wherever a new k is chosen, gamma(k) is also calculated to avoid time-consuming recalculation of it for every value of t.
 				// This is done using the Lanczos approximation (http://en.wikipedia.org/wiki/Lanczos_approximation), and only positive values are considered.
 				double k = vertex0k____;
@@ -1063,9 +1068,9 @@ public class CladeAgeProbabilities {
 				double vertex0Y = 0;
 
 				// vertex1
-				double vertex1c____ = 0.5 + Math.random();
-				double vertex1k____ = 1 + Math.random()*3;
-				double vertex1theta = (Math.random()*90 + 10)/vertex1k____;
+				double vertex1c____ = 0.5 + Randomizer.nextDouble();
+				double vertex1k____ = 1 + Randomizer.nextDouble()*3;
+				double vertex1theta = (Randomizer.nextDouble()*90 + 10)/vertex1k____;
 				// Wherever a new k is chosen, gamma(k) is also calculated to avoid time-consuming recalculation of it for every value of t.
 				// This is done using the Lanczos approximation (http://en.wikipedia.org/wiki/Lanczos_approximation), and only positive values are considered.
 				k = vertex1k____;
@@ -1080,9 +1085,9 @@ public class CladeAgeProbabilities {
 				double vertex1Y = 0;
 
 				// vertex2
-				double vertex2c____ = 0.5 + Math.random();
-				double vertex2k____ = 1 + Math.random()*3;
-				double vertex2theta = (Math.random()*90 + 10)/vertex2k____;
+				double vertex2c____ = 0.5 + Randomizer.nextDouble();
+				double vertex2k____ = 1 + Randomizer.nextDouble()*3;
+				double vertex2theta = (Randomizer.nextDouble()*90 + 10)/vertex2k____;
 				// Wherever a new k is chosen, gamma(k) is also calculated to avoid time-consuming recalculation of it for every value of t.
 				// This is done using the Lanczos approximation (http://en.wikipedia.org/wiki/Lanczos_approximation), and only positive values are considered.
 				k = vertex2k____;
@@ -1097,9 +1102,9 @@ public class CladeAgeProbabilities {
 				double vertex2Y = 0;
 
 				// vertex3
-				double vertex3c____ = 0.5 + Math.random();
-				double vertex3k____ = 1 + Math.random()*3;
-				double vertex3theta = (Math.random()*90 + 10)/vertex3k____;
+				double vertex3c____ = 0.5 + Randomizer.nextDouble();
+				double vertex3k____ = 1 + Randomizer.nextDouble()*3;
+				double vertex3theta = (Randomizer.nextDouble()*90 + 10)/vertex3k____;
 				// Wherever a new k is chosen, gamma(k) is also calculated to avoid time-consuming recalculation of it for every value of t.
 				// This is done using the Lanczos approximation (http://en.wikipedia.org/wiki/Lanczos_approximation), and only positive values are considered.
 				k = vertex3k____;
@@ -1250,11 +1255,11 @@ public class CladeAgeProbabilities {
 					double reflectionc____ = centroidc____ + alph * (centroidc____ - worstc____);
 					double reflectionk____ = centroidk____ + alph * (centroidk____ - worstk____);
 					if (reflectionk____ < 0) {
-						reflectionk____ = 1 + Math.random()*3;
+						reflectionk____ = 1 + Randomizer.nextDouble()*3;
 					}
 					double reflectiontheta = centroidtheta + alph * (centroidtheta - worsttheta);
 					if (reflectiontheta < 0) {
-						reflectiontheta = (Math.random()*90 + 10)/reflectionk____;
+						reflectiontheta = (Randomizer.nextDouble()*90 + 10)/reflectionk____;
 					}
 					// Wherever a new k is chosen, gamma(k) is also calculated to avoid time-consuming recalculation of it for every value of t.
 					// This is done using the Lanczos approximation (http://en.wikipedia.org/wiki/Lanczos_approximation), and only positive values are considered.
@@ -1287,11 +1292,11 @@ public class CladeAgeProbabilities {
 						double extensionc____ = centroidc____ + gamm * (centroidc____ - worstc____);
 						double extensionk____ = centroidk____ + gamm * (centroidk____ - worstk____);
 						if (extensionk____ < 0) {
-							extensionk____ = 1 + Math.random()*3;
+							extensionk____ = 1 + Randomizer.nextDouble()*3;
 						}
 						double extensiontheta = centroidtheta + gamm * (centroidtheta - worsttheta);
 						if (extensiontheta < 0) {
-							extensiontheta = (Math.random()*90 + 10)/extensionk____;
+							extensiontheta = (Randomizer.nextDouble()*90 + 10)/extensionk____;
 						}
 						// Wherever a new k is chosen, gamma(k) is also calculated to avoid time-consuming recalculation of it for every value of t.
 						// This is done using the Lanczos approximation (http://en.wikipedia.org/wiki/Lanczos_approximation), and only positive values are considered.
@@ -1604,27 +1609,27 @@ public class CladeAgeProbabilities {
 			
 				// Initiate the simplex, find 4 vertices.
 				// vertex0
-				double vertex0mean_ = 10 + Math.random()*50;
-				double vertex0c2___ = 0.5*(0.5 + Math.random());
-				double vertex0theta = (10 + Math.random()*50)/2.0;
+				double vertex0mean_ = 10 + Randomizer.nextDouble()*50;
+				double vertex0c2___ = 0.5*(0.5 + Randomizer.nextDouble());
+				double vertex0theta = (10 + Randomizer.nextDouble()*50)/2.0;
 				double vertex0Y = 0;
 		
 				// vertex1
-				double vertex1mean_ = 10 + Math.random()*50;
-				double vertex1c2___ = 0.5*(0.5 + Math.random());
-				double vertex1theta = (10 + Math.random()*50)/2.0;
+				double vertex1mean_ = 10 + Randomizer.nextDouble()*50;
+				double vertex1c2___ = 0.5*(0.5 + Randomizer.nextDouble());
+				double vertex1theta = (10 + Randomizer.nextDouble()*50)/2.0;
 				double vertex1Y = 0;
 		
 				// vertex2
-				double vertex2mean_ = 10 + Math.random()*50;
-				double vertex2c2___ = 0.5*(0.5 + Math.random());
-				double vertex2theta = (10 + Math.random()*50)/2.0;
+				double vertex2mean_ = 10 + Randomizer.nextDouble()*50;
+				double vertex2c2___ = 0.5*(0.5 + Randomizer.nextDouble());
+				double vertex2theta = (10 + Randomizer.nextDouble()*50)/2.0;
 				double vertex2Y = 0;
 		
 				// vertex3
-				double vertex3mean_ = 10 + Math.random()*50;
-				double vertex3c2___ = 0.5*(0.5 + Math.random());
-				double vertex3theta = (10 + Math.random()*50)/2.0;
+				double vertex3mean_ = 10 + Randomizer.nextDouble()*50;
+				double vertex3c2___ = 0.5*(0.5 + Randomizer.nextDouble());
+				double vertex3theta = (10 + Randomizer.nextDouble()*50)/2.0;
 				double vertex3Y = 0;
 						
 				// Prepare for the Nelder-Mead loop.
@@ -1770,11 +1775,11 @@ public class CladeAgeProbabilities {
 					double reflectionmean_ = centroidmean_ + alph * (centroidmean_ - worstmean_);
 					double reflectionc2___ = centroidc2___ + alph * (centroidc2___ - worstc2___);
 					if (reflectionc2___ <= 0) {
-						reflectionc2___ = 0.5*(0.5 + Math.random());
+						reflectionc2___ = 0.5*(0.5 + Randomizer.nextDouble());
 					}
 					double reflectiontheta = centroidtheta + alph * (centroidtheta - worsttheta);
 					if (reflectiontheta < 0) {
-						reflectiontheta = (10 + Math.random()*50)/2.0;
+						reflectiontheta = (10 + Randomizer.nextDouble()*50)/2.0;
 					}
 		
 					// Calculate the y value of the reflection.
@@ -1797,11 +1802,11 @@ public class CladeAgeProbabilities {
 						double extensionmean_ = centroidmean_ + gamm * (centroidmean_ - worstmean_);
 						double extensionc2___ = centroidc2___ + gamm * (centroidc2___ - worstc2___);
 						if (extensionc2___ <= 0) {
-							extensionc2___ = 0.5*(0.5 + Math.random());
+							extensionc2___ = 0.5*(0.5 + Randomizer.nextDouble());
 						}
 						double extensiontheta = centroidtheta + gamm * (centroidtheta - worsttheta);
 						if (extensiontheta < 0) {
-							extensiontheta = (10 + Math.random()*50)/2.0;
+							extensiontheta = (10 + Randomizer.nextDouble()*50)/2.0;
 						}
 		
 						// Calculate the y value of the extension.

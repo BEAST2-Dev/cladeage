@@ -9,9 +9,6 @@ import beast.app.ca.CAPanel;
 import beast.app.ca.CladeAgeProbabilities;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Plugin;
-import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.substitutionmodel.SubstitutionModel;
 
 @Description("Distribution based on fossil information")
 public class FossilCalibration extends ParametricDistribution {
