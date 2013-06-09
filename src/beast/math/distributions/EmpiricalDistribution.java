@@ -138,7 +138,12 @@ public class EmpiricalDistribution implements ContinuousDistribution {
 		}
 		if (p > cummulative[cummulative.length-1]) {
 			if (useExponentialTail) {
-				return Math.log((1.0 - p) / beta)/Math.log(alpha);
+				// int_q^\infty beta*alpha^x dx = 1-p
+				// solve integral
+				// beta*alpha^x/log alpha |_q^\infty = alpha^x = 1-p
+				// alpha^x = (1-p) * log alpha / beta
+				// x = log((1-p) * log alpha / beta)
+				return (Math.log(1.0 - p) + Math.log(Math.abs(Math.log(alpha))) - Math.log(beta))/Math.log(alpha);
 			} else {
 				return x[cummulative.length-1];
 			}
