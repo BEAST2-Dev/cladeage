@@ -209,7 +209,7 @@ public class CladeAgeProbabilities {
 				// Trim the tree so that no branches are older than @ages[i] - first_occurrence_age. While trimming, make sure the tree contains at least one extant species.
 				if (tree_duration >= 0) {
 					double sum_of_species_durations = 0.0;
-					int number_of_extant_taxa = 0;
+					int number_of_extant_taxa = (tree_duration == 0 ? 1 : 0);
 					for (int o = branch_origin.size()-1; o >= 0; o--) {
 						boolean remove_this_branch = false;
 						if (branch_origin.get(o) >= tree_duration) {
@@ -234,7 +234,7 @@ public class CladeAgeProbabilities {
 					} // for (int o = branch_origin.size()-1; o >= 0; o--)
 					
 					// If at least one species is extant at this age, get the sum of lineage durations, excluding the sampling gap.
-					if (number_of_extant_taxa > 0) {
+					if (number_of_extant_taxa > 0 || tree_duration == 0) {
 						// Draw a value for the sampling rate psi.
 						for (int pp = 0; pp < psi_sample_size; pp++) {
 							double psi = psi_min + Randomizer.nextDouble()*(psi_max-psi_min);
@@ -255,6 +255,8 @@ public class CladeAgeProbabilities {
 		for (int i = 0; i < raw_probabilities.length; i ++) {
 			probabilities[i] = raw_probabilities[i]/(double) successful_simulations[i];
 		}
+//		double d = ages[1] - ages[2];
+//		probabilities[raw_probabilities.length - 1] = (psi_max + psi_min) / 2.0 / d;
 		
 		long end= System.currentTimeMillis();
 		System.err.println("Simulation took " + (end - start)/1000.0 + " seconds");
