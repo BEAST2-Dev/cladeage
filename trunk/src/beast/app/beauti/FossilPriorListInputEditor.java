@@ -12,6 +12,7 @@ import beast.core.Logger;
 import beast.core.Plugin;
 import beast.core.State;
 import beast.core.StateNode;
+import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Tree;
@@ -40,11 +41,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor {
 	    public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
 	        FossilPrior prior = new FossilPrior();
 	        try {
-	        	FossilCalibration fossilCallibration = new FossilCalibration();
-	        	fossilCallibration.setID("FossilCallibration.0");
-	        	doc.registerPlugin(fossilCallibration);
-		        prior.callibrationDistr.setValue(fossilCallibration, prior);
-
+	        	
 	            List<Tree> trees = new ArrayList<Tree>();
 	            getDoc().scrubAll(true, false);
 	            State state = (State) doc.pluginmap.get("state");
@@ -90,7 +87,28 @@ public class FossilPriorListInputEditor extends PriorListInputEditor {
 	            CompoundDistribution compoundPrior = (CompoundDistribution) doc.pluginmap.get("fossilCalibrations");
 	            compoundPrior.pDistributions.setValue(prior, compoundPrior);
 
+//				FossilCalibration fossilCallibration = new FossilCalibration();
+//				fossilCallibration.setInputValue("minOccuranceAge",new RealParameter("0.0"));
+//				fossilCallibration.setInputValue("maxOccuranceAge",new RealParameter("0.0"));
+//				fossilCallibration.setInputValue("minDivRate",     new RealParameter("0.01"));
+//				fossilCallibration.setInputValue("maxDivRate",     new RealParameter("0.01"));
+//				fossilCallibration.setInputValue("maxSamplingRate",new RealParameter("0.01"));
+//				fossilCallibration.setInputValue("minSamplingRate",new RealParameter("0.01"));
+//				fossilCallibration.setInputValue("minTurnoverRate",new RealParameter("0.001"));
+//				fossilCallibration.setInputValue("maxTurnoverRate",new RealParameter("0.001"));
+//				fossilCallibration.setInputValue("maxSamplingGap", new RealParameter("0.0"));
+//				fossilCallibration.setInputValue("minSamplingGap", new RealParameter("0.0"));
+
+				List<BeautiSubTemplate> availablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(
+						new Input<FossilCalibration>("fossil","",FossilCalibration.class), doc, null, doc);
+				FossilCalibration fossilCallibration = (FossilCalibration) availablePlugins.get(0).createSubNet(new PartitionContext(), false);
+	        	fossilCallibration.setID("FossilCallibration.0");
+	        	doc.registerPlugin(fossilCallibration);
+		        prior.callibrationDistr.setValue(fossilCallibration, prior);
+
+	            
 	        } catch (Exception e) {
+	        	e.printStackTrace();
 	            // TODO: handle exception
 	        }
 	        List<Plugin> selectedPlugins = new ArrayList<Plugin>();
