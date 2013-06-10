@@ -9,6 +9,7 @@ import beast.app.ca.CAPanelListener;
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
 import beast.core.Plugin;
+import beast.core.parameter.RealParameter;
 import beast.math.distributions.FossilCalibration;
 
 public class FossilCalibrationInputEditor extends PluginInputEditor implements CAPanelListener {
@@ -33,17 +34,17 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
         m_plugin = plugin;
         calibration = (FossilCalibration) m_input.get();
         panel = new CAPanel();
-        panel.setMinOccuranceAge(calibration.minOccuranceAgeInput.get());
-        panel.setMinDivRate(calibration.minDivRateInput.get());
-        panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get());
-        panel.setMinSamplingRate(calibration.minSamplingRateInput.get());
-        panel.setMinSamplingGap(calibration.minSamplingGapInput.get());
+        panel.setMinOccuranceAge(calibration.minOccuranceAgeInput.get().getValue());
+        panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
+        panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
+        panel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
+        panel.setMinSamplingGap(calibration.minSamplingGapInput.get().getValue());
 
-        panel.setMaxOccuranceAge(calibration.maxOccuranceAgeInput.get());
-        panel.setMaxDivRate(calibration.maxDivRateInput.get());
-        panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get());
-        panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get());
-        panel.setMaxSamplingGap(calibration.maxSamplingGapInput.get());
+        panel.setMaxOccuranceAge(calibration.maxOccuranceAgeInput.get().getValue());
+        panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
+        panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
+        panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
+        panel.setMaxSamplingGap(calibration.maxSamplingGapInput.get().getValue());
         panel.setNumberOfTreeSimulations(calibration.NumberOfTreeSimulationsInput.get());
         panel.setMaxNrOfBranches(calibration.MaxNrOfBranchesInput.get());
         panel.setSamplingReplicatesPerTree(calibration.SamplingReplicatesPerTreeInput.get());
@@ -79,9 +80,10 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
 		setValue(calibration.SamplingReplicatesPerTreeInput, panel.getSamplingReplicatesPerTree());
 	}
 
-	private void setValue(Input<Double> input, double value) {
+	private void setValue(Input<RealParameter> input, double value) {
 		try {
-			input.setValue(value, calibration);
+			input.get().m_pValues.setValue(value+"", calibration);
+			input.get().setValue(value);
 		} catch (Exception e) {
 			
 		}

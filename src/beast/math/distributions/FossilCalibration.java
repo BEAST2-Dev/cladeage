@@ -9,38 +9,46 @@ import beast.app.ca.CAPanel;
 import beast.app.ca.CladeAgeProbabilities;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.parameter.RealParameter;
 
 @Description("Distribution based on fossil information")
 public class FossilCalibration extends ParametricDistribution {
-	public Input<Double> minOccuranceAgeInput = new Input<Double>("minOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, 0.0);
-	public Input<Double> maxOccuranceAgeInput = new Input<Double>("maxOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, 0.0);
+	public Input<RealParameter> minOccuranceAgeInput = new Input<RealParameter>("minOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, Validate.REQUIRED);
+	public Input<RealParameter> maxOccuranceAgeInput = new Input<RealParameter>("maxOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, Validate.REQUIRED);
 
-	public Input<Double> minDivRateInput = new Input<Double>("minDivRate", CAPanel.DIV_RATE_HELP, 0.01);
-	public Input<Double> maxDivRateInput = new Input<Double>("maxDivRate", CAPanel.DIV_RATE_HELP, 0.01);
+	public Input<RealParameter> minDivRateInput = new Input<RealParameter>("minDivRate", CAPanel.DIV_RATE_HELP, Validate.REQUIRED);
+	public Input<RealParameter> maxDivRateInput = new Input<RealParameter>("maxDivRate", CAPanel.DIV_RATE_HELP, Validate.REQUIRED);
 	
-	public Input<Double> minTurnoverRateInput = new Input<Double>("minTurnoverRate", CAPanel.TURNOVER_RATE_HELP, 0.1);
-	public Input<Double> maxTurnoverRateInput = new Input<Double>("maxTurnoverRate", CAPanel.TURNOVER_RATE_HELP, 0.1);
+	public Input<RealParameter> minTurnoverRateInput = new Input<RealParameter>("minTurnoverRate", CAPanel.TURNOVER_RATE_HELP, Validate.REQUIRED);
+	public Input<RealParameter> maxTurnoverRateInput = new Input<RealParameter>("maxTurnoverRate", CAPanel.TURNOVER_RATE_HELP, Validate.REQUIRED);
 	
-	public Input<Double> minSamplingRateInput = new Input<Double>("minSamplingRate", CAPanel.SAMPLING_RATE_HELP, 0.01);
-	public Input<Double> maxSamplingRateInput = new Input<Double>("maxSamplingRate", CAPanel.SAMPLING_RATE_HELP, 0.01);
+	public Input<RealParameter> minSamplingRateInput = new Input<RealParameter>("minSamplingRate", CAPanel.SAMPLING_RATE_HELP, Validate.REQUIRED);
+	public Input<RealParameter> maxSamplingRateInput = new Input<RealParameter>("maxSamplingRate", CAPanel.SAMPLING_RATE_HELP, Validate.REQUIRED);
 	
-	public Input<Double> minSamplingGapInput = new Input<Double>("minSamplingGap", CAPanel.SAMPLING_GAP_HELP, 0.0);
-	public Input<Double> maxSamplingGapInput = new Input<Double>("maxSamplingGap", CAPanel.SAMPLING_GAP_HELP, 0.0);
+	public Input<RealParameter> minSamplingGapInput = new Input<RealParameter>("minSamplingGap", CAPanel.SAMPLING_GAP_HELP, Validate.REQUIRED);
+	public Input<RealParameter> maxSamplingGapInput = new Input<RealParameter>("maxSamplingGap", CAPanel.SAMPLING_GAP_HELP, Validate.REQUIRED);
 	
 	public Input<Integer> NumberOfTreeSimulationsInput = new Input<Integer>("numberOfTreeSimulations", CAPanel.NR_SIMULATIONS_HELP, 10000);
 	public Input<Integer> MaxNrOfBranchesInput = new Input<Integer>("maxNrOfBranches", CAPanel.MAX_NR_TREES_HELP, 100000);
 	public Input<Integer> SamplingReplicatesPerTreeInput = new Input<Integer>("samplingReplicatesPerTree", CAPanel.REPS_PER_TREE_HELP, 10);
 	
-	public boolean canSetMinOccuranceAge(Object o) throws Exception {
-        final Double value = Double.parseDouble((String) o);
-        return (value <= maxOccuranceAgeInput.get());
-		
-	}
-	public boolean canSetMaxOccuranceAge(Object o) throws Exception {
-        final Double value = Double.parseDouble((String) o);
-        return (value >= minOccuranceAgeInput.get());
-		
-	}
+//	public boolean canSetMinOccuranceAge(Object o) throws Exception {
+//        final Double value = ((RealParameter) o).getValue(); 
+//        if (maxOccuranceAgeInput.get() != null) {
+//        	return (value <= maxOccuranceAgeInput.get().getValue());
+//        } 
+//        return true;
+//		
+//	}
+//	public boolean canSetMaxOccuranceAge(Object o) throws Exception {
+//        final Double value = ((RealParameter) o).getValue(); 
+//        if (minOccuranceAgeInput.get() != null) {
+//        	return (value >= minOccuranceAgeInput.get().getValue());
+//        }
+//        return true;
+//		
+//	}
 	
     ContinuousDistribution m_dist = null;
 
@@ -62,17 +70,17 @@ public class FossilCalibration extends ParametricDistribution {
 
 	@Override
 	public void initAndValidate() throws Exception {
-		minOccuranceAge = minOccuranceAgeInput.get();
-		minDivRate = minDivRateInput.get();
-		minTurnoverRate = minTurnoverRateInput.get();
-		minSamplingRate = minSamplingRateInput.get();
-		minSamplingGap = minSamplingGapInput.get();
+		minOccuranceAge = minOccuranceAgeInput.get().getValue();
+		minDivRate = minDivRateInput.get().getValue();
+		minTurnoverRate = minTurnoverRateInput.get().getValue();
+		minSamplingRate = minSamplingRateInput.get().getValue();
+		minSamplingGap = minSamplingGapInput.get().getValue();
 
-		maxOccuranceAge = maxOccuranceAgeInput.get();
-		maxDivRate = maxDivRateInput.get();
-		maxTurnoverRate = maxTurnoverRateInput.get();
-		maxSamplingRate = maxSamplingRateInput.get();
-		maxSamplingGap = maxSamplingGapInput.get();
+		maxOccuranceAge = maxOccuranceAgeInput.get().getValue();
+		maxDivRate = maxDivRateInput.get().getValue();
+		maxTurnoverRate = maxTurnoverRateInput.get().getValue();
+		maxSamplingRate = maxSamplingRateInput.get().getValue();
+		maxSamplingGap = maxSamplingGapInput.get().getValue();
 
 		NumberOfTreeSimulations = NumberOfTreeSimulationsInput.get();
 		MaxNrOfBranches = MaxNrOfBranchesInput.get();
