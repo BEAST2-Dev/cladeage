@@ -1,11 +1,14 @@
 package beast.app.beauti;
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import beast.app.ca.CAPanel;
+import beast.app.ca.CAPanelListener;
 import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Logger;
@@ -20,7 +23,7 @@ import beast.math.distributions.FossilCalibration;
 import beast.math.distributions.FossilPrior;
 import beast.math.distributions.OneOnX;
 
-public class FossilPriorListInputEditor extends PriorListInputEditor {
+public class FossilPriorListInputEditor extends PriorListInputEditor implements CAPanelListener {
 	    private static final long serialVersionUID = 1L;
 
 		public FossilPriorListInputEditor(BeautiDoc doc) {
@@ -35,6 +38,29 @@ public class FossilPriorListInputEditor extends PriorListInputEditor {
 	    @Override
 	    public Class<?> baseType() {
 	        return FossilPrior.class;
+	    }
+	    
+	    CAPanel panel;
+	    FossilCalibration calibration;
+	    
+	    @Override
+	    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	    	List<?> list = (List) input.get();
+	    	if (list.size() > 0) {
+	    		calibration = ((FossilPrior) list.get(0)).callibrationDistr.get();
+	    		panel = new CAPanel(CAPanel.MODE_BEAUTI_TOP);
+	            panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
+	            panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
+	            panel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
+	            panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
+	            panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
+	            panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
+	            panel.dataToGUI();
+	            panel.addChangeListener(this);
+
+	            add(panel);
+	    	}
+	    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 	    }
 	    
 	    @Override
@@ -116,5 +142,25 @@ public class FossilPriorListInputEditor extends PriorListInputEditor {
 	        g_collapsedIDs.add(prior.getID());	        
 	        return selectedPlugins;
 	    }
+
+		@Override
+		public void update() {
+			//setValue(calibration.m_offset, panel.getMinOccuranceAge());
+			setValue(calibration.minDivRateInput, panel.getMinDivRate());
+			setValue(calibration.maxDivRateInput, panel.getMaxDivRate());
+			setValue(calibration.minTurnoverRateInput, panel.getMinTurnoverRate());
+			setValue(calibration.maxTurnoverRateInput, panel.getMaxTurnoverRate());
+			setValue(calibration.minSamplingRateInput, panel.getMinSamplingRate());
+			setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
+		}
+
+		private void setValue(Input<RealParameter> input, double value) {
+			try {
+				input.get().m_pValues.setValue(value+"", calibration);
+				input.get().setValue(value);
+			} catch (Exception e) {
+				
+			}
+		}
 
 }

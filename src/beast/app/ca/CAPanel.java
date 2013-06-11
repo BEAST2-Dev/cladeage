@@ -281,20 +281,42 @@ RATE_HELP + "</html>";
 	ContinuousDistribution m_distr = null;
 	double m_rmsd = 0;
 	
+	
+	public final static int MODE_STAND_ALONE = 0;
+	public final static int MODE_BEAUTI_TOP = 1;
+	public final static int MODE_BEAUTI_BOTTOM = 2;
+	int mode = MODE_STAND_ALONE;
 
 
 	GridBagLayout gridBagLayout = new GridBagLayout();
 	
-	public CAPanel() {
+	public CAPanel(int mode) {
+		this.mode = mode;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		//gridBagLayout.columnWidths = new int[]{525, 375, 100};
-		gridBagLayout.columnWidths = new int[]{800, 100, 200};
-		gridBagLayout.columnWidths = new int[]{450, 80, 200};
-		gridBagLayout.columnWidths = new int[]{350, 40, 150};
-		gridBagLayout.columnWidths = new int[]{0};
-		gridBagLayout.rowHeights = new int[]{180, 450};
-		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
-		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+		switch (mode) {
+		case MODE_STAND_ALONE:
+			gridBagLayout.columnWidths = new int[]{800, 100, 200};
+			gridBagLayout.columnWidths = new int[]{450, 80, 200};
+			gridBagLayout.columnWidths = new int[]{350, 40, 150};
+			gridBagLayout.columnWidths = new int[]{0};
+			gridBagLayout.rowHeights = new int[]{180, 450};
+			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
+			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+			break;
+		case MODE_BEAUTI_BOTTOM:
+			gridBagLayout.columnWidths = new int[]{0};
+			gridBagLayout.rowHeights = new int[]{80, 450};
+			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
+			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+			break;
+		case MODE_BEAUTI_TOP:
+			gridBagLayout.columnWidths = new int[]{0};
+			gridBagLayout.rowHeights = new int[]{180};
+			gridBagLayout.columnWeights = new double[]{1.0};
+			gridBagLayout.rowWeights = new double[]{1.0};
+			break;			
+		}
 		setLayout(gridBagLayout);
 		
 		panel = new JPanel();
@@ -326,272 +348,290 @@ RATE_HELP + "</html>";
 		panel.add(lblNewLabel_3, gbc_lblNewLabel_3);
 		
 		
-		JLabel lblBirt = new JLabel("First occurance age:");
-		GridBagConstraints gbc_lblBirt = new GridBagConstraints();
-		gbc_lblBirt.anchor = GridBagConstraints.EAST;
-		gbc_lblBirt.insets = new Insets(0, 0, 5, 5);
-		gbc_lblBirt.gridx = 0;
-		gbc_lblBirt.gridy = 1;
-		panel.add(lblBirt, gbc_lblBirt);
 		
-		textField_minOccuranceAge = newTextField();
-		textField_minOccuranceAge.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_minOccuranceAge.setColumns(10);
-		GridBagConstraints gbc_textField_7 = new GridBagConstraints();
-		gbc_textField_7.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_7.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_7.gridx = 1;
-		gbc_textField_7.gridy = 1;
-		panel.add(textField_minOccuranceAge, gbc_textField_7);
-		
-		JLabel label = new JLabel("-");
-		GridBagConstraints gbc_label = new GridBagConstraints();
-		gbc_label.insets = new Insets(0, 0, 5, 5);
-		gbc_label.anchor = GridBagConstraints.EAST;
-		gbc_label.gridx = 2;
-		gbc_label.gridy = 1;
-		panel.add(label, gbc_label);
-		
-		textField_maxOccuranceAge = newTextField();
-		textField_maxOccuranceAge.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_maxOccuranceAge.setColumns(10);
-		GridBagConstraints gbc_textField_1_1 = new GridBagConstraints();
-		gbc_textField_1_1.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_1_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1_1.gridx = 3;
-		gbc_textField_1_1.gridy = 1;
-		panel.add(textField_maxOccuranceAge, gbc_textField_1_1);
-		
-		JLabel lblNetDiversificationRate = new JLabel("<html>Net&nbsp;diversification&nbsp;rate&nbsp;&lambda;&minus;&mu;:</html>");
-		GridBagConstraints gbc_lblNetDiversificationRate = new GridBagConstraints();
-		gbc_lblNetDiversificationRate.anchor = GridBagConstraints.EAST;
-		gbc_lblNetDiversificationRate.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNetDiversificationRate.gridx = 0;
-		gbc_lblNetDiversificationRate.gridy = 2;
-		panel.add(lblNetDiversificationRate, gbc_lblNetDiversificationRate);
-		
-		textField_minDivRate = newTextField();
-		textField_minDivRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_minDivRate.setColumns(10);
-		GridBagConstraints gbc_textField_8 = new GridBagConstraints();
-		gbc_textField_8.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_8.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_8.gridx = 1;
-		gbc_textField_8.gridy = 2;
-		panel.add(textField_minDivRate, gbc_textField_8);
-		
-		JLabel label_1 = new JLabel("-");
-		GridBagConstraints gbc_label_1 = new GridBagConstraints();
-		gbc_label_1.insets = new Insets(0, 0, 5, 5);
-		gbc_label_1.gridx = 2;
-		gbc_label_1.gridy = 2;
-		panel.add(label_1, gbc_label_1);
-		
-		textField_maxDivRate = newTextField();
-		textField_maxDivRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_maxDivRate.setColumns(10);
-		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_2.gridx = 3;
-		gbc_textField_2.gridy = 2;
-		panel.add(textField_maxDivRate, gbc_textField_2);
-		
-		JLabel lblRurnoverRateDb = new JLabel("<html>Turnover&nbsp;rate&nbsp;&mu;/&lambda;:</html>");
-		GridBagConstraints gbc_lblRurnoverRateDb = new GridBagConstraints();
-		gbc_lblRurnoverRateDb.anchor = GridBagConstraints.EAST;
-		gbc_lblRurnoverRateDb.insets = new Insets(0, 0, 5, 5);
-		gbc_lblRurnoverRateDb.gridx = 0;
-		gbc_lblRurnoverRateDb.gridy = 3;
-		panel.add(lblRurnoverRateDb, gbc_lblRurnoverRateDb);
-		
-		textField_minTurnoverRate = newTextField();
-		textField_minTurnoverRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_minTurnoverRate.setColumns(10);
-		GridBagConstraints gbc_textField_9 = new GridBagConstraints();
-		gbc_textField_9.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_9.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_9.gridx = 1;
-		gbc_textField_9.gridy = 3;
-		panel.add(textField_minTurnoverRate, gbc_textField_9);
-		
-		JLabel label_2 = new JLabel("-");
-		GridBagConstraints gbc_label_2 = new GridBagConstraints();
-		gbc_label_2.insets = new Insets(0, 0, 5, 5);
-		gbc_label_2.gridx = 2;
-		gbc_label_2.gridy = 3;
-		panel.add(label_2, gbc_label_2);
-		
-		textField_maxTurnoverRate = newTextField();
-		textField_maxTurnoverRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_maxTurnoverRate.setColumns(10);
-		GridBagConstraints gbc_textField_3 = new GridBagConstraints();
-		gbc_textField_3.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_3.gridx = 3;
-		gbc_textField_3.gridy = 3;
-		panel.add(textField_maxTurnoverRate, gbc_textField_3);
-		
-		JLabel lblSamplingRate = new JLabel("<html>Sampling&nbsp;rate&nbsp;&psi;:</html>");
-		GridBagConstraints gbc_lblSamplingRate = new GridBagConstraints();
-		gbc_lblSamplingRate.anchor = GridBagConstraints.EAST;
-		gbc_lblSamplingRate.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSamplingRate.gridx = 0;
-		gbc_lblSamplingRate.gridy = 4;
-		panel.add(lblSamplingRate, gbc_lblSamplingRate);
-		
-		textField_minSamplingRate = newTextField();
-		textField_minSamplingRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_minSamplingRate.setColumns(10);
-		GridBagConstraints gbc_textField_10 = new GridBagConstraints();
-		gbc_textField_10.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_10.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_10.gridx = 1;
-		gbc_textField_10.gridy = 4;
-		panel.add(textField_minSamplingRate, gbc_textField_10);
-		
-		JLabel label_3 = new JLabel("-");
-		GridBagConstraints gbc_label_3 = new GridBagConstraints();
-		gbc_label_3.insets = new Insets(0, 0, 5, 5);
-		gbc_label_3.gridx = 2;
-		gbc_label_3.gridy = 4;
-		panel.add(label_3, gbc_label_3);
-		
-		textField_maxSamplingRate = newTextField();
-		textField_maxSamplingRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_maxSamplingRate.setColumns(10);
-		GridBagConstraints gbc_textField_4 = new GridBagConstraints();
-		gbc_textField_4.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_4.gridx = 3;
-		gbc_textField_4.gridy = 4;
-		panel.add(textField_maxSamplingRate, gbc_textField_4);
-		
-		JLabel lblNewLabel = new JLabel("Sampling gap:");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
-		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 5;
-		panel.add(lblNewLabel, gbc_lblNewLabel);
-		
-		textField_minSamplginGap = newTextField();
-		textField_minSamplginGap.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_minSamplginGap.setColumns(10);
-		GridBagConstraints gbc_textField_11 = new GridBagConstraints();
-		gbc_textField_11.insets = new Insets(0, 0, 0, 5);
-		gbc_textField_11.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_11.gridx = 1;
-		gbc_textField_11.gridy = 5;
-		panel.add(textField_minSamplginGap, gbc_textField_11);
-		
-		JLabel label_4 = new JLabel("-");
-		GridBagConstraints gbc_label_4 = new GridBagConstraints();
-		gbc_label_4.insets = new Insets(0, 0, 0, 5);
-		gbc_label_4.gridx = 2;
-		gbc_label_4.gridy = 5;
-		panel.add(label_4, gbc_label_4);
-		
-		textField_maxSamplingGap = newTextField();
-		textField_maxSamplingGap.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_maxSamplingGap.setColumns(10);
-		GridBagConstraints gbc_textField_5 = new GridBagConstraints();
-		gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_5.gridx = 3;
-		gbc_textField_5.gridy = 5;
-		panel.add(textField_maxSamplingGap, gbc_textField_5);
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+			JLabel lblBirt = new JLabel("First occurance age:");
+			lblBirt.setToolTipText(OCCURRENCE_AGE_HELP);
+			GridBagConstraints gbc_lblBirt = new GridBagConstraints();
+			gbc_lblBirt.anchor = GridBagConstraints.EAST;
+			gbc_lblBirt.insets = new Insets(0, 0, 5, 5);
+			gbc_lblBirt.gridx = 0;
+			gbc_lblBirt.gridy = 1;
+			panel.add(lblBirt, gbc_lblBirt);
 
-		// help buttons for panel1
-		JButton btnHelpButtonFirstOccurance = newHelpButton();
-		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.gridx = 5;
-		gbc_btnNewButton.gridy = 1;
-		panel.add(btnHelpButtonFirstOccurance, gbc_btnNewButton);
-		btnHelpButtonFirstOccurance.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(OCCURRENCE_AGE_HELP);
-			}
-
-		});
-
-		JButton btnHelpButton2= newHelpButton();
-		GridBagConstraints gbc_btnNewButton2 = new GridBagConstraints();
-		gbc_btnNewButton2.gridx = 5;
-		gbc_btnNewButton2.gridy = 2;
-		panel.add(btnHelpButton2, gbc_btnNewButton2);
-		btnHelpButton2.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(DIV_RATE_HELP);
-			}
-		});
-
-		JButton btnHelpButton3= newHelpButton();
-		GridBagConstraints gbc_btnNewButton3 = new GridBagConstraints();
-		gbc_btnNewButton3.gridx = 5;
-		gbc_btnNewButton3.gridy = 3;
-		panel.add(btnHelpButton3, gbc_btnNewButton3);
-		btnHelpButton3.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(TURNOVER_RATE_HELP);
-			}
-		});
-
-		JButton btnHelpButton4= newHelpButton();
-		GridBagConstraints gbc_btnNewButton4 = new GridBagConstraints();
-		gbc_btnNewButton4.gridx = 5;
-		gbc_btnNewButton4.gridy = 4;
-		panel.add(btnHelpButton4, gbc_btnNewButton4);
-		btnHelpButton4.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(SAMPLING_RATE_HELP);
-			}
-		});
+			textField_minOccuranceAge = newTextField();
+			textField_minOccuranceAge.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_minOccuranceAge.setColumns(10);
+			GridBagConstraints gbc_textField_7 = new GridBagConstraints();
+			gbc_textField_7.insets = new Insets(0, 0, 5, 5);
+			gbc_textField_7.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_7.gridx = 1;
+			gbc_textField_7.gridy = 1;
+			panel.add(textField_minOccuranceAge, gbc_textField_7);
+			
+			JLabel label = new JLabel("-");
+			GridBagConstraints gbc_label = new GridBagConstraints();
+			gbc_label.insets = new Insets(0, 0, 5, 5);
+			gbc_label.anchor = GridBagConstraints.EAST;
+			gbc_label.gridx = 2;
+			gbc_label.gridy = 1;
+			panel.add(label, gbc_label);
+			
+			textField_maxOccuranceAge = newTextField();
+			textField_maxOccuranceAge.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_maxOccuranceAge.setColumns(10);
+			GridBagConstraints gbc_textField_1_1 = new GridBagConstraints();
+			gbc_textField_1_1.insets = new Insets(0, 0, 5, 0);
+			gbc_textField_1_1.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_1_1.gridx = 3;
+			gbc_textField_1_1.gridy = 1;
+			panel.add(textField_maxOccuranceAge, gbc_textField_1_1);
+		}
 		
-		JButton btnHelpButton5= newHelpButton();
-		GridBagConstraints gbc_btnNewButton5 = new GridBagConstraints();
-		gbc_btnNewButton5.gridx = 5;
-		gbc_btnNewButton5.gridy = 5;
-		panel.add(btnHelpButton5, gbc_btnNewButton5);
-		btnHelpButton5.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(SAMPLING_GAP_HELP);
-			}
-		});
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
+			JLabel lblNetDiversificationRate = new JLabel("<html>Net&nbsp;diversification&nbsp;rate&nbsp;&lambda;&minus;&mu;:</html>");
+			GridBagConstraints gbc_lblNetDiversificationRate = new GridBagConstraints();
+			gbc_lblNetDiversificationRate.anchor = GridBagConstraints.EAST;
+			gbc_lblNetDiversificationRate.insets = new Insets(0, 0, 5, 5);
+			gbc_lblNetDiversificationRate.gridx = 0;
+			gbc_lblNetDiversificationRate.gridy = 2;
+			panel.add(lblNetDiversificationRate, gbc_lblNetDiversificationRate);
+			
+			textField_minDivRate = newTextField();
+			textField_minDivRate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_minDivRate.setColumns(10);
+			GridBagConstraints gbc_textField_8 = new GridBagConstraints();
+			gbc_textField_8.insets = new Insets(0, 0, 5, 5);
+			gbc_textField_8.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_8.gridx = 1;
+			gbc_textField_8.gridy = 2;
+			panel.add(textField_minDivRate, gbc_textField_8);
+			
+			JLabel label_1 = new JLabel("-");
+			GridBagConstraints gbc_label_1 = new GridBagConstraints();
+			gbc_label_1.insets = new Insets(0, 0, 5, 5);
+			gbc_label_1.gridx = 2;
+			gbc_label_1.gridy = 2;
+			panel.add(label_1, gbc_label_1);
+			
+			textField_maxDivRate = newTextField();
+			textField_maxDivRate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_maxDivRate.setColumns(10);
+			GridBagConstraints gbc_textField_2 = new GridBagConstraints();
+			gbc_textField_2.insets = new Insets(0, 0, 5, 0);
+			gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_2.gridx = 3;
+			gbc_textField_2.gridy = 2;
+			panel.add(textField_maxDivRate, gbc_textField_2);
+			
+			JLabel lblRurnoverRateDb = new JLabel("<html>Turnover&nbsp;rate&nbsp;&mu;/&lambda;:</html>");
+			GridBagConstraints gbc_lblRurnoverRateDb = new GridBagConstraints();
+			gbc_lblRurnoverRateDb.anchor = GridBagConstraints.EAST;
+			gbc_lblRurnoverRateDb.insets = new Insets(0, 0, 5, 5);
+			gbc_lblRurnoverRateDb.gridx = 0;
+			gbc_lblRurnoverRateDb.gridy = 3;
+			panel.add(lblRurnoverRateDb, gbc_lblRurnoverRateDb);
+			
+			textField_minTurnoverRate = newTextField();
+			textField_minTurnoverRate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_minTurnoverRate.setColumns(10);
+			GridBagConstraints gbc_textField_9 = new GridBagConstraints();
+			gbc_textField_9.insets = new Insets(0, 0, 5, 5);
+			gbc_textField_9.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_9.gridx = 1;
+			gbc_textField_9.gridy = 3;
+			panel.add(textField_minTurnoverRate, gbc_textField_9);
+			
+			JLabel label_2 = new JLabel("-");
+			GridBagConstraints gbc_label_2 = new GridBagConstraints();
+			gbc_label_2.insets = new Insets(0, 0, 5, 5);
+			gbc_label_2.gridx = 2;
+			gbc_label_2.gridy = 3;
+			panel.add(label_2, gbc_label_2);
+			
+			textField_maxTurnoverRate = newTextField();
+			textField_maxTurnoverRate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_maxTurnoverRate.setColumns(10);
+			GridBagConstraints gbc_textField_3 = new GridBagConstraints();
+			gbc_textField_3.insets = new Insets(0, 0, 5, 0);
+			gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_3.gridx = 3;
+			gbc_textField_3.gridy = 3;
+			panel.add(textField_maxTurnoverRate, gbc_textField_3);
+			
+			JLabel lblSamplingRate = new JLabel("<html>Sampling&nbsp;rate&nbsp;&psi;:</html>");
+			GridBagConstraints gbc_lblSamplingRate = new GridBagConstraints();
+			gbc_lblSamplingRate.anchor = GridBagConstraints.EAST;
+			gbc_lblSamplingRate.insets = new Insets(0, 0, 5, 5);
+			gbc_lblSamplingRate.gridx = 0;
+			gbc_lblSamplingRate.gridy = 4;
+			panel.add(lblSamplingRate, gbc_lblSamplingRate);
+			
+			textField_minSamplingRate = newTextField();
+			textField_minSamplingRate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_minSamplingRate.setColumns(10);
+			GridBagConstraints gbc_textField_10 = new GridBagConstraints();
+			gbc_textField_10.insets = new Insets(0, 0, 5, 5);
+			gbc_textField_10.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_10.gridx = 1;
+			gbc_textField_10.gridy = 4;
+			panel.add(textField_minSamplingRate, gbc_textField_10);
+			
+			JLabel label_3 = new JLabel("-");
+			GridBagConstraints gbc_label_3 = new GridBagConstraints();
+			gbc_label_3.insets = new Insets(0, 0, 5, 5);
+			gbc_label_3.gridx = 2;
+			gbc_label_3.gridy = 4;
+			panel.add(label_3, gbc_label_3);
+			
+			textField_maxSamplingRate = newTextField();
+			textField_maxSamplingRate.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_maxSamplingRate.setColumns(10);
+			GridBagConstraints gbc_textField_4 = new GridBagConstraints();
+			gbc_textField_4.insets = new Insets(0, 0, 5, 0);
+			gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_4.gridx = 3;
+			gbc_textField_4.gridy = 4;
+			panel.add(textField_maxSamplingRate, gbc_textField_4);
+			
+			lblNetDiversificationRate.setToolTipText(DIV_RATE_HELP);
+			lblRurnoverRateDb.setToolTipText(TURNOVER_RATE_HELP);
+			lblSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
+		}
+		
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+			JLabel lblNewLabel = new JLabel("Sampling gap:");
+			lblNewLabel.setToolTipText(SAMPLING_GAP_HELP);
+			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+			gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
+			gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+			gbc_lblNewLabel.gridx = 0;
+			gbc_lblNewLabel.gridy = 5;
+			panel.add(lblNewLabel, gbc_lblNewLabel);
+
+			textField_minSamplginGap = newTextField();
+			textField_minSamplginGap.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_minSamplginGap.setColumns(10);
+			GridBagConstraints gbc_textField_11 = new GridBagConstraints();
+			gbc_textField_11.insets = new Insets(0, 0, 0, 5);
+			gbc_textField_11.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_11.gridx = 1;
+			gbc_textField_11.gridy = 5;
+			panel.add(textField_minSamplginGap, gbc_textField_11);
+			
+			JLabel label_4 = new JLabel("-");
+			GridBagConstraints gbc_label_4 = new GridBagConstraints();
+			gbc_label_4.insets = new Insets(0, 0, 0, 5);
+			gbc_label_4.gridx = 2;
+			gbc_label_4.gridy = 5;
+			panel.add(label_4, gbc_label_4);
+			
+			textField_maxSamplingGap = newTextField();
+			textField_maxSamplingGap.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			textField_maxSamplingGap.setColumns(10);
+			GridBagConstraints gbc_textField_5 = new GridBagConstraints();
+			gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textField_5.gridx = 3;
+			gbc_textField_5.gridy = 5;
+			panel.add(textField_maxSamplingGap, gbc_textField_5);
+	
+			// help buttons for panel1
+			JButton btnHelpButtonFirstOccurance = newHelpButton();
+			GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+			gbc_btnNewButton.gridx = 5;
+			gbc_btnNewButton.gridy = 1;
+			panel.add(btnHelpButtonFirstOccurance, gbc_btnNewButton);
+			btnHelpButtonFirstOccurance.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					showHelp(OCCURRENCE_AGE_HELP);
+				}
+	
+			});
+
+		}
+		
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
+			JButton btnHelpButton2= newHelpButton();
+			GridBagConstraints gbc_btnNewButton2 = new GridBagConstraints();
+			gbc_btnNewButton2.gridx = 5;
+			gbc_btnNewButton2.gridy = 2;
+			panel.add(btnHelpButton2, gbc_btnNewButton2);
+			btnHelpButton2.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					showHelp(DIV_RATE_HELP);
+				}
+			});
+
+			JButton btnHelpButton3= newHelpButton();
+			GridBagConstraints gbc_btnNewButton3 = new GridBagConstraints();
+			gbc_btnNewButton3.gridx = 5;
+			gbc_btnNewButton3.gridy = 3;
+			panel.add(btnHelpButton3, gbc_btnNewButton3);
+			btnHelpButton3.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					showHelp(TURNOVER_RATE_HELP);
+				}
+			});
+	
+			JButton btnHelpButton4= newHelpButton();
+			GridBagConstraints gbc_btnNewButton4 = new GridBagConstraints();
+			gbc_btnNewButton4.gridx = 5;
+			gbc_btnNewButton4.gridy = 4;
+			panel.add(btnHelpButton4, gbc_btnNewButton4);
+			btnHelpButton4.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					showHelp(SAMPLING_RATE_HELP);
+				}
+			});
+		}
+		
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+			JButton btnHelpButton5= newHelpButton();
+			GridBagConstraints gbc_btnNewButton5 = new GridBagConstraints();
+			gbc_btnNewButton5.gridx = 5;
+			gbc_btnNewButton5.gridy = 5;
+			panel.add(btnHelpButton5, gbc_btnNewButton5);
+			btnHelpButton5.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					showHelp(SAMPLING_GAP_HELP);
+				}
+			});
+		}
 		
 		panel2 = new JPanel();
 		panel2.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Simulation settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -612,8 +652,13 @@ RATE_HELP + "</html>";
 		panel2b.setLayout(new BorderLayout());
 		
 		JLabel lblIcon = new MyJLabel(BeautiPanel.getIcon(CA_ICON));
-		lblIcon.setMinimumSize(new Dimension(160,160));
-		lblIcon.setPreferredSize(new Dimension(128,128));
+		if (mode == MODE_BEAUTI_BOTTOM) {
+			lblIcon.setMinimumSize(new Dimension(84,84));
+			lblIcon.setPreferredSize(new Dimension(84,84));
+		} else {
+			lblIcon.setMinimumSize(new Dimension(160,160));
+			lblIcon.setPreferredSize(new Dimension(128,128));
+		}			
 		panel2b.add(lblIcon, BorderLayout.NORTH);
 		
 		btnCalculate = new JButton("Run");
@@ -692,7 +737,7 @@ RATE_HELP + "</html>";
 //		gbc_btnCalculate.insets = new Insets(0, 0, 5, 0);
 //		gbc_btnCalculate.gridx = 0;
 //		gbc_btnCalculate.gridy = 4;
-		panel2b.add(btnCalculate, BorderLayout.SOUTH);
+		panel2b.add(btnCalculate, BorderLayout.CENTER);
 		
 		GridBagConstraints gbc_lblIcon = new GridBagConstraints();
 		gbc_lblIcon.insets = new Insets(5, 0, 5, 5);
@@ -701,7 +746,9 @@ RATE_HELP + "</html>";
 		gbc_lblIcon.gridy = 0;
 		gbc_lblIcon.gridwidth = 2;
 		
-		add(panel2b, gbc_lblIcon);
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+			add(panel2b, gbc_lblIcon);
+		}
 		
 		textField_NumberOfTreeSimulations = newTextField();
 		textField_NumberOfTreeSimulations.addActionListener(new ActionListener() {
@@ -827,7 +874,9 @@ RATE_HELP + "</html>";
 		gbc_panel3.gridx = 0;
 		gbc_panel3.gridy = 1;
 		gbc_panel3.gridwidth = 3;
-		add(panel3, gbc_panel3);
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+			add(panel3, gbc_panel3);
+		}
 		GridBagLayout gbl_panel3 = new GridBagLayout();
 		gbl_panel3.columnWidths = new int[]{0};
 		gbl_panel3.rowHeights = new int[]{0, 103};
@@ -1043,7 +1092,6 @@ RATE_HELP + "</html>";
 		gbc_panel_1.gridx = 0;
 		gbc_panel_1.gridy = 1;
 		panel3.add(panel_1, gbc_panel_1);
-
 //		JPanel panel4 = new JPanel();
 //		panel4.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Approximation", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 //		GridBagConstraints gbc_panel4 = new GridBagConstraints();
@@ -1134,29 +1182,30 @@ RATE_HELP + "</html>";
 		
 		dataToGUI();
 
-		lblBirt.setToolTipText(OCCURRENCE_AGE_HELP);
-		lblNetDiversificationRate.setToolTipText(DIV_RATE_HELP);
-		lblRurnoverRateDb.setToolTipText(TURNOVER_RATE_HELP);
-		lblSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
-		lblNewLabel.setToolTipText(SAMPLING_GAP_HELP);
-		lblNewLabel_1.setToolTipText(NR_SIMULATIONS_HELP);
-		lblMaximumNumberOf.setToolTipText(MAX_NR_TREES_HELP);
-		lblSamplingReplicatesPer.setToolTipText(REPS_PER_TREE_HELP);
-		textField_maxOccuranceAge.setToolTipText(OCCURRENCE_AGE_HELP);
-		textField_maxDivRate.setToolTipText(DIV_RATE_HELP);
-		textField_maxTurnoverRate.setToolTipText(TURNOVER_RATE_HELP);
-		textField_maxSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
-		textField_maxSamplingGap.setToolTipText(SAMPLING_GAP_HELP);
-		textField_minOccuranceAge.setToolTipText(OCCURRENCE_AGE_HELP);
-		textField_minDivRate.setToolTipText(DIV_RATE_HELP);
-		textField_minTurnoverRate.setToolTipText(TURNOVER_RATE_HELP);
-		textField_minSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
-		textField_minSamplginGap.setToolTipText(SAMPLING_GAP_HELP);
-		textField_NumberOfTreeSimulations.setToolTipText(NR_SIMULATIONS_HELP);
-		textField_MaxNrOfBranches.setToolTipText(MAX_NR_TREES_HELP);
-		textField_SamplingReplicatesPerTree.setToolTipText(REPS_PER_TREE_HELP);
+		setToolTipText(lblNewLabel_1,NR_SIMULATIONS_HELP);
+		setToolTipText(lblMaximumNumberOf, MAX_NR_TREES_HELP);
+		setToolTipText(lblSamplingReplicatesPer, REPS_PER_TREE_HELP);
+		setToolTipText(textField_maxOccuranceAge, OCCURRENCE_AGE_HELP);
+		setToolTipText(textField_maxDivRate, DIV_RATE_HELP);
+		setToolTipText(textField_maxTurnoverRate, TURNOVER_RATE_HELP);
+		setToolTipText(textField_maxSamplingRate, SAMPLING_RATE_HELP);
+		setToolTipText(textField_maxSamplingGap, SAMPLING_GAP_HELP);
+		setToolTipText(textField_minOccuranceAge, OCCURRENCE_AGE_HELP);
+		setToolTipText(textField_minDivRate, DIV_RATE_HELP);
+		setToolTipText(textField_minTurnoverRate, TURNOVER_RATE_HELP);
+		setToolTipText(textField_minSamplingRate, SAMPLING_RATE_HELP);
+		setToolTipText(textField_minSamplginGap, SAMPLING_GAP_HELP);
+		setToolTipText(textField_NumberOfTreeSimulations, NR_SIMULATIONS_HELP);
+		setToolTipText(textField_MaxNrOfBranches, MAX_NR_TREES_HELP);
+		setToolTipText(textField_SamplingReplicatesPerTree, REPS_PER_TREE_HELP);
 	}
 
+	private void setToolTipText(JComponent component, String text) {
+		if (component != null) {
+			component.setToolTipText(text);
+		}
+	}
+	
 	private JButton newHelpButton() {
 		return new HelpButton("?",true);
 	}
@@ -1223,88 +1272,99 @@ RATE_HELP + "</html>";
 	
 	public void dataToGUI() {
 		processingDataToGui = true;
-		textField_minOccuranceAge.setText(minOccuranceAge + "");
-		textField_minDivRate.setText(minDivRate + "");
-		textField_minTurnoverRate.setText(minTurnoverRate + "");
-		textField_minSamplingRate.setText(minSamplingRate + "");
-		textField_minSamplginGap.setText(minSamplingGap + "");
+			
 		textField_NumberOfTreeSimulations.setText(NumberOfTreeSimulations + "");
 		textField_MaxNrOfBranches.setText(MaxNrOfBranches + "");
 		textField_SamplingReplicatesPerTree.setText(SamplingReplicatesPerTree + "");
-		if (maxOccuranceAge != minOccuranceAge) {
-			textField_maxOccuranceAge.setText(maxOccuranceAge + "");
-		} else {
-			textField_maxOccuranceAge.setText("As minimum");
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+			textField_minOccuranceAge.setText(minOccuranceAge + "");
+			textField_minSamplginGap.setText(minSamplingGap + "");
+
+			if (maxOccuranceAge != minOccuranceAge) {
+				textField_maxOccuranceAge.setText(maxOccuranceAge + "");
+			} else {
+				textField_maxOccuranceAge.setText("As minimum");
+			}
+			if (maxSamplingGap != minSamplingGap) {
+				textField_maxSamplingGap.setText(maxSamplingGap + "");
+			} else {
+				textField_maxSamplingGap.setText("As minimum");
+			}
 		}
-		if (maxDivRate != minDivRate) {
-			textField_maxDivRate.setText(maxDivRate + "");
-		} else {
-			textField_maxDivRate.setText("As minimum");
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
+			textField_minDivRate.setText(minDivRate + "");
+			textField_minTurnoverRate.setText(minTurnoverRate + "");
+			textField_minSamplingRate.setText(minSamplingRate + "");
+			if (maxDivRate != minDivRate) {
+				textField_maxDivRate.setText(maxDivRate + "");
+			} else {
+				textField_maxDivRate.setText("As minimum");
+			}
+			if (maxTurnoverRate != minTurnoverRate) {
+				textField_maxTurnoverRate.setText(maxTurnoverRate + "");
+			} else {
+				textField_maxTurnoverRate.setText("As minimum");
+			}
+			if (maxSamplingRate != minSamplingRate) {
+				textField_maxSamplingRate.setText(maxSamplingRate + "");
+			} else {
+				textField_maxSamplingRate.setText("As minimum");
+			}
 		}
-		if (maxTurnoverRate != minTurnoverRate) {
-			textField_maxTurnoverRate.setText(maxTurnoverRate + "");
-		} else {
-			textField_maxTurnoverRate.setText("As minimum");
-		}
-		if (maxSamplingRate != minSamplingRate) {
-			textField_maxSamplingRate.setText(maxSamplingRate + "");
-		} else {
-			textField_maxSamplingRate.setText("As minimum");
-		}
-		if (maxSamplingGap != minSamplingGap) {
-			textField_maxSamplingGap.setText(maxSamplingGap + "");
-		} else {
-			textField_maxSamplingGap.setText("As minimum");
-		}
+
 		processingDataToGui = false;
 	}
 	
 	void guiToData() {
-		maxOccuranceAge = parseDouble(textField_maxOccuranceAge.getText());
-		maxDivRate = parseDouble(textField_maxDivRate.getText());
-		maxTurnoverRate = parseDouble(textField_maxTurnoverRate.getText());
-		maxSamplingRate = parseDouble(textField_maxSamplingRate.getText());
-		maxSamplingGap = parseDouble(textField_maxSamplingGap.getText());
-	
-		minOccuranceAge = parseDouble(textField_minOccuranceAge.getText());
-		if (minOccuranceAge < 0) {
-			minOccuranceAge = 0;
+		
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+			maxOccuranceAge = parseDouble(textField_maxOccuranceAge.getText());
+			maxSamplingGap = parseDouble(textField_maxSamplingGap.getText());
+			minOccuranceAge = parseDouble(textField_minOccuranceAge.getText());
+			if (minOccuranceAge < 0) {
+				minOccuranceAge = 0;
+			}
+			if (Double.isInfinite(maxOccuranceAge) || maxOccuranceAge < minOccuranceAge) {
+				maxOccuranceAge = minOccuranceAge;
+			}
+			minSamplingGap = parseDouble(textField_minSamplginGap.getText());
+			if (minSamplingGap < 0) {
+				minSamplingGap = 0;
+			}
+			if (Double.isInfinite(maxSamplingGap) || maxSamplingGap < minSamplingGap) {
+				maxSamplingGap = minSamplingGap;
+			}
 		}
-		if (Double.isInfinite(maxOccuranceAge) || maxOccuranceAge < minOccuranceAge) {
-			maxOccuranceAge = minOccuranceAge;
-		}
-		minDivRate = parseDouble(textField_minDivRate.getText());
-		if (minDivRate < 0) {
-			minDivRate = 0;
-		}
-		if (Double.isInfinite(maxDivRate) || maxDivRate < minDivRate) {
-			maxDivRate = minDivRate;
-		}
-		minTurnoverRate = parseDouble(textField_minTurnoverRate.getText());
-		if (minTurnoverRate < 0) {
-			minTurnoverRate = 0;
-		}
-		if (Double.isInfinite(maxTurnoverRate) || maxTurnoverRate < minTurnoverRate) {
-			maxTurnoverRate = minTurnoverRate;
-		}
-		minSamplingRate = parseDouble(textField_minSamplingRate.getText());
-		if (minSamplingRate < 1e-10) {
-			minSamplingRate = 1e-10;
-		}
-		if (Double.isInfinite(maxSamplingRate) || maxSamplingRate < minSamplingRate) {
-			maxSamplingRate = minSamplingRate;
-		}
-		minSamplingGap = parseDouble(textField_minSamplginGap.getText());
-		if (minSamplingGap < 0) {
-			minSamplingGap = 0;
-		}
-		if (Double.isInfinite(maxSamplingGap) || maxSamplingGap < minSamplingGap) {
-			maxSamplingGap = minSamplingGap;
-		}
+		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
+			maxDivRate = parseDouble(textField_maxDivRate.getText());
+			maxTurnoverRate = parseDouble(textField_maxTurnoverRate.getText());
+			maxSamplingRate = parseDouble(textField_maxSamplingRate.getText());
+			minDivRate = parseDouble(textField_minDivRate.getText());
+			if (minDivRate < 0) {
+				minDivRate = 0;
+			}
+			if (Double.isInfinite(maxDivRate) || maxDivRate < minDivRate) {
+				maxDivRate = minDivRate;
+			}
+			minTurnoverRate = parseDouble(textField_minTurnoverRate.getText());
+			if (minTurnoverRate < 0) {
+				minTurnoverRate = 0;
+			}
+			if (Double.isInfinite(maxTurnoverRate) || maxTurnoverRate < minTurnoverRate) {
+				maxTurnoverRate = minTurnoverRate;
+			}
+			minSamplingRate = parseDouble(textField_minSamplingRate.getText());
+			if (minSamplingRate < 1e-10) {
+				minSamplingRate = 1e-10;
+			}
+			if (Double.isInfinite(maxSamplingRate) || maxSamplingRate < minSamplingRate) {
+				maxSamplingRate = minSamplingRate;
+			}
+		}	
+
 		NumberOfTreeSimulations = parseInt(textField_NumberOfTreeSimulations.getText());
 		MaxNrOfBranches = parseInt(textField_MaxNrOfBranches.getText());
 		SamplingReplicatesPerTree = parseInt(textField_SamplingReplicatesPerTree.getText());
-
 		// something changed, so the probabilities are not valid any more
 		m_distr = null;
 		
@@ -1626,12 +1686,12 @@ RATE_HELP + "</html>";
         
 		frame.setSize(1024, 728);
 		
-
         ImageIcon icon = BeautiPanel.getIcon(CA_ICON);
         if (icon != null) {
             frame.setIconImage(icon.getImage());
         }
-		CAPanel pane = new CAPanel();
+		CAPanel pane = new CAPanel(CAPanel.MODE_STAND_ALONE);
+		
         JMenuBar menuBar = pane.makeMenuBar();
         frame.setJMenuBar(menuBar);
 		frame.getContentPane().add(pane);
