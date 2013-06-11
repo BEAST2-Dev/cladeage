@@ -33,17 +33,17 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
         m_input = input;
         m_plugin = plugin;
         calibration = (FossilCalibration) m_input.get();
-        panel = new CAPanel();
+        panel = new CAPanel(CAPanel.MODE_BEAUTI_BOTTOM);
         panel.setMinOccuranceAge(calibration.minOccuranceAgeInput.get().getValue());
-        panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
-        panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
-        panel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
+//        panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
+//        panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
+//        panel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
         panel.setMinSamplingGap(calibration.minSamplingGapInput.get().getValue());
 
         panel.setMaxOccuranceAge(calibration.maxOccuranceAgeInput.get().getValue());
-        panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
-        panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
-        panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
+//        panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
+//        panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
+//        panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
         panel.setMaxSamplingGap(calibration.maxSamplingGapInput.get().getValue());
         panel.setNumberOfTreeSimulations(calibration.NumberOfTreeSimulationsInput.get());
         panel.setMaxNrOfBranches(calibration.MaxNrOfBranchesInput.get());
@@ -67,17 +67,25 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
 		//setValue(calibration.m_offset, panel.getMinOccuranceAge());
 		setValue(calibration.minOccuranceAgeInput, panel.getMinOccuranceAge());
 		setValue(calibration.maxOccuranceAgeInput, panel.getMaxOccuranceAge());
-		setValue(calibration.minDivRateInput, panel.getMinDivRate());
-		setValue(calibration.maxDivRateInput, panel.getMaxDivRate());
-		setValue(calibration.minTurnoverRateInput, panel.getMinTurnoverRate());
-		setValue(calibration.maxTurnoverRateInput, panel.getMaxTurnoverRate());
-		setValue(calibration.minSamplingRateInput, panel.getMinSamplingRate());
-		setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
+//		setValue(calibration.minDivRateInput, panel.getMinDivRate());
+//		setValue(calibration.maxDivRateInput, panel.getMaxDivRate());
+//		setValue(calibration.minTurnoverRateInput, panel.getMinTurnoverRate());
+//		setValue(calibration.maxTurnoverRateInput, panel.getMaxTurnoverRate());
+//		setValue(calibration.minSamplingRateInput, panel.getMinSamplingRate());
+//		setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
 		setValue(calibration.minSamplingGapInput, panel.getMinSamplingGap());
 		setValue(calibration.maxSamplingGapInput, panel.getMaxSamplingGap());
 		setValue(calibration.NumberOfTreeSimulationsInput, panel.getNumberOfTreeSimulations());
 		setValue(calibration.MaxNrOfBranchesInput, panel.getMaxNrOfBranches());
 		setValue(calibration.SamplingReplicatesPerTreeInput, panel.getSamplingReplicatesPerTree());
+
+		panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
+		panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
+		panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
+		panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
+		panel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
+		panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
+	
 	}
 
 	private void setValue(Input<RealParameter> input, double value) {
