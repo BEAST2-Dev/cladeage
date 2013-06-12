@@ -8,6 +8,7 @@
 	</description>
 
 	<!-- set global properties for this build -->
+	<property name="versionCA" value="1.0.0" />
 	<property name="srcCA" location="src" />
 	<property name="buildCA" location="build" />
 	<property name="libCA" location="lib" />
@@ -191,12 +192,12 @@
 			<fileset file="templates/FossilCalibration.xml" />
 		</copy>
 
-		<jar jarfile="${distCA}/CA.addon.v${version}.zip">
+		<jar jarfile="${distCA}/CA.addon.v${versionCA}.zip">
 			<fileset dir="${Add_on_dir}">
 				<include name="**/*" />
 			</fileset>
         </jar>
-		<echo message="Add-on version v${version} release is finished." />
+		<echo message="Add-on version v${versionCA} release is finished." />
 	</target>
 
 
@@ -205,7 +206,7 @@
 
 	<!-- Release -->
 	<property name="version" value="1.0.0" />
-	<property name="version_number" value="${version}" />
+	<property name="version_number" value="${versionCA}" />
 	<property name="release_dirCA" value="release" />
 	<property name="copyright" value="CladeAge development team 2013" />
 
@@ -245,15 +246,15 @@
 		          jar="${distCA}/cladeage.jar"
 		          outfile="${Windows_package_dirCA}/${CladeAge_name}.exe"
 		          fileVersion="${version_number}.0"
-		          txtFileVersion="${version}"
+		          txtFileVersion="${versionCA}"
 		          productVersion="${version_number}.0"
-		          txtProductVersion="${version}" />
+		          txtProductVersion="${versionCA}" />
 
 		<copy todir="${Windows_package_dirCA}/templates/">
 			<fileset dir="templates/" />
 		</copy>
 
-		<zip destfile="${Windows_dirCA}/${CladeAge_name} v${version}.zip">
+		<zip destfile="${Windows_dirCA}/${CladeAge_name} v${versionCA}.zip">
 			<zipfileset dir="${Windows_package_dirCA}" prefix="${CladeAge_name}" />
 		</zip>
 
@@ -290,7 +291,7 @@
 	        description="release Mac version of CladeAge">
 		<delete dir="${Mac_package_dirCA}" />
 		<delete file="${Mac_dirCA}/pack.temp.dmg"/>
-		<delete file="${Mac_dirCA}/CladeAge v${version}.dmg"/>
+		<delete file="${Mac_dirCA}/CladeAge v${versionCA}.dmg"/>
 		<!-- Create the release directory -->
 		<mkdir dir="${Mac_package_dirCA}" />
 
@@ -318,7 +319,7 @@
 		            jvmversion="1.6+"
 		            vmoptions="-Xmx1024M"
 		            arguments="-window -working -options"
-		            version="${version}"
+		            version="${versionCA}"
 		            infostring="${CladeAge_name}, ${copyright}"
 		            bundleid="${main_class_CladeAge}">
 			<jarfileset dir="${Mac_package_dirCA}/lib">
