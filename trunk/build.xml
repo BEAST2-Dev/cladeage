@@ -285,7 +285,7 @@
 		<echo message="Linux/Unix version release is finished." />
 	</target>
 
-	<property name="jarbundler_dir" value="/Applications/eclipse/plugins/org.apache.ant_1.8.2.v20110505-1300/lib" />
+	<property name="jarbundler_dir" value="/Applications/eclipse/plugins/org.apache.ant_1.8.3.v201301120609/lib" />
 	<target name="mac"
 	        depends="build_jar_all_CA_NoJUnitTest"
 	        description="release Mac version of CladeAge">
