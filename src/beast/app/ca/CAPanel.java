@@ -71,6 +71,7 @@ import beast.math.distributions.EmpiricalDistribution;
 import beast.math.distributions.ExpGamma;
 import beast.math.distributions.LogNormalImpl;
 
+
 public class CAPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 

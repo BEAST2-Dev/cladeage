@@ -7,14 +7,19 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.BeautiSubTemplate;
+import beast.app.beauti.PartitionContext;
+import beast.app.beauti.PriorListInputEditor;
+import beast.app.beauti.TaxonSetDialog;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
 import beast.app.draw.PluginPanel;
 import beast.core.Input;
 import beast.core.Logger;
-import beast.core.Plugin;
 import beast.core.State;
 import beast.core.StateNode;
+import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.TaxonSet;
@@ -22,6 +27,7 @@ import beast.evolution.tree.Tree;
 import beast.math.distributions.FossilCalibration;
 import beast.math.distributions.FossilPrior;
 import beast.math.distributions.OneOnX;
+
 
 public class FossilPriorListInputEditor extends PriorListInputEditor implements CAPanelListener {
 	    private static final long serialVersionUID = 1L;
@@ -44,7 +50,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    FossilCalibration calibration;
 	    
 	    @Override
-	    public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 	    	List<?> list = (List) input.get();
 	    	if (list.size() > 0) {
 	    		calibration = ((FossilPrior) list.get(0)).callibrationDistr.get();
@@ -64,7 +70,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    }
 	    
 	    @Override
-	    public List<Plugin> pluginSelector(Input<?> input, Plugin parent, List<String> sTabuList) {
+	    public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject parent, List<String> sTabuList) {
 	        FossilPrior prior = new FossilPrior();
 	        try {
 	        	
@@ -89,7 +95,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            if (iTree < 0) {
 	                return null;
 	            }
-	            prior.m_treeInput.setValue(trees.get(iTree), prior);
+	            prior.treeInput.setValue(trees.get(iTree), prior);
 	            TaxonSet taxonSet = new TaxonSet();
 
 	            TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior), doc);
@@ -98,16 +104,16 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            }
 	            taxonSet = dlg.taxonSet;
 	            PluginPanel.addPluginToMap(taxonSet, doc);
-	            prior.m_taxonset.setValue(taxonSet, prior);
+	            prior.taxonsetInput.setValue(taxonSet, prior);
 	            //prior.setID(taxonSet.getID() + ".fossilprior");
 	            prior.setID(taxonSet.getID()+".fossilprior");
 	            // this sets up the type
-	            prior.m_distInput.setValue(new OneOnX(), prior);
+	            prior.distInput.setValue(new OneOnX(), prior);
 	            // this removes the parametric distribution
-	            prior.m_distInput.setValue(null, prior);
+	            prior.distInput.setValue(null, prior);
 
 	            Logger logger = (Logger) doc.pluginmap.get("tracelog");
-	            logger.m_pLoggers.setValue(prior, logger);
+	            logger.loggersInput.setValue(prior, logger);
 //	            CompoundFossilPrior compoundPrior = (CompoundFossilPrior) doc.pluginmap.get("fossilCalibrations");
 //	            compoundPrior.distributionsInput.setValue(prior, compoundPrior);
 	            CompoundDistribution compoundPrior = (CompoundDistribution) doc.pluginmap.get("fossilCalibrations");
@@ -137,7 +143,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	        	e.printStackTrace();
 	            // TODO: handle exception
 	        }
-	        List<Plugin> selectedPlugins = new ArrayList<Plugin>();
+	        List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
 	        selectedPlugins.add(prior);
 	        g_collapsedIDs.add(prior.getID());	        
 	        return selectedPlugins;
@@ -156,7 +162,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 
 		private void setValue(Input<RealParameter> input, double value) {
 			try {
-				input.get().m_pValues.setValue(value+"", calibration);
+				input.get().valuesInput.setValue(value+"", calibration);
 				input.get().setValue(value);
 			} catch (Exception e) {
 				

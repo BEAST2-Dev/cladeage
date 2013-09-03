@@ -9,6 +9,7 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 
+
 @Deprecated // use CompoundDistribution instead
 @Description("Takes a collection of fossil priors and combines them into the compound of these distributions.")
 public class CompoundFossilPrior extends Distribution {

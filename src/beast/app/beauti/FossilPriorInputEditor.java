@@ -10,13 +10,18 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
+import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.MRCAPriorInputEditor;
+import beast.app.beauti.PriorInputEditor;
+import beast.app.beauti.TaxonSetDialog;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.FossilPrior;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
+
 
 public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 
@@ -30,7 +35,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 	}
 
 	@Override
-	public void init(Input<?> input, Plugin plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTObject plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.tree");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.distr");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.monophyletic");
@@ -47,7 +52,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         Box itemBox = Box.createHorizontalBox();
 
         MRCAPrior prior = (MRCAPrior) plugin;
-        String sText = prior.m_taxonset.get().getID();
+        String sText = prior.taxonsetInput.get().getID();
 
         JButton taxonButton = new JButton(sText);
         taxonButton.setMinimumSize(PriorInputEditor.PREFERRED_SIZE);
@@ -60,12 +65,12 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
                 List<?> list = (List<?>) m_input.get();
                 MRCAPrior prior = (MRCAPrior) list.get(itemNr);
                 try {
-                    TaxonSet taxonset = prior.m_taxonset.get();
+                    TaxonSet taxonset = prior.taxonsetInput.get();
                     Set<Taxon> candidates = getTaxonCandidates(prior);
                     TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates, doc);
                     if (dlg.showDialog()) {
                         prior.setID(dlg.taxonSet.getID()+".fossilprior");
-                        prior.m_taxonset.setValue(dlg.taxonSet, prior);
+                        prior.taxonsetInput.setValue(dlg.taxonSet, prior);
                     }
                     } catch (Exception e1) {
                     // TODO Auto-generated catch block
@@ -76,20 +81,20 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         });
 
 
-        if (prior.m_distInput.getType() == null) {
+        if (prior.distInput.getType() == null) {
             try {
-                prior.m_distInput.setValue(new OneOnX(), prior);
-                prior.m_distInput.setValue(null, prior);
+                prior.distInput.setValue(new OneOnX(), prior);
+                prior.distInput.setValue(null, prior);
             } catch (Exception e) {
                 // TODO: handle exception
             }
 
         }
 
-        JCheckBox isMonophyleticdBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.m_bIsMonophyleticInput.getName()));
+        JCheckBox isMonophyleticdBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.isMonophyleticInput.getName()));
         isMonophyleticdBox.setName(sText+".isMonophyletic");
-        isMonophyleticdBox.setSelected(prior.m_bIsMonophyleticInput.get());
-        isMonophyleticdBox.setToolTipText(prior.m_bIsMonophyleticInput.getTipText());
+        isMonophyleticdBox.setSelected(prior.isMonophyleticInput.get());
+        isMonophyleticdBox.setToolTipText(prior.isMonophyleticInput.getTipText());
         isMonophyleticdBox.addActionListener(new MRCAPriorActionListener(prior));
         itemBox.add(isMonophyleticdBox);
         itemBox.add(Box.createGlue());
@@ -99,7 +104,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 	
     Set<Taxon> getTaxonCandidates(FossilPrior prior) {
         Set<Taxon> candidates = new HashSet<Taxon>();
-        for (String sTaxon : prior.m_treeInput.get().getTaxaNames()) {
+        for (String sTaxon : prior.treeInput.get().getTaxaNames()) {
             Taxon taxon = null;
             for (Taxon taxon2 : doc.taxaset) {
                 if (taxon2.getID().equals(sTaxon)) {

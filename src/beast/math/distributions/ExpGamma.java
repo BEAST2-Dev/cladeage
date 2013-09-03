@@ -8,6 +8,7 @@ import org.apache.commons.math.special.Gamma;
 
 import beast.core.Description;
 
+
 @Description("Mixture of exponential and gamma distribution")
 public class ExpGamma implements ContinuousDistribution {
     final org.apache.commons.math.distribution.ExponentialDistribution dist1 = new ExponentialDistributionImpl(1.0);

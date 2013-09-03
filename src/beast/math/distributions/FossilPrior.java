@@ -2,27 +2,31 @@ package beast.math.distributions;
 
 import java.io.PrintStream;
 
+import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.math.distributions.MRCAPrior;
+
 
 @Description("Prior based on information from the fossil record")
+@Citation("Michael Matschiner and Remco Boucakert. A rough guide to CladeAge, 2013")
 public class FossilPrior extends MRCAPrior {
 	public Input<FossilCalibration> callibrationDistr = new Input<FossilCalibration>("fossilDistr", "", Validate.REQUIRED);
 
 	public FossilPrior() {
-		m_distInput.setRule(Validate.OPTIONAL);
+		distInput.setRule(Validate.OPTIONAL);
 	}
 	
 	public void initAndValidate() throws Exception {
 		// this only makes sense as a prior on the parent of a clade,
 		// so tipsonly and useOriginate will be set to reflect this.
-		m_bOnlyUseTipsInput.setValue(false, this);
-		m_bUseOriginateInput.setValue(true, this);
+		onlyUseTipsInput.setValue(false, this);
+		useOriginateInput.setValue(true, this);
 		
-		m_distInput.setValue(callibrationDistr.get(), this);
+		distInput.setValue(callibrationDistr.get(), this);
 		super.initAndValidate();
-		m_distInput.setValue(null, this);
+		distInput.setValue(null, this);
 	};
 	
 	
@@ -31,11 +35,11 @@ public class FossilPrior extends MRCAPrior {
      */
     @Override
     public void init(final PrintStream out) throws Exception {
-    	String id = (m_taxonset.get() != null ? m_taxonset.get().getID() : null);
+    	String id = (taxonsetInput.get() != null ? taxonsetInput.get().getID() : null);
     	if (id == null) {
     		id = getID();
     	}
-        if (m_dist != null || m_bIsMonophyleticInput.get()) {
+        if (dist != null || isMonophyleticInput.get()) {
             out.print("logP(mrca(" + id + "))\t");
         }
         out.print("mrcatime(" + id + ")\t");
