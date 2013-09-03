@@ -11,6 +11,8 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.math.distributions.ParametricDistribution;
+
 
 @Description("Distribution based on fossil information")
 public class FossilCalibration extends ParametricDistribution {

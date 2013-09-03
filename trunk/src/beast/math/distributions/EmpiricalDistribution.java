@@ -9,6 +9,7 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 
 import beast.core.Description;
 
+
 @Description("Continuous distribution defined by a set of density points")
 public class EmpiricalDistribution implements ContinuousDistribution {
 	

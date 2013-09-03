@@ -4,13 +4,15 @@ package beast.app.beauti;
 
 import java.awt.Dimension;
 
+import beast.app.beauti.BeautiDoc;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
 import beast.app.draw.PluginInputEditor;
 import beast.core.Input;
-import beast.core.Plugin;
+import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.FossilCalibration;
+
 
 public class FossilCalibrationInputEditor extends PluginInputEditor implements CAPanelListener {
 
@@ -29,7 +31,7 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
 	FossilCalibration calibration;
 	
 	@Override
-	public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_input = input;
         m_plugin = plugin;
         calibration = (FossilCalibration) m_input.get();
@@ -90,7 +92,7 @@ public class FossilCalibrationInputEditor extends PluginInputEditor implements C
 
 	private void setValue(Input<RealParameter> input, double value) {
 		try {
-			input.get().m_pValues.setValue(value+"", calibration);
+			input.get().valuesInput.setValue(value+"", calibration);
 			input.get().setValue(value);
 		} catch (Exception e) {
 			
