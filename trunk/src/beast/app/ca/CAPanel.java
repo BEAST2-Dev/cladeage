@@ -152,7 +152,7 @@ RATE_HELP + "</html>";
 "Foote & Sepkoski (1999) Nature 398, 415-417, <br/>"+
 "<a href='http://www.ncbi.nlm.nih.gov/pubmed/11536900'>http://www.ncbi.nlm.nih.gov/pubmed/11536900</a><br/>"+
 "Friedman & Brazeau (2011), <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/20739322‎'>http://www.ncbi.nlm.nih.gov/pubmed/20739322‎</a></html>";
+"<a href='http://www.ncbi.nlm.nih.gov/pubmed/20739322'>http://www.ncbi.nlm.nih.gov/pubmed/20739322</a></html>";
 
 	final public static String SAMPLING_GAP_HELP = "<html>Sampling gap:<br/>"+
 "<br/>"+
