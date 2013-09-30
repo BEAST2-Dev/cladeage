@@ -2,19 +2,20 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.Dimension;
 
 import beast.app.beauti.BeautiDoc;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
-import beast.app.draw.PluginInputEditor;
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.FossilCalibration;
 
 
-public class FossilCalibrationInputEditor extends PluginInputEditor implements CAPanelListener {
+public class FossilCalibrationInputEditor extends BEASTObjectInputEditor implements CAPanelListener {
 
 	private static final long serialVersionUID = 1L;
 

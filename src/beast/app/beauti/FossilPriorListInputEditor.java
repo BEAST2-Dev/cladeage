@@ -14,7 +14,7 @@ import beast.app.beauti.PriorListInputEditor;
 import beast.app.beauti.TaxonSetDialog;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
-import beast.app.draw.PluginPanel;
+import beast.app.draw.BEASTObjectPanel;
 import beast.core.Input;
 import beast.core.Logger;
 import beast.core.State;
@@ -103,7 +103,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	                return null;
 	            }
 	            taxonSet = dlg.taxonSet;
-	            PluginPanel.addPluginToMap(taxonSet, doc);
+	            BEASTObjectPanel.addPluginToMap(taxonSet, doc);
 	            prior.taxonsetInput.setValue(taxonSet, prior);
 	            //prior.setID(taxonSet.getID() + ".fossilprior");
 	            prior.setID(taxonSet.getID()+".fossilprior");
