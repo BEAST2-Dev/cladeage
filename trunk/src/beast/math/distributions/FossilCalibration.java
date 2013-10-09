@@ -30,11 +30,7 @@ public class FossilCalibration extends ParametricDistribution {
 	
 	public Input<RealParameter> minSamplingGapInput = new Input<RealParameter>("minSamplingGap", CAPanel.SAMPLING_GAP_HELP, Validate.REQUIRED);
 	public Input<RealParameter> maxSamplingGapInput = new Input<RealParameter>("maxSamplingGap", CAPanel.SAMPLING_GAP_HELP, Validate.REQUIRED);
-	
-	public Input<Integer> NumberOfTreeSimulationsInput = new Input<Integer>("numberOfTreeSimulations", CAPanel.NR_SIMULATIONS_HELP, 10000);
-	public Input<Integer> MaxNrOfBranchesInput = new Input<Integer>("maxNrOfBranches", CAPanel.MAX_NR_TREES_HELP, 100000);
-	public Input<Integer> SamplingReplicatesPerTreeInput = new Input<Integer>("samplingReplicatesPerTree", CAPanel.REPS_PER_TREE_HELP, 10);
-	
+		
 //	public boolean canSetMinOccuranceAge(Object o) throws Exception {
 //        final Double value = ((RealParameter) o).getValue(); 
 //        if (maxOccuranceAgeInput.get() != null) {
@@ -65,10 +61,6 @@ public class FossilCalibration extends ParametricDistribution {
 	private double maxTurnoverRate;
 	private double maxSamplingRate;
 	private double maxSamplingGap;
-	private int NumberOfTreeSimulations;
-	private int MaxNrOfBranches;
-	private int SamplingReplicatesPerTree;
-
 
 	@Override
 	public void initAndValidate() throws Exception {
@@ -83,10 +75,6 @@ public class FossilCalibration extends ParametricDistribution {
 		maxTurnoverRate = maxTurnoverRateInput.get().getValue();
 		maxSamplingRate = maxSamplingRateInput.get().getValue();
 		maxSamplingGap = maxSamplingGapInput.get().getValue();
-
-		NumberOfTreeSimulations = NumberOfTreeSimulationsInput.get();
-		MaxNrOfBranches = MaxNrOfBranchesInput.get();
-		SamplingReplicatesPerTree = SamplingReplicatesPerTreeInput.get();
 		
 		//TODO: deal with offset
 	}
@@ -99,8 +87,6 @@ public class FossilCalibration extends ParametricDistribution {
 		return m_dist;
 	}
 
-
-
 	private void updateDistribution() {
 		CladeAgeProbabilities probs = new CladeAgeProbabilities();
 		probs.bd_simulate(
@@ -109,7 +95,7 @@ public class FossilCalibration extends ParametricDistribution {
 				minTurnoverRate, maxTurnoverRate,
 				minSamplingRate, maxSamplingRate,
 				minSamplingGap, maxSamplingGap,
-				NumberOfTreeSimulations, MaxNrOfBranches, SamplingReplicatesPerTree, null);
+				null);
 		
 //		if (maxOccuranceAge == minOccuranceAge) {
 //			m_dist = probs.fitExponential(null);
