@@ -8,9 +8,9 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
-// XXX import the correct distributions
-import beast.math.distributions.ExpGamma;
-import beast.math.distributions.LogNormalImpl;
+// Import CladeAge distributions.
+import beast.math.distributions.EmpiricalCladeAgeDistribution;
+import beast.math.distributions.FittedCladeAgeDistribution;
 
 public class CladeAgeProbabilities {
 
@@ -89,7 +89,7 @@ public class CladeAgeProbabilities {
 		return cancel;
 	}
 
-	public void run_empirical_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, JProgressBar dpb) {
+	public EmpiricalCladeAgeDistribution run_empirical_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, JProgressBar dpb) {
 
 		// Make sure cancel is set to false.
 		cancel = false;
@@ -240,7 +240,7 @@ public class CladeAgeProbabilities {
 		
 		while (successful_simulations[-1] < 10000) {
 			if (cancel) {
-				return;
+				return null;
 			}
 			// Increment the progress indicator.
 			if (dpb != null) {
@@ -359,10 +359,13 @@ public class CladeAgeProbabilities {
 		for (int i = 0; i < raw_probabilities.length; i ++) {
 			int_probabilities[i] = raw_probabilities[i]/(double) successful_simulations[i];
 		}
+		
+		// Return the empirical CladeAge distribution.
+		return new EmpiricalCladeAgeDistribution(ages, int_probabilities, true);
 
 	} // public void run_empirical_cladeage(...)
 
-	public ContinuousDistribution run_fitted_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, JProgressBar dpb) {
+	public FittedCladeAgeDistribution run_fitted_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, JProgressBar dpb) {
 		
 		// Make sure cancel is set to false.
 		cancel = false;
@@ -1116,31 +1119,12 @@ public class CladeAgeProbabilities {
 		}
 		double fittedCladeAgeCcorr = 1/(0.5 * Math.sqrt(Math.PI) * Math.sqrt(fittedCladeAgeW) * (1+erf));
 
-		// Fill variables distribution_parameters and distribution_rmsd.
-		distribution_parameters[0] = first_occurrence_age_min;
-		distribution_parameters[1] = first_occurrence_age_max;
-		distribution_parameters[2] = fittedCladeAgeCcorr;
-		distribution_parameters[3] = fittedCladeAgeS;
-		distribution_parameters[4] = fittedCladeAgeM;
-		distribution_parameters[5] = fittedCladeAgeW;
-		distribution_rmsd = fittedCladeAgeRmsd;
-		
-		// XXX this is just here for tests.
-		System.out.println("Offset: " + distribution_parameters[0]);
-		System.out.println("Breakpoint: " + distribution_parameters[1]);
-		System.out.println("C: " + distribution_parameters[2]);
-		System.out.println("S: " + distribution_parameters[3]);
-		System.out.println("M: " + distribution_parameters[4]);
-		System.out.println("W: " + distribution_parameters[5]);
-		System.out.println("RMSD: " + distribution_rmsd);
-
-		// XXX todo: The below distribution must be implemented, remove the below.
-		// return new FittedCladeAge(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
-		return null;
+		// Return the fitted CladeAge distribution.
+		return new FittedCladeAgeDistribution(first_occurrence_age_min, first_occurrence_age_max, fittedCladeAgeCcorr, fittedCladeAgeS, fittedCladeAgeM, fittedCladeAgeW, fittedCladeAgeRmsd);
 		
 	} // public ContinuousDistribution run_fitted_cladeage(...)
 	
-	public ContinuousDistribution run_fitted_cladeage_star(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, JProgressBar dpb) {
+	public FittedCladeAgeDistribution run_fitted_cladeage_star(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, JProgressBar dpb) {
 
 		// Reset arrays.
 		ages = new double[number_of_ages + 1];
@@ -1974,22 +1958,12 @@ public class CladeAgeProbabilities {
 		}
 		double fittedCladeAgeCcorr = 1/(0.5 * Math.sqrt(Math.PI) * Math.sqrt(fittedCladeAgeW) * (1+erf));
 		
-		// Fill variables distribution_parameters and distribution_rmsd.
-		distribution_parameters[0] = first_occurrence_age_min;
-		distribution_parameters[1] = first_occurrence_age_max;
-		distribution_parameters[2] = fittedCladeAgeCcorr;
-		distribution_parameters[3] = fittedCladeAgeS;
-		distribution_parameters[4] = fittedCladeAgeM;
-		distribution_parameters[5] = fittedCladeAgeW;
-		distribution_rmsd = fittedCladeAgeRmsd;
+		// Return the fitted CladeAge distribution.
+		return new FittedCladeAgeDistribution(first_occurrence_age_min, first_occurrence_age_max, fittedCladeAgeCcorr, fittedCladeAgeS, fittedCladeAgeM, fittedCladeAgeW, fittedCladeAgeRmsd);
 		
-		// XXX todo: The below distribution must be implemented, remove the below.
-		// return new FittedCladeAge(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
-		return null;
-		
-	} // public ContinuousDistribution run_fitted_cladeage_star(...)
+	} // public fittedCladeAge run_fitted_cladeage_star(...)
 
-	public ContinuousDistribution run_fitted_cladeage_rapid(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max) {
+	public FittedCladeAgeDistribution run_fitted_cladeage_rapid(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max) {
 
 		// Part 1: Calculate the maximum tree duration, which will be used in Part 4 to determine only 4 time points.
 		// This is equivalent to part 3 of function run_fitted_cladeage_star(...).
@@ -2505,20 +2479,10 @@ public class CladeAgeProbabilities {
 		}
 		double fittedCladeAgeCcorr = 1/(0.5 * Math.sqrt(Math.PI) * Math.sqrt(fittedCladeAgeW) * (1+erf));
 		
-		// Fill variables distribution_parameters and distribution_rmsd.
-		distribution_parameters[0] = first_occurrence_age_min;
-		distribution_parameters[1] = first_occurrence_age_max;
-		distribution_parameters[2] = fittedCladeAgeCcorr;
-		distribution_parameters[3] = fittedCladeAgeS;
-		distribution_parameters[4] = fittedCladeAgeM;
-		distribution_parameters[5] = fittedCladeAgeW;
-		distribution_rmsd = fittedCladeAgeRmsd;
+		// Return the fitted CladeAge distribution.
+		return new FittedCladeAgeDistribution(first_occurrence_age_min, first_occurrence_age_max, fittedCladeAgeCcorr, fittedCladeAgeS, fittedCladeAgeM, fittedCladeAgeW, fittedCladeAgeRmsd);
 		
-		// XXX todo: The below distribution must be implemented, remove the below.
-		// return new FittedCladeAge(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
-		return null;
-		
-	} // public ContinuousDistribution run_fitted_cladeage_rapid(...)
+	} // public FittedCladeAgeDistribution run_fitted_cladeage_rapid(...)
 
 	public ContinuousDistribution run_standard(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, String distribution_type, JProgressBar dpb) {
 		

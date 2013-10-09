@@ -164,37 +164,6 @@ RATE_HELP + "</html>";
 "is optional. A sampling gap of 0.0-2.0 Ma may be a <br/>"+
 "reasonable assumption.</html>";
 
-	final public static String NR_SIMULATIONS_HELP = "<html>Number of tree simulations:<br/>"+
-"<br/>"+
-"The number of times birth-death trees are <br/>"+
-"simulated to estimate the total unobserved lineage duration of a <br/>"+
-"clade given the net diversification rate and the turnover rate. The <br/>"+
-"higher this number, the better the estimates of the unobserved history, <br/>"+
-"and thus of clade age probabilities. The default of 1000 <br/>"+
-"tree simulations usually works well. But, if the simulated distribution <br/>" +
-"looks bumpy, increasing this may help. If the calculation time is too long <br/>" +
-"decreasing this number may help.</html>";
-
-	final public static String MAX_NR_TREES_HELP = "<html>Maximum number of trees:<br/>"+
-"<br/>"+
-"If the net diversification rate is high (> 0.5), <br/>"+
-"the simulated trees could potentially become very large, which can <br/>"+
-"substantially slow down the estimation of clade age probabilities. <br/>"+
-"The maximum number of branches limits the size of simulated trees. <br/>"+
-"If the limit should be hit for a given age in one of the simulations, <br/>"+
-"this age will not be further analysed and it <br/>"+
-"will not appear in the output. There is no reason to decrease <br/>"+
-"this number, but in extreme cases you might want <br/>"+
-"to increase it.</html>";
-
-	final public static String REPS_PER_TREE_HELP = "<html>Sampling replicates per tree:<br/>"+
-"<br/>"+
-"If a range of sampling rates has been specified, <br/>"+
-"this number specifies how often rates will be drawn at random <br/>"+
-"from this range for each simulated tree to estimate the probabilities <br/>"+
-"of unobserved lineage durations. The default of 10 sampling <br/>"+
-"replicates per tree usually works well.<br/></html>";
-
 	final public static String ABOUT_HELP = "<html>CladeAge:<br/><br/>" +
 			"Copyright 2013<br/><br/>" +
 			"Michael Matschiner<br/>michaelmatschiner@mac.com<br/>" +
@@ -213,9 +182,6 @@ RATE_HELP + "</html>";
 	private JTextField textField_minTurnoverRate;
 	private JTextField textField_minSamplingRate;
 	private JTextField textField_minSamplginGap;
-	private JTextField textField_NumberOfTreeSimulations;
-	private JTextField textField_MaxNrOfBranches;
-	private JTextField textField_SamplingReplicatesPerTree;
 	JButton btnFindApproximation;
 	JButton btnCalculate;
 	public void setCalculateButtonText(String text) {btnCalculate.setText(text);}
@@ -239,9 +205,6 @@ RATE_HELP + "</html>";
 	private double maxTurnoverRate = minTurnoverRate;
 	private double maxSamplingRate = minSamplingRate;
 	private double maxSamplingGap = minSamplingGap;
-	private int NumberOfTreeSimulations = 1000;
-	private int MaxNrOfBranches = 100000;
-	private int SamplingReplicatesPerTree = 10;
 
 	public double getMinOccuranceAge() { return	minOccuranceAge;}
 	public double getMinDivRate() { return	minDivRate;}
@@ -254,9 +217,6 @@ RATE_HELP + "</html>";
 	public double getMaxTurnoverRate() { return	maxTurnoverRate;}
 	public double getMaxSamplingRate() { return	maxSamplingRate;}
 	public double getMaxSamplingGap() { return	maxSamplingGap;}
-	public int getNumberOfTreeSimulations() { return	NumberOfTreeSimulations;}
-	public int getMaxNrOfBranches() { return	MaxNrOfBranches;}
-	public int getSamplingReplicatesPerTree() { return	SamplingReplicatesPerTree;}
 	
 	public void setMinOccuranceAge(double minOccuranceAge) {this.minOccuranceAge = minOccuranceAge;}
 	public void setMinDivRate(double minDivRate) {this.minDivRate = minDivRate;}
@@ -269,9 +229,6 @@ RATE_HELP + "</html>";
 	public void setMaxTurnoverRate(double maxTurnoverRate) {this.maxTurnoverRate = maxTurnoverRate;}
 	public void setMaxSamplingRate(double maxSamplingRate) {this.maxSamplingRate = maxSamplingRate;}
 	public void setMaxSamplingGap(double maxSamplingGap) {this.maxSamplingGap = maxSamplingGap;}
-	public void setNumberOfTreeSimulations(int NumberOfTreeSimulations) {this.NumberOfTreeSimulations = NumberOfTreeSimulations;}
-	public void setMaxNrOfBranches(int MaxNrOfBranches) {this.MaxNrOfBranches = MaxNrOfBranches;}
-	public void setSamplingReplicatesPerTree(int SamplingReplicatesPerTree) {this.SamplingReplicatesPerTree = SamplingReplicatesPerTree;}
 	
 	boolean processingDataToGui = false;
 
@@ -674,15 +631,14 @@ RATE_HELP + "</html>";
 				
 				Frame parentFrame = Frame.getFrames()[0];
 			    final JDialog dlg = new JDialog(parentFrame, "Progress Dialog", true);
-			    int k = (((String) comboBox.getSelectedItem()).equals("Best fit") ? 2 : 1);
-			    final JProgressBar dpb = new JProgressBar(0, NumberOfTreeSimulations + CladeAgeProbabilities.DELTA_PROGRESS * CladeAgeProbabilities.nmRepetitions * k);
+			    final JProgressBar dpb = new JProgressBar(0, 100);
 			    final JButton cancelButton = new JButton("Cancel");
 			    cancelButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
 							System.err.println("Trying to stop");
-							probs.setCancel1();
+							probs.setCancel();
 							dlg.setVisible(false);
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -704,8 +660,7 @@ RATE_HELP + "</html>";
 							minDivRate, maxDivRate,
 							minTurnoverRate, maxTurnoverRate,
 							minSamplingRate, maxSamplingRate,
-							minSamplingGap, maxSamplingGap,
-							NumberOfTreeSimulations, MaxNrOfBranches, SamplingReplicatesPerTree, dpb);
+							minSamplingGap, maxSamplingGap, dpb);
 					calcFit(dpb);
 			        dlg.setVisible(false);
 			      }
@@ -720,14 +675,14 @@ RATE_HELP + "</html>";
 			    		
 			    	}
 			    }
-			    if (probs.getCancel1()) {
+			    if (probs.getCancel()) {
 					panel_1.repaint();
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			    	return;
 			    }
 		        
 				ages = probs.getAges();
-				probabilities =  probs.getProbabilities();
+				probabilities =  probs.getInt_probabilities();
 
 				panel_1.repaint();
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));				
@@ -750,116 +705,118 @@ RATE_HELP + "</html>";
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
 			add(panel2b, gbc_lblIcon);
 		}
-		
-		textField_NumberOfTreeSimulations = newTextField();
-		textField_NumberOfTreeSimulations.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 1;
-		panel2.add(textField_NumberOfTreeSimulations, gbc_textField);
-		textField_NumberOfTreeSimulations.setColumns(10);
-		
-		textField_MaxNrOfBranches = newTextField();
-		textField_MaxNrOfBranches.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_MaxNrOfBranches.setColumns(10);
-		GridBagConstraints gbc_textField_12 = new GridBagConstraints();
-		gbc_textField_12.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_12.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_12.gridx = 1;
-		gbc_textField_12.gridy = 2;
-		panel2.add(textField_MaxNrOfBranches, gbc_textField_12);
-		
-		JLabel lblSamplingReplicatesPer = new JLabel("Sampling replicates per tree:");
-		GridBagConstraints gbc_lblSamplingReplicatesPer = new GridBagConstraints();
-		gbc_lblSamplingReplicatesPer.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSamplingReplicatesPer.anchor = GridBagConstraints.EAST;
-		gbc_lblSamplingReplicatesPer.gridx = 0;
-		gbc_lblSamplingReplicatesPer.gridy = 3;
-		panel2.add(lblSamplingReplicatesPer, gbc_lblSamplingReplicatesPer);
-		
-		textField_SamplingReplicatesPerTree = newTextField();
-		textField_SamplingReplicatesPerTree.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		textField_SamplingReplicatesPerTree.setColumns(10);
-		GridBagConstraints gbc_textField_13 = new GridBagConstraints();
-		gbc_textField_13.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_13.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_13.gridx = 1;
-		gbc_textField_13.gridy = 3;
-		panel2.add(textField_SamplingReplicatesPerTree, gbc_textField_13);
-				
-		JLabel lblMaximumNumberOf = new JLabel("Maximum number of branches:");
-		GridBagConstraints gbc_lblMaximumNumberOf = new GridBagConstraints();
-		gbc_lblMaximumNumberOf.anchor = GridBagConstraints.EAST;
-		gbc_lblMaximumNumberOf.insets = new Insets(0, 0, 5, 5);
-		gbc_lblMaximumNumberOf.gridx = 0;
-		gbc_lblMaximumNumberOf.gridy = 2;
-		panel2.add(lblMaximumNumberOf, gbc_lblMaximumNumberOf);
-		
-		JLabel lblNewLabel_1 = new JLabel("Number of tree simulations:");
-		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_1.gridx = 0;
-		gbc_lblNewLabel_1.gridy = 1;
-		panel2.add(lblNewLabel_1, gbc_lblNewLabel_1);
-		
-		Component verticalGlue = Box.createVerticalGlue();
-		GridBagConstraints gbc_verticalGlue = new GridBagConstraints();
-		gbc_verticalGlue.gridwidth = 2;
-		gbc_verticalGlue.insets = new Insets(0, 0, 5, 5);
-		gbc_verticalGlue.gridx = 0;
-		gbc_verticalGlue.gridy = 5;
-		panel2.add(verticalGlue, gbc_verticalGlue);
 
-		// help buttons for panel2
-		JButton btnHelpNrSimulateions = newHelpButton();
-		GridBagConstraints gbc_btnNewButton12 = new GridBagConstraints();
-		gbc_btnNewButton12.gridx = 3;
-		gbc_btnNewButton12.gridy = 1;
-		panel2.add(btnHelpNrSimulateions, gbc_btnNewButton12);
-		btnHelpNrSimulateions.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(NR_SIMULATIONS_HELP);
-			}
-		});
-		
-		JButton btnHelpNrBranches = newHelpButton();
-		GridBagConstraints gbc_btnNewButton13 = new GridBagConstraints();
-		gbc_btnNewButton13.gridx = 3;
-		gbc_btnNewButton13.gridy = 2;
-		panel2.add(btnHelpNrBranches, gbc_btnNewButton13);
-		btnHelpNrBranches.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(MAX_NR_TREES_HELP);
-			}
-		});
+// The below is not needed anymore, as parameters numberOfTreeSimulations, maxNrOfBranches, and samplingReplicatesPer don't exist anymore.
+//
+//		textField_NumberOfTreeSimulations = newTextField();
+//		textField_NumberOfTreeSimulations.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//			}
+//		});
+//		GridBagConstraints gbc_textField = new GridBagConstraints();
+//		gbc_textField.insets = new Insets(0, 0, 5, 0);
+//		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+//		gbc_textField.gridx = 1;
+//		gbc_textField.gridy = 1;
+//		panel2.add(textField_NumberOfTreeSimulations, gbc_textField);
+//		textField_NumberOfTreeSimulations.setColumns(10);
+//		
+//		textField_MaxNrOfBranches = newTextField();
+//		textField_MaxNrOfBranches.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//			}
+//		});
+//		textField_MaxNrOfBranches.setColumns(10);
+//		GridBagConstraints gbc_textField_12 = new GridBagConstraints();
+//		gbc_textField_12.insets = new Insets(0, 0, 5, 0);
+//		gbc_textField_12.fill = GridBagConstraints.HORIZONTAL;
+//		gbc_textField_12.gridx = 1;
+//		gbc_textField_12.gridy = 2;
+//		panel2.add(textField_MaxNrOfBranches, gbc_textField_12);
+//		
+//		JLabel lblSamplingReplicatesPer = new JLabel("Sampling replicates per tree:");
+//		GridBagConstraints gbc_lblSamplingReplicatesPer = new GridBagConstraints();
+//		gbc_lblSamplingReplicatesPer.insets = new Insets(0, 0, 5, 5);
+//		gbc_lblSamplingReplicatesPer.anchor = GridBagConstraints.EAST;
+//		gbc_lblSamplingReplicatesPer.gridx = 0;
+//		gbc_lblSamplingReplicatesPer.gridy = 3;
+//		panel2.add(lblSamplingReplicatesPer, gbc_lblSamplingReplicatesPer);
+//		
+//		textField_SamplingReplicatesPerTree = newTextField();
+//		textField_SamplingReplicatesPerTree.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//			}
+//		});
+//		textField_SamplingReplicatesPerTree.setColumns(10);
+//		GridBagConstraints gbc_textField_13 = new GridBagConstraints();
+//		gbc_textField_13.insets = new Insets(0, 0, 5, 0);
+//		gbc_textField_13.fill = GridBagConstraints.HORIZONTAL;
+//		gbc_textField_13.gridx = 1;
+//		gbc_textField_13.gridy = 3;
+//		panel2.add(textField_SamplingReplicatesPerTree, gbc_textField_13);
+//				
+//		JLabel lblMaximumNumberOf = new JLabel("Maximum number of branches:");
+//		GridBagConstraints gbc_lblMaximumNumberOf = new GridBagConstraints();
+//		gbc_lblMaximumNumberOf.anchor = GridBagConstraints.EAST;
+//		gbc_lblMaximumNumberOf.insets = new Insets(0, 0, 5, 5);
+//		gbc_lblMaximumNumberOf.gridx = 0;
+//		gbc_lblMaximumNumberOf.gridy = 2;
+//		panel2.add(lblMaximumNumberOf, gbc_lblMaximumNumberOf);
+//		
+//		JLabel lblNewLabel_1 = new JLabel("Number of tree simulations:");
+//		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+//		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
+//		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
+//		gbc_lblNewLabel_1.gridx = 0;
+//		gbc_lblNewLabel_1.gridy = 1;
+//		panel2.add(lblNewLabel_1, gbc_lblNewLabel_1);
+//		
+//		Component verticalGlue = Box.createVerticalGlue();
+//		GridBagConstraints gbc_verticalGlue = new GridBagConstraints();
+//		gbc_verticalGlue.gridwidth = 2;
+//		gbc_verticalGlue.insets = new Insets(0, 0, 5, 5);
+//		gbc_verticalGlue.gridx = 0;
+//		gbc_verticalGlue.gridy = 5;
+//		panel2.add(verticalGlue, gbc_verticalGlue);
+//
+//		// help buttons for panel2
+//		JButton btnHelpNrSimulateions = newHelpButton();
+//		GridBagConstraints gbc_btnNewButton12 = new GridBagConstraints();
+//		gbc_btnNewButton12.gridx = 3;
+//		gbc_btnNewButton12.gridy = 1;
+//		panel2.add(btnHelpNrSimulateions, gbc_btnNewButton12);
+//		btnHelpNrSimulateions.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				showHelp(NR_SIMULATIONS_HELP);
+//			}
+//		});
+//		
+//		JButton btnHelpNrBranches = newHelpButton();
+//		GridBagConstraints gbc_btnNewButton13 = new GridBagConstraints();
+//		gbc_btnNewButton13.gridx = 3;
+//		gbc_btnNewButton13.gridy = 2;
+//		panel2.add(btnHelpNrBranches, gbc_btnNewButton13);
+//		btnHelpNrBranches.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				showHelp(MAX_NR_TREES_HELP);
+//			}
+//		});
+//
+//		JButton btnHelpReplicates = newHelpButton();
+//		GridBagConstraints gbc_btnNewButton14 = new GridBagConstraints();
+//		gbc_btnNewButton14.gridx = 3;
+//		gbc_btnNewButton14.gridy = 3;
+//		panel2.add(btnHelpReplicates, gbc_btnNewButton14);
+//		btnHelpReplicates.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				showHelp(REPS_PER_TREE_HELP);
+//			}
+//		});
 
-		JButton btnHelpReplicates = newHelpButton();
-		GridBagConstraints gbc_btnNewButton14 = new GridBagConstraints();
-		gbc_btnNewButton14.gridx = 3;
-		gbc_btnNewButton14.gridy = 3;
-		panel2.add(btnHelpReplicates, gbc_btnNewButton14);
-		btnHelpReplicates.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showHelp(REPS_PER_TREE_HELP);
-			}
-		});
-
-		comboBox = new JComboBox(new String[]{"Best fit","Exponential","Gamma","Log Normal", "Exp Gamma", "Empirical"});
+		comboBox = new JComboBox(new String[]{"empirical CladeAge","fitted CladeAge","fitted CladeAge*","Lognormal", "Gamma", "Exponential", "truncated Lognormal", "truncated Gamma", "truncated Normal"});
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 0, 5);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -1183,9 +1140,6 @@ RATE_HELP + "</html>";
 		
 		dataToGUI();
 
-		setToolTipText(lblNewLabel_1,NR_SIMULATIONS_HELP);
-		setToolTipText(lblMaximumNumberOf, MAX_NR_TREES_HELP);
-		setToolTipText(lblSamplingReplicatesPer, REPS_PER_TREE_HELP);
 		setToolTipText(textField_maxOccuranceAge, OCCURRENCE_AGE_HELP);
 		setToolTipText(textField_maxDivRate, DIV_RATE_HELP);
 		setToolTipText(textField_maxTurnoverRate, TURNOVER_RATE_HELP);
@@ -1196,9 +1150,6 @@ RATE_HELP + "</html>";
 		setToolTipText(textField_minTurnoverRate, TURNOVER_RATE_HELP);
 		setToolTipText(textField_minSamplingRate, SAMPLING_RATE_HELP);
 		setToolTipText(textField_minSamplginGap, SAMPLING_GAP_HELP);
-		setToolTipText(textField_NumberOfTreeSimulations, NR_SIMULATIONS_HELP);
-		setToolTipText(textField_MaxNrOfBranches, MAX_NR_TREES_HELP);
-		setToolTipText(textField_SamplingReplicatesPerTree, REPS_PER_TREE_HELP);
 	}
 
 	private void setToolTipText(JComponent component, String text) {
@@ -1214,8 +1165,9 @@ RATE_HELP + "</html>";
 	
 	public void calcFit(JProgressBar progress) {
 		String type = (String) comboBox.getSelectedItem();
-		if (type.equals("Empirical")) {
-			EmpiricalDistribution fit = new EmpiricalDistribution();
+		
+		if (type.equals("empirical CladeAge")) {
+			EmpiricalCladeAgeDistribution fit = new EmpiricalCladeAgeDistribution();
 			try {
 				fit.setup(probs.getAges(), probs.getProbabilities(), true);
 			} catch (Exception e) {
