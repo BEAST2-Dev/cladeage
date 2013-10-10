@@ -28,7 +28,7 @@ public class FittedCladeAgeDistribution implements ContinuousDistribution {
 	// The root mean square deviation of the fitted CladeAge distribution.
 	double rmsd;
 	
-	 public FittedCladeAgeDistribution(double first_occurrence_age_min, double first_occurrence_age_max, double fittedCladeAgeC, double fittedCladeAgeS, double fittedCladeAgeM, double fittedCladeAgeW, double fittedCladeAgeRmsd) {
+	public FittedCladeAgeDistribution(double first_occurrence_age_min, double first_occurrence_age_max, double fittedCladeAgeC, double fittedCladeAgeS, double fittedCladeAgeM, double fittedCladeAgeW, double fittedCladeAgeRmsd) {
 		 this.first_occurrence_age_min = first_occurrence_age_min;
 		 this.first_occurrence_age_max = first_occurrence_age_max;
 		 this.c = fittedCladeAgeC;
@@ -36,7 +36,7 @@ public class FittedCladeAgeDistribution implements ContinuousDistribution {
 		 this.m = fittedCladeAgeM;
 		 this.w = fittedCladeAgeW;
 		 this.rmsd = fittedCladeAgeRmsd;
-	 }
+	}
 	 	
 	@Override
 	public double cumulativeProbability(double age) throws MathException {

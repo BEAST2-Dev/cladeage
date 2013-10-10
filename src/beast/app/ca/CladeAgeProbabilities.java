@@ -89,7 +89,7 @@ public class CladeAgeProbabilities {
 		return cancel;
 	}
 
-	public EmpiricalCladeAgeDistribution run_empirical_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, JProgressBar dpb) {
+	public EmpiricalCladeAgeDistribution run_empirical_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, double sampling_gap_min, double sampling_gap_max, JProgressBar dpb) throws Exception {
 
 		// Make sure cancel is set to false.
 		cancel = false;

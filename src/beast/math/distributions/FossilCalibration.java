@@ -1,7 +1,5 @@
 package beast.math.distributions;
 
-
-
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 

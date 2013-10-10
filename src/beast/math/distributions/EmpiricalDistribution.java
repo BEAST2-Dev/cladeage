@@ -35,7 +35,7 @@ public class EmpiricalDistribution implements ContinuousDistribution {
 		}
 		
 		// sort points by x
-		java.awt.geom.Point2D.Double [] points= new java.awt.geom.Point2D.Double[x_.length];
+		java.awt.geom.Point2D.Double [] points = new java.awt.geom.Point2D.Double[x_.length];
 		for (int i = 0; i < points.length; i++) {
 			points[i] = new java.awt.geom.Point2D.Double();
 			points[i].x = x_[i];
