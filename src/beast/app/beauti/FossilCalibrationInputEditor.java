@@ -48,9 +48,6 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 //        panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
 //        panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
         panel.setMaxSamplingGap(calibration.maxSamplingGapInput.get().getValue());
-        panel.setNumberOfTreeSimulations(calibration.NumberOfTreeSimulationsInput.get());
-        panel.setMaxNrOfBranches(calibration.MaxNrOfBranchesInput.get());
-        panel.setSamplingReplicatesPerTree(calibration.SamplingReplicatesPerTreeInput.get());
         panel.dataToGUI();
         panel.setCalculateButtonText("Preview");
 
@@ -78,9 +75,6 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 //		setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
 		setValue(calibration.minSamplingGapInput, panel.getMinSamplingGap());
 		setValue(calibration.maxSamplingGapInput, panel.getMaxSamplingGap());
-		setValue(calibration.NumberOfTreeSimulationsInput, panel.getNumberOfTreeSimulations());
-		setValue(calibration.MaxNrOfBranchesInput, panel.getMaxNrOfBranches());
-		setValue(calibration.SamplingReplicatesPerTreeInput, panel.getSamplingReplicatesPerTree());
 
 		panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
 		panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());

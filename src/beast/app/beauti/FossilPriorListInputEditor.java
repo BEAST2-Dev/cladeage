@@ -53,7 +53,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 	    	List<?> list = (List) input.get();
 	    	if (list.size() > 0) {
-	    		calibration = ((FossilPrior) list.get(0)).callibrationDistr.get();
+	    		calibration = ((FossilPrior) list.get(0)).calibrationDistr.get();
 	    		panel = new CAPanel(CAPanel.MODE_BEAUTI_TOP);
 	            panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
 	            panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
@@ -136,7 +136,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 				FossilCalibration fossilCallibration = (FossilCalibration) availablePlugins.get(0).createSubNet(new PartitionContext(), false);
 	        	fossilCallibration.setID("FossilCallibration.0");
 	        	doc.registerPlugin(fossilCallibration);
-		        prior.callibrationDistr.setValue(fossilCallibration, prior);
+		        prior.calibrationDistr.setValue(fossilCallibration, prior);
 
 	            
 	        } catch (Exception e) {

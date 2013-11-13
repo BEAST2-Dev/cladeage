@@ -67,9 +67,8 @@ import beast.app.beauti.BeautiPanel;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.util.Utils;
-import beast.math.distributions.EmpiricalDistribution;
-import beast.math.distributions.ExpGamma;
-import beast.math.distributions.LogNormalImpl;
+import beast.math.distributions.EmpiricalCladeAgeDistribution;
+import beast.math.distributions.FittedCladeAgeDistribution;
 
 
 public class CAPanel extends JPanel {
@@ -79,97 +78,84 @@ public class CAPanel extends JPanel {
 	static final String CA_ICON2 = "beast/app/ca/icons/cladeage_128x128px.png";
 
 	final public static String OCCURRENCE_AGE_HELP = "<html>First occurrence age:<br/>"+
-"<br/>"+
-"The age of the oldest fossil of the clade. <br/>"+
-"If this age is known exactly, it should be specified in the 'Minimum' <br/>"+
-"field. If not, you should specify both a minimum and maximum age.<br/>" +
-"<br/>" +
-"Consider a fosil described in the literature to have come from the oligocene,<br/>" +
-"which extends from about 34 million to 23 million years before the present <br/>" +
-"(33.9±0.1 to 23.03±0.05 Ma). The uncertainties in the boundaries are small <br/>" +
-"enough to be ignored, so the minimum is 23.03 and maximum 33.9 if you want <br/>" +
-"to express ages in millions of years. <br/>" +
-"</html>";
+		"<br/>"+
+		"The age of the oldest fossil of the clade. <br/>"+
+		"If this age is known exactly, it should be specified in the 'Minimum' <br/>"+
+		"field. If not, you should specify both a minimum and maximum age.<br/>" +
+		"<br/>" +
+		"Consider a fosil described in the literature to have come from the oligocene,<br/>" +
+		"which extends from about 34 million to 23 million years before the present <br/>" +
+		"(33.9-0.1 to 23.03-0.05 Ma). The uncertainties in the boundaries are small <br/>" +
+		"enough to be ignored, so the minimum is 23.03 and maximum 33.9 if you want <br/>" +
+		"to express ages in millions of years. <br/>" +
+		"</html>";
 
 	final static String RATE_HELP = 
-	"See e.g. Alfaro et al. (2009), Santini et al. (2009), Jetz et al. <br/>" +
-	"(2012), and Stadler (2011) for rate estimates for vertebrates, <br/>" +
-	"teleost fishes, birds, and mammals.<br/>" +
-	"<br/>---<br/>" +
-	"Alfaro ME, Santini F, Brock CD et al. (2009) Nine exceptional <br/>" +
-	"radiations plus high turnover explain species diversity in jawed <br/>" +
-	"vertebrates. Proceedings of the National Academy of Sciences USA, <br/>" +
-	"106, 13410–13414.<br/>" +
-	"<br/>" +
-	"Jetz W, Thomas GH, Joy JB, Hartmann K, Mooers AØ (2012) The global <br/>" +
-	"diversity of birds in space and time. Nature, 491, 444–448.<br/>" +
-	"<br/>" +
-	"Santini F, Harmon LJ, Carnevale G, Alfaro ME (2009) Did genome <br/>" +
-	"duplication drive the origin of teleosts? A comparative study of <br/>" +
-	"diversification in ray-finned fishes. BMC Evolutionary Biology, <br/>" +
-	"9, 194.<br/>" +
-	"<br/>" +
-	"Stadler T (2011) Mammalian phylogeny reveals recent diversification <br/>" +
-	"rate shifts. Proceedings of the National Academy of Sciences, <br/>" +
-	"108, 6187–6192.<br/>";
+		"See e.g. Alfaro et al. (2009), Santini et al. (2009), Jetz et al. <br/>" +
+		"(2012), and Stadler (2011) for rate estimates for vertebrates, <br/>" +
+		"teleost fishes, birds, and mammals.<br/>" +
+		"<br/>---<br/>" +
+		"Alfaro ME, Santini F, Brock CD et al. (2009) Nine exceptional <br/>" +
+		"radiations plus high turnover explain species diversity in jawed <br/>" +
+		"vertebrates. Proceedings of the National Academy of Sciences USA, <br/>" +
+		"106, 13410-13414.<br/>" +
+		"<br/>" +
+		"Jetz W, Thomas GH, Joy JB, Hartmann K, Mooers A (2012) The global <br/>" +
+		"diversity of birds in space and time. Nature, 491, 444-448.<br/>" +
+		"<br/>" +
+		"Santini F, Harmon LJ, Carnevale G, Alfaro ME (2009) Did genome <br/>" +
+		"duplication drive the origin of teleosts? A comparative study of <br/>" +
+		"diversification in ray-finned fishes. BMC Evolutionary Biology, <br/>" +
+		"9, 194.<br/>" +
+		"<br/>" +
+		"Stadler T (2011) Mammalian phylogeny reveals recent diversification <br/>" +
+		"rate shifts. Proceedings of the National Academy of Sciences, <br/>" +
+		"108, 6187-6192.<br/>";
 	
 	final public static String DIV_RATE_HELP = "<html>Net diversification rate:<br/>"+
-"<br/>"+
-"The net diversification rate is the difference between <br/>"+
-"speciation and extinction rate.<br/>" + RATE_HELP + "</html>";
-//"e.g. with MEDUSA (Alfaro et al. 2009) or TreePar (Stadler 2011).<br/>"+
-//"-<br/>"+
-//"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
-//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
-//"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
-//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a>
+		"<br/>"+
+		"The net diversification rate is the difference between <br/>"+
+		"speciation and extinction rate.<br/>" + RATE_HELP + "</html>";
 
 	final public static String TURNOVER_RATE_HELP = "<html>Turnover rate:<br/>"+
-"<br/>"+
-"The turnover rate is the ratio of extinction and speciation rate.<br/>"+
-RATE_HELP + "</html>";
-//"Estimates can be obtained e.g. with MEDUSA (Alfaro et al. <br/>"+
-//"2009) or TreePar (Stadler 2011).<br/>"+
-//"-<br/>"+
-//"Alfaro et al. (2009) PNAS 106, 13410-13414 <br/>"+
-//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19633192'>http://www.ncbi.nlm.nih.gov/pubmed/19633192</a><br/>"+
-//"Stadler (2009) PNAS 108, 6187-6192, <br/>"+
-//"<a href='http://www.ncbi.nlm.nih.gov/pubmed/19631666'>http://www.ncbi.nlm.nih.gov/pubmed/19631666</a></html>";
+		"<br/>"+
+		"The turnover rate is the ratio of extinction and speciation rate.<br/>"+
+		RATE_HELP + "</html>";
 
 	final public static String SAMPLING_RATE_HELP = "<html>Sampling rate:<br/>"+
-"<br/>"+
-"The sampling rate (sometimes called 'preservation rate') <br/>"+
-"includes all processes that result in the publication of a fossil, <br/>"+
-"including fossilization, discovery, identification and description <br/>"+
-"(Friedman & Brazeau 2011). Estimates have been reported for many <br/>"+
-"taxonomic groups (e.g. Foote et al. 1999, Foote & Sepkoski 1999) <br/>"+
-"and can be obtained by methods outlined in Foote (1997).<br/>"+
-"-<br/>"+
-"Foote (1997) Paleobiology 23, 278-300 Proc R Soc B 278, 432-439, <br/>"+
-"<a href='http://www.jstor.org/stable/2401105'>http://www.jstor.org/stable/2401105</a><br/>"+
-"Foote et al. (1999) Science 283, 1310-1314, <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/10037598'>http://www.ncbi.nlm.nih.gov/pubmed/10037598</a><br/>"+
-"Foote & Sepkoski (1999) Nature 398, 415-417, <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/11536900'>http://www.ncbi.nlm.nih.gov/pubmed/11536900</a><br/>"+
-"Friedman & Brazeau (2011), <br/>"+
-"<a href='http://www.ncbi.nlm.nih.gov/pubmed/20739322'>http://www.ncbi.nlm.nih.gov/pubmed/20739322</a></html>";
+		"<br/>"+
+		"The sampling rate (sometimes called 'preservation rate') <br/>"+
+		"includes all processes that result in the publication of a fossil, <br/>"+
+		"including fossilization, discovery, identification and description <br/>"+
+		"(Friedman & Brazeau 2011). Estimates have been reported for many <br/>"+
+		"taxonomic groups (e.g. Foote et al. 1999, Foote & Sepkoski 1999) <br/>"+
+		"and can be obtained by methods outlined in Foote (1997).<br/>"+
+		"-<br/>"+
+		"Foote (1997) Paleobiology 23, 278-300 Proc R Soc B 278, 432-439, <br/>"+
+		"<a href='http://www.jstor.org/stable/2401105'>http://www.jstor.org/stable/2401105</a><br/>"+
+		"Foote et al. (1999) Science 283, 1310-1314, <br/>"+
+		"<a href='http://www.ncbi.nlm.nih.gov/pubmed/10037598'>http://www.ncbi.nlm.nih.gov/pubmed/10037598</a><br/>"+
+		"Foote & Sepkoski (1999) Nature 398, 415-417, <br/>"+
+		"<a href='http://www.ncbi.nlm.nih.gov/pubmed/11536900'>http://www.ncbi.nlm.nih.gov/pubmed/11536900</a><br/>"+
+		"Friedman & Brazeau (2011), <br/>"+
+		"<a href='http://www.ncbi.nlm.nih.gov/pubmed/20739322'>http://www.ncbi.nlm.nih.gov/pubmed/20739322</a></html>";
 
 	final public static String SAMPLING_GAP_HELP = "<html>Sampling gap:<br/>"+
-"<br/>"+
-"The sampling gap represents the time period after a clade's <br/>"+
-"origin during which it could not have fossilized (possibly due to <br/>"+
-"small population size or limited geographic distribution), or its <br/>"+
-"earliest fossils could not be recognized as part of this clade (as <br/>"+
-"no apomorphies may have evolved yet). Specifying a sampling gap <br/>"+
-"is optional. A sampling gap of 0.0-2.0 Ma may be a <br/>"+
-"reasonable assumption.</html>";
+		"<br/>"+
+		"The sampling gap represents the time period after a clade's <br/>"+
+		"origin during which it could not have fossilized (possibly due to <br/>"+
+		"small population size or limited geographic distribution), or its <br/>"+
+		"earliest fossils could not be recognized as part of this clade (as <br/>"+
+		"no apomorphies may have evolved yet). Specifying a sampling gap <br/>"+
+		"is optional. A sampling gap of 0.0-2.0 Ma may be a <br/>"+
+		"reasonable assumption.</html>";
 
 	final public static String ABOUT_HELP = "<html>CladeAge:<br/><br/>" +
-			"Copyright 2013<br/><br/>" +
-			"Michael Matschiner<br/>michaelmatschiner@mac.com<br/>" +
-			"<br/>and <br/><br/>" +
-			"Remco Bouckaert<br/>remco@cs.auckland.ac.nz<br/>" +
-			"</html>";
+		"Copyright 2013<br/><br/>" +
+		"Michael Matschiner<br/>michaelmatschiner@mac.com<br/>" +
+		"<br/>and <br/><br/>" +
+		"Remco Bouckaert<br/>remco@cs.auckland.ac.nz<br/>" +
+		"</html>";
 	
     // GUI components
 	private JTextField textField_maxOccuranceAge;
@@ -181,7 +167,7 @@ RATE_HELP + "</html>";
 	private JTextField textField_minDivRate;
 	private JTextField textField_minTurnoverRate;
 	private JTextField textField_minSamplingRate;
-	private JTextField textField_minSamplginGap;
+	private JTextField textField_minSamplingGap;
 	JButton btnFindApproximation;
 	JButton btnCalculate;
 	public void setCalculateButtonText(String text) {btnCalculate.setText(text);}
@@ -491,18 +477,18 @@ RATE_HELP + "</html>";
 			gbc_lblNewLabel.gridy = 5;
 			panel.add(lblNewLabel, gbc_lblNewLabel);
 
-			textField_minSamplginGap = newTextField();
-			textField_minSamplginGap.addActionListener(new ActionListener() {
+			textField_minSamplingGap = newTextField();
+			textField_minSamplingGap.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 				}
 			});
-			textField_minSamplginGap.setColumns(10);
+			textField_minSamplingGap.setColumns(10);
 			GridBagConstraints gbc_textField_11 = new GridBagConstraints();
 			gbc_textField_11.insets = new Insets(0, 0, 0, 5);
 			gbc_textField_11.fill = GridBagConstraints.HORIZONTAL;
 			gbc_textField_11.gridx = 1;
 			gbc_textField_11.gridy = 5;
-			panel.add(textField_minSamplginGap, gbc_textField_11);
+			panel.add(textField_minSamplingGap, gbc_textField_11);
 			
 			JLabel label_4 = new JLabel("-");
 			GridBagConstraints gbc_label_4 = new GridBagConstraints();
@@ -590,22 +576,7 @@ RATE_HELP + "</html>";
 				}
 			});
 		}
-		
-		panel2 = new JPanel();
-		panel2.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Simulation settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		gbc_panel2 = new GridBagConstraints();
-		gbc_panel2.fill = GridBagConstraints.BOTH;
-		gbc_panel2.gridx = 1;
-		gbc_panel2.gridy = 0;
-		//add(panel2, gbc_panel2);
-		
-		GridBagLayout gbl_panel2 = new GridBagLayout();
-		gbl_panel2.columnWidths = new int[]{0, 0, 0};
-		gbl_panel2.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_panel2.columnWeights = new double[]{0, 1.0, 0};
-		gbl_panel2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-		panel2.setLayout(gbl_panel2);
-		
+				
 		JPanel panel2b = new JPanel();
 		panel2b.setLayout(new BorderLayout());
 		
@@ -655,12 +626,16 @@ RATE_HELP + "</html>";
 
 			    final Thread t = new Thread(new Runnable() {
 			      public void run() {
-					probs.bd_simulate(
-							minOccuranceAge, maxOccuranceAge,
-							minDivRate, maxDivRate,
-							minTurnoverRate, maxTurnoverRate,
-							minSamplingRate, maxSamplingRate,
-							minSamplingGap, maxSamplingGap, dpb);
+					try {
+						probs.run_empirical_cladeage(
+								minOccuranceAge, maxOccuranceAge,
+								minDivRate, maxDivRate,
+								minTurnoverRate, maxTurnoverRate,
+								minSamplingRate, maxSamplingRate,
+								minSamplingGap, maxSamplingGap, dpb);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 					calcFit(dpb);
 			        dlg.setVisible(false);
 			      }
@@ -822,7 +797,6 @@ RATE_HELP + "</html>";
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox.gridx = 1;
 		gbc_comboBox.gridy = 5;
-		panel2.add(comboBox, gbc_comboBox);
 		
 		JPanel panel3 = new JPanel();
 		panel3.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Clade age probabilities", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -844,7 +818,7 @@ RATE_HELP + "</html>";
 		
 		panel_1 = new JPanel() {
 			protected void paintComponent(java.awt.Graphics g) {
-					g.setColor(new Color(241, 241, 241));
+				g.setColor(new Color(241, 241, 241));
 				g.fillRect(0, 0, getWidth(), getHeight());
 				if (ages != null) {
 		            final int width = getWidth();
@@ -917,7 +891,7 @@ RATE_HELP + "</html>";
 		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints2;  
 		                if (m_distr != null) {
 		                    try {
-		                    	if (m_distr instanceof EmpiricalDistribution) {
+		                    	if (m_distr instanceof EmpiricalCladeAgeDistribution) {
 			                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);
 		                    	} else {
 		                    		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2 - minOccuranceAge);
@@ -1149,7 +1123,7 @@ RATE_HELP + "</html>";
 		setToolTipText(textField_minDivRate, DIV_RATE_HELP);
 		setToolTipText(textField_minTurnoverRate, TURNOVER_RATE_HELP);
 		setToolTipText(textField_minSamplingRate, SAMPLING_RATE_HELP);
-		setToolTipText(textField_minSamplginGap, SAMPLING_GAP_HELP);
+		setToolTipText(textField_minSamplingGap, SAMPLING_GAP_HELP);
 	}
 
 	private void setToolTipText(JComponent component, String text) {
@@ -1167,71 +1141,66 @@ RATE_HELP + "</html>";
 		String type = (String) comboBox.getSelectedItem();
 		
 		if (type.equals("empirical CladeAge")) {
-			EmpiricalCladeAgeDistribution fit = new EmpiricalCladeAgeDistribution();
 			try {
-				fit.setup(probs.getAges(), probs.getProbabilities(), true);
+				m_distr = probs.run_empirical_cladeage(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,minSamplingGap,maxSamplingGap, null);
 			} catch (Exception e) {
 				return;
 			}
-			m_distr = fit;
 			m_rmsd = 0;
 			return;
 		}
 		
-		if (type.equals("Best fit")) {
-			if (maxOccuranceAge == minOccuranceAge) {
-				ContinuousDistribution bestFit = probs.fitExponential(progress);
-				m_rmsd = probs.getApprox_distribution_rmsd();
-				if (probs.getCancel1()) {
-					return;
-				}
-				ContinuousDistribution tmp = probs.fitExpGamma(progress);
-				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-					m_rmsd = probs.getApprox_distribution_rmsd();
-					bestFit = tmp;
-				}
-				m_distr = bestFit;
-			} else {
-				ContinuousDistribution bestFit = probs.fitGamma(progress);
-				m_rmsd = probs.getApprox_distribution_rmsd();
-				if (probs.getCancel1()) {
-					return;
-				}
-				ContinuousDistribution tmp = probs.fitLognormal(progress);
-				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-					 m_rmsd = probs.getApprox_distribution_rmsd();
-					 bestFit = tmp;
-				}
-				m_distr = bestFit;
-			}
-		}
-		if (type.equals("Exponential")) {
-			m_distr = probs.fitExponential(progress);
-			m_rmsd = probs.getApprox_distribution_rmsd();
-		}
-		if (type.equals("Gamma")) {
-			m_distr = probs.fitGamma(progress);
-			m_rmsd = probs.getApprox_distribution_rmsd();
-		}
-		if (type.equals("Log Normal")) {
-			m_distr = probs.fitLognormal(progress);
-			m_rmsd = probs.getApprox_distribution_rmsd();
-		}
-		if (type.equals("Exp Gamma")) {
-			m_distr = probs.fitExpGamma(progress);
-			m_rmsd = probs.getApprox_distribution_rmsd();
-		}
+//		if (type.equals("Best fit")) {
+//			if (maxOccuranceAge == minOccuranceAge) {
+//				ContinuousDistribution bestFit = probs.fitExponential(progress);
+//				m_rmsd = probs.getApprox_distribution_rmsd();
+//				if (probs.getCancel1()) {
+//					return;
+//				}
+//				ContinuousDistribution tmp = probs.fitExpGamma(progress);
+//				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+//					m_rmsd = probs.getApprox_distribution_rmsd();
+//					bestFit = tmp;
+//				}
+//				m_distr = bestFit;
+//			} else {
+//				ContinuousDistribution bestFit = probs.fitGamma(progress);
+//				m_rmsd = probs.getApprox_distribution_rmsd();
+//				if (probs.getCancel1()) {
+//					return;
+//				}
+//				ContinuousDistribution tmp = probs.fitLognormal(progress);
+//				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
+//					 m_rmsd = probs.getApprox_distribution_rmsd();
+//					 bestFit = tmp;
+//				}
+//				m_distr = bestFit;
+//			}
+//		}
+//		if (type.equals("Exponential")) {
+//			m_distr = probs.fitExponential(progress);
+//			m_rmsd = probs.getApprox_distribution_rmsd();
+//		}
+//		if (type.equals("Gamma")) {
+//			m_distr = probs.fitGamma(progress);
+//			m_rmsd = probs.getApprox_distribution_rmsd();
+//		}
+//		if (type.equals("Log Normal")) {
+//			m_distr = probs.fitLognormal(progress);
+//			m_rmsd = probs.getApprox_distribution_rmsd();
+//		}
+//		if (type.equals("Exp Gamma")) {
+//			m_distr = probs.fitExpGamma(progress);
+//			m_rmsd = probs.getApprox_distribution_rmsd();
+//		}
 	}
 	
 	public void dataToGUI() {
 		processingDataToGui = true;
 			
-		textField_NumberOfTreeSimulations.setText(NumberOfTreeSimulations + "");
-		textField_MaxNrOfBranches.setText(MaxNrOfBranches + "");
-		textField_SamplingReplicatesPerTree.setText(SamplingReplicatesPerTree + "");
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
 			textField_minOccuranceAge.setText(minOccuranceAge + "");
-			textField_minSamplginGap.setText(minSamplingGap + "");
+			textField_minSamplingGap.setText(minSamplingGap + "");
 
 			if (maxOccuranceAge != minOccuranceAge) {
 				textField_maxOccuranceAge.setText(maxOccuranceAge + "");
@@ -1280,7 +1249,7 @@ RATE_HELP + "</html>";
 			if (Double.isInfinite(maxOccuranceAge) || maxOccuranceAge < minOccuranceAge) {
 				maxOccuranceAge = minOccuranceAge;
 			}
-			minSamplingGap = parseDouble(textField_minSamplginGap.getText());
+			minSamplingGap = parseDouble(textField_minSamplingGap.getText());
 			if (minSamplingGap < 0) {
 				minSamplingGap = 0;
 			}
@@ -1315,9 +1284,6 @@ RATE_HELP + "</html>";
 			}
 		}	
 
-		NumberOfTreeSimulations = parseInt(textField_NumberOfTreeSimulations.getText());
-		MaxNrOfBranches = parseInt(textField_MaxNrOfBranches.getText());
-		SamplingReplicatesPerTree = parseInt(textField_SamplingReplicatesPerTree.getText());
 		// something changed, so the probabilities are not valid any more
 		m_distr = null;
 		
@@ -1409,30 +1375,30 @@ RATE_HELP + "</html>";
         	double mean = ((ExponentialDistributionImpl) m_distr).getMean();
             text += "mean: " + format(mean,5) + "\n";
         }
-        if (m_distr instanceof LogNormalImpl) {
-        	double mean = ((LogNormalImpl) m_distr).getMean();
-        	double sigma = ((LogNormalImpl) m_distr).getSigma();
-            text += "mean: " + format(mean,5) + "\n";
-            text += "sigma: " + format(sigma,5) + "\n";
-        }
-        if (m_distr instanceof GammaDistributionImpl) {
-        	double alpha = ((GammaDistributionImpl) m_distr).getAlpha();
-        	double beta = ((GammaDistributionImpl) m_distr).getBeta();
-            text += "alpha: " + format(alpha,5) + "\n";
-            text += "beta: " + format(beta,5) + "\n";
-        }
-        if (m_distr instanceof ExpGamma) {
-        	double mean = ((ExpGamma) m_distr).getMean();
-        	double alpha = ((ExpGamma) m_distr).getAlpha();
-        	double beta = ((ExpGamma) m_distr).getBeta();
-        	double weight = ((ExpGamma) m_distr).getWeight();
-            text += "mean: " + format(mean,5) + "\n";
-            text += "alpha: " + format(alpha,5) + "\n";
-            text += "beta: " + format(beta,5) + "\n";
-            text += "weight: " + format(weight,5) + "\n";
-        }
+//        if (m_distr instanceof LogNormalImpl) {
+//        	double mean = ((LogNormalImpl) m_distr).getMean();
+//        	double sigma = ((LogNormalImpl) m_distr).getSigma();
+//            text += "mean: " + format(mean,5) + "\n";
+//            text += "sigma: " + format(sigma,5) + "\n";
+//        }
+//        if (m_distr instanceof GammaDistributionImpl) {
+//        	double alpha = ((GammaDistributionImpl) m_distr).getAlpha();
+//        	double beta = ((GammaDistributionImpl) m_distr).getBeta();
+//            text += "alpha: " + format(alpha,5) + "\n";
+//            text += "beta: " + format(beta,5) + "\n";
+//        }
+//        if (m_distr instanceof ExpGamma) {
+//        	double mean = ((ExpGamma) m_distr).getMean();
+//        	double alpha = ((ExpGamma) m_distr).getAlpha();
+//        	double beta = ((ExpGamma) m_distr).getBeta();
+//        	double weight = ((ExpGamma) m_distr).getWeight();
+//            text += "mean: " + format(mean,5) + "\n";
+//            text += "alpha: " + format(alpha,5) + "\n";
+//            text += "beta: " + format(beta,5) + "\n";
+//            text += "weight: " + format(weight,5) + "\n";
+//        }
         try {
-        	if (m_distr instanceof EmpiricalDistribution) {
+        	if (m_distr instanceof EmpiricalCladeAgeDistribution) {
     	        text += "\nmedian: " + format(m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
     	        text += "\n95% HPD: " + "\n" + 
     	        		format(m_distr.inverseCumulativeProbability(0.025), 5) + 
