@@ -1,5 +1,7 @@
 package beast.math.distributions;
 
+import javax.swing.JProgressBar;
+
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 
@@ -80,21 +82,14 @@ public class FossilCalibration extends ParametricDistribution {
 	@Override
 	public Distribution getDistribution() {
 		if (m_dist == null) {
-			updateDistribution();
+			updateEmpiricalCladeAgeDistribution();
 		}
 		return m_dist;
 	}
 
-	private void updateDistribution() {
+	private void updateEmpiricalCladeAgeDistribution() {
 		CladeAgeProbabilities probs = new CladeAgeProbabilities();
-		probs.bd_simulate(
-				minOccuranceAge, maxOccuranceAge,
-				minDivRate, maxDivRate,
-				minTurnoverRate, maxTurnoverRate,
-				minSamplingRate, maxSamplingRate,
-				minSamplingGap, maxSamplingGap,
-				null);
-		
+								
 //		if (maxOccuranceAge == minOccuranceAge) {
 //			m_dist = probs.fitExponential(null);
 //			double rmsd = probs.getApprox_distribution_rmsd();
@@ -111,9 +106,13 @@ public class FossilCalibration extends ParametricDistribution {
 //			}
 //		}
 		try {
-			EmpiricalDistribution dist = new EmpiricalDistribution();
-			dist.setup(probs.getAges(), probs.getProbabilities(), true);
-			m_dist = dist;
+			m_dist = probs.run_empirical_cladeage(
+					minOccuranceAge, maxOccuranceAge,
+					minDivRate, maxDivRate,
+					minTurnoverRate, maxTurnoverRate,
+					minSamplingRate, maxSamplingRate,
+					minSamplingGap, maxSamplingGap,
+					null);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

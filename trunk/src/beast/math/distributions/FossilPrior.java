@@ -12,7 +12,7 @@ import beast.math.distributions.MRCAPrior;
 @Description("Prior based on information from the fossil record")
 @Citation("Michael Matschiner and Remco Boucakert. A rough guide to CladeAge, 2013")
 public class FossilPrior extends MRCAPrior {
-	public Input<FossilCalibration> callibrationDistr = new Input<FossilCalibration>("fossilDistr", "", Validate.REQUIRED);
+	public Input<FossilCalibration> calibrationDistr = new Input<FossilCalibration>("fossilDistr", "", Validate.REQUIRED);
 
 	public FossilPrior() {
 		distInput.setRule(Validate.OPTIONAL);
@@ -24,7 +24,7 @@ public class FossilPrior extends MRCAPrior {
 		onlyUseTipsInput.setValue(false, this);
 		useOriginateInput.setValue(true, this);
 		
-		distInput.setValue(callibrationDistr.get(), this);
+		distInput.setValue(calibrationDistr.get(), this);
 		super.initAndValidate();
 		distInput.setValue(null, this);
 	};
