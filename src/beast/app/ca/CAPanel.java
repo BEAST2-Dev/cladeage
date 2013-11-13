@@ -1135,7 +1135,6 @@ public class CAPanel extends JPanel {
 	private JButton newHelpButton() {
 		return new HelpButton("?",true);
 	}
-
 	
 	public void calcFit(JProgressBar progress) {
 		String type = (String) comboBox.getSelectedItem();
@@ -1149,50 +1148,61 @@ public class CAPanel extends JPanel {
 			m_rmsd = 0;
 			return;
 		}
+		if (type.equals("fitted CladeAge")) {
+			try {
+				m_distr = probs.run_fitted_cladeage(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate, null);
+			} catch (Exception e) {
+				return;
+			}
+			m_rmsd = probs.getDistribution_rmsd();
+			return;
+		}
+		if (type.equals("fitted CladeAge*")) {
+			try {
+				m_distr = probs.run_fitted_cladeage_star(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate, null);
+			} catch (Exception e) {
+				return;
+			}
+			m_rmsd = probs.getDistribution_rmsd();
+			return;
+		}		
+		if (type.equals("Lognormal")) {
+			try {
+				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Lognormal", null);
+			} catch (Exception e) {
+				return;
+			}
+			m_rmsd = probs.getDistribution_rmsd();
+			return;
+		}
+		if (type.equals("Gamma")) {
+			try {
+				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Gamma", null);
+			} catch (Exception e) {
+				return;
+			}
+			m_rmsd = probs.getDistribution_rmsd();
+			return;
+		}
+		if (type.equals("Exponential")) {
+			try {
+				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Exponential", null);
+			} catch (Exception e) {
+				return;
+			}
+			m_rmsd = probs.getDistribution_rmsd();
+			return;
+		}
+		if (type.equals("Normal")) {
+			try {
+				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Normal", null);
+			} catch (Exception e) {
+				return;
+			}
+			m_rmsd = probs.getDistribution_rmsd();
+			return;
+		}
 		
-//		if (type.equals("Best fit")) {
-//			if (maxOccuranceAge == minOccuranceAge) {
-//				ContinuousDistribution bestFit = probs.fitExponential(progress);
-//				m_rmsd = probs.getApprox_distribution_rmsd();
-//				if (probs.getCancel1()) {
-//					return;
-//				}
-//				ContinuousDistribution tmp = probs.fitExpGamma(progress);
-//				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-//					m_rmsd = probs.getApprox_distribution_rmsd();
-//					bestFit = tmp;
-//				}
-//				m_distr = bestFit;
-//			} else {
-//				ContinuousDistribution bestFit = probs.fitGamma(progress);
-//				m_rmsd = probs.getApprox_distribution_rmsd();
-//				if (probs.getCancel1()) {
-//					return;
-//				}
-//				ContinuousDistribution tmp = probs.fitLognormal(progress);
-//				if (probs.getApprox_distribution_rmsd() < m_rmsd) {
-//					 m_rmsd = probs.getApprox_distribution_rmsd();
-//					 bestFit = tmp;
-//				}
-//				m_distr = bestFit;
-//			}
-//		}
-//		if (type.equals("Exponential")) {
-//			m_distr = probs.fitExponential(progress);
-//			m_rmsd = probs.getApprox_distribution_rmsd();
-//		}
-//		if (type.equals("Gamma")) {
-//			m_distr = probs.fitGamma(progress);
-//			m_rmsd = probs.getApprox_distribution_rmsd();
-//		}
-//		if (type.equals("Log Normal")) {
-//			m_distr = probs.fitLognormal(progress);
-//			m_rmsd = probs.getApprox_distribution_rmsd();
-//		}
-//		if (type.equals("Exp Gamma")) {
-//			m_distr = probs.fitExpGamma(progress);
-//			m_rmsd = probs.getApprox_distribution_rmsd();
-//		}
 	}
 	
 	public void dataToGUI() {

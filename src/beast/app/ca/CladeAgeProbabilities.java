@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import javax.swing.JProgressBar;
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
-import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
+// XXX I couldn't find org.apache.commons.math.distribution.LognormalDistributionImpl.
+// Is there another way to import lognormal distributions?
+// import org.apache.commons.math.distribution.LognormalDistributionImpl;
+import org.apache.commons.math.distribution.ExponentialDistributionImpl;
+import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 // Import CladeAge distributions.
 import beast.math.distributions.EmpiricalCladeAgeDistribution;
@@ -2484,6 +2488,11 @@ public class CladeAgeProbabilities {
 		
 	} // public FittedCladeAgeDistribution run_fitted_cladeage_rapid(...)
 
+	// XXX What I did here may not be entirely correct. The below method returns
+	// GammaDistributionImpl, ExponentialDistributionImpl, or NormalDistributionImpl, depending on
+	// its second-last argument 'distribution_type'. If distribution_type does not match any of the options,
+	// null is returned. Is it ok for ContinuousDistribution to return e.g. GammaDistributionImpl?
+	// Isn't GammaDistributionImpl a subclass (if that's the right expression) of ContinuousDistribution?
 	public ContinuousDistribution run_standard(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, String distribution_type, JProgressBar dpb) {
 		
 		// Reset arrays.
@@ -3217,22 +3226,12 @@ public class CladeAgeProbabilities {
 			double logStdev = sigmas[index];
 			double logRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 
-			// Fill variables distribution_type, distribution_parameters, and distribution_rmsd
-			distribution_parameters[0] = logMean;
-			distribution_parameters[1] = logStdev;
+			// Memorize distribution_rmsd and normaliser.
 			distribution_rmsd = logRmsd;
-
-			// XXX this is just here for tests.
-			System.out.println("Distribution type: " + distribution_type);
-			System.out.println("Mean (log): " + distribution_parameters[0]);
-			System.out.println("Stdev (log): " + distribution_parameters[1]);
-			System.out.println("RMSD: " + distribution_rmsd);
-
-			// XXX todo: Find a standard way to use the normaliser!
 			normaliser = logConstant;			
 			
-			// XXX todo: The below distribution must be implemented, remove the below.
-			// return new XXX(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
+			// XXX todo: A lognormal distribution should be returned, with parameters logMean and logStdev.
+			// But I can't find lognormal distributions in org.apache.commons.math.distribution, so how does this work?
 			return null;
 	
 		} else if (distribution_type == "Gamma") {
@@ -3763,21 +3762,11 @@ public class CladeAgeProbabilities {
 			double gamScale = thetas[index];
 			double gamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 
-			// Fill variables distribution_type, distribution_parameters, and distribution_rmsd
-			distribution_parameters[0] = gamShape;
-			distribution_parameters[1] = gamScale;
+			// Memorize distribution_rmsd and normaliser
 			distribution_rmsd = gamRmsd;
-
-			// XXX this is just here for tests.
-			System.out.println("Distribution type: " + distribution_type);
-			System.out.println("Shape: " + distribution_parameters[0]);
-			System.out.println("Scale: " + distribution_parameters[1]);
-			System.out.println("RMSD: " + distribution_rmsd);
-
-			// XXX todo: Find a standard way to use the normaliser!
 			normaliser = gamConstant;			
 			
-			return new GammaDistributionImpl(distribution_parameters[0], distribution_parameters[1]);						
+			return new GammaDistributionImpl(gamShape, gamScale);						
 	
 		} else if (distribution_type == "Exponential") {
 
@@ -4067,22 +4056,11 @@ public class CladeAgeProbabilities {
 			double expMean = means[index];
 			double expRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 
-			
-			
-			// Fill variables distribution_parameters and distribution_rmsd.
-			distribution_parameters[0] = expMean;
+			// Memorize distribution_rmsd and normaliser
 			distribution_rmsd = expRmsd;
-						
-			// XXX this is just here for tests.
-			System.out.println("Distribution type: " + distribution_type);
-			System.out.println("Mean: " + distribution_parameters[0]);
-			System.out.println("RMSD: " + distribution_parameters);
-
-			// XXX todo: Find a standard way to use the normaliser!			
 			normaliser = expConstant;
 
-			// XXX todo: Check whether this is the right way to return the distribution.
-			return new ExponentialDistributionImpl(distribution_parameters[0]);		
+			return new ExponentialDistributionImpl(expMean);		
 	
 		} else if (distribution_type == "TruncatedLognormal") {
 
@@ -4592,24 +4570,17 @@ public class CladeAgeProbabilities {
 			double truncLogStdev = sigmas[index];
 			double truncLogRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 
-			// Fill variables distribution_type, distribution_parameters, and distribution_rmsd
-			distribution_parameters[0] = truncLogShift;
-			distribution_parameters[1] = truncLogMean;
-			distribution_parameters[2] = truncLogStdev;
+			// Memorize distribution_rmsd and normaliser.
 			distribution_rmsd = truncLogRmsd;
-
-			// XXX this is just here for tests.
-			System.out.println("Distribution type: " + distribution_type);
-			System.out.println("Shift: " + distribution_parameters[0]);
-			System.out.println("Mean (log): " + distribution_parameters[1]);
-			System.out.println("Stdev (log): " + distribution_parameters[2]);
-			System.out.println("RMSD: " + distribution_rmsd);
-
-			// XXX todo: Find a standard way to use the normaliser!
 			normaliser = truncLogConstant;
 
-			// XXX todo: The below distribution must be implemented, remove the below.
-			// return new XXX(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
+			// XXX todo: This is supposed to return a truncated lognormal distribution with parameters truncLogShift,
+			// truncLogMean, and truncLogStdev. But I don't see a straigtforward way to do this.
+			// Should we just forget about fitting truncated lognormal and gamma distributions?
+			// After all, they're only good if the fossil age is exactly known, otherwise lognormal and gamma work better anyway.
+			// Also, the fittedCladAgeDistribution is basically a truncated Lognormal. I wouldn't mind kicking out the
+			// truncated distributions.
+			// However, I've changed what used to be the truncated Normal distribution to simply return a normal distribution.
 			return null;
 	
 		} else if (distribution_type == "TruncatedGamma") {
@@ -5279,27 +5250,15 @@ public class CladeAgeProbabilities {
 			double truncGamScale = thetas[index];
 			double truncGamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 				
-			// Fill variables distribution_parameters and distribution_rmsd
-			distribution_parameters[0] = truncGamShift;
-			distribution_parameters[1] = truncGamShape;
-			distribution_parameters[2] = truncGamScale;
+			// Memorize distribution_rmsd and normaliser.
 			distribution_rmsd = truncGamRmsd;
-				
-			// XXX this is just here for tests.
-			System.out.println("Distribution type: " + distribution_type);
-			System.out.println("Shift: " + distribution_parameters[0]);
-			System.out.println("Shape: " + distribution_parameters[1]);
-			System.out.println("Scale: " + distribution_parameters[2]);
-			System.out.println("RMSD: " + distribution_rmsd);
-
-			// XXX todo: Find a standard way to use the normaliser!
 			normaliser = truncGamConstant;
 			
-			// XXX todo: The below distribution must be implemented, remove the below.
-			// return new XXX(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
+			// XXX todo: This is supposed to return a truncated gamma distribution with parameters truncGamShift,
+			// truncGamShape, and truncGamScale. See above, I wouldn't mind kicking out truncated distributions in general.
 			return null;
 	
-		} else if (distribution_type == "TruncatedNormal") {
+		} else if (distribution_type == "Normal") {
 
 			// Set the number of Nelder Mead Downhill Simplex repetitions.
 			int nmRepetitions = 10;
@@ -5670,30 +5629,17 @@ public class CladeAgeProbabilities {
 			double normConstant = cs[index];
 			double normMean = ms[index];
 			double normStdev = Math.sqrt(ws[index]/2.0);
-			double gamRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
+			double normRmsd = Math.sqrt(ys[index]/(double) (number_of_ages+1));
 
-			// Fill variables distribution_parameters and distribution_rmsd
-			distribution_parameters[0] = normMean;
-			distribution_parameters[1] = normStdev;
-			distribution_rmsd = gamRmsd;
-
-			// XXX this is just here for tests.
-			System.out.println("Distribution type: " + distribution_type);
-			System.out.println("Mean: " + distribution_parameters[0]);
-			System.out.println("StDev: " + distribution_parameters[1]);
-			System.out.println("RMSD: " + distribution_rmsd);
-
-			// XXX todo: Find a standard way to use the normaliser!
+			// Memorize distribution_rmsd and normaliser
+			distribution_rmsd = normRmsd;
 			normaliser = normConstant;
 			
-			// XXX todo: The below distribution must be implemented, remove the below.
-			// return new XXX(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
-			return null;
+			return new NormalDistributionImpl(normMean, normStdev);
 	
 		} // if (distribution_type == "Lognormal")
 
-		// XXX todo: The below distribution must be implemented, remove the below.
-		// return new XXX(distribution_parameters[0], distribution_parameters[1], distribution_parameters[2], distribution_parameters[3], distribution_parameters[4], distribution_parameters[5]);
+		// XXX Todo: If I remove the below, I get a red flag. Is there a better way to do this?
 		return null;
 				
 	}
