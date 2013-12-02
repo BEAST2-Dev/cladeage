@@ -61,6 +61,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
 	            panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
 	            panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
+	            panel.setMethod(calibration.cladeAgeMethodInput.get());
 	            panel.dataToGUI();
 	            panel.addChangeListener(this);
 
@@ -158,7 +159,11 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 			setValue(calibration.maxTurnoverRateInput, panel.getMaxTurnoverRate());
 			setValue(calibration.minSamplingRateInput, panel.getMinSamplingRate());
 			setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
-		}
+			try {
+				calibration.cladeAgeMethodInput.setValue(panel.getMethod(), calibration);
+			} catch (Exception e) {
+			}
+	}
 
 		private void setValue(Input<RealParameter> input, double value) {
 			try {

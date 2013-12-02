@@ -246,7 +246,7 @@ public class CladeAgeProbabilities {
 			}
 			// Increment the progress indicator.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[successful_simulations.length-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]/100);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
@@ -515,7 +515,7 @@ public class CladeAgeProbabilities {
 		// Part 2: Estimate clade age probability densities.
 		
 		// Prepare the arrays raw_probabilities and successful simulations (those in which at least one taxon survives), and fill them with 0.
-		int[] successful_simulations = new int[number_of_ages];
+		int[] successful_simulations = new int[number_of_ages + 1];
 		
 		while (successful_simulations[successful_simulations.length-1] < 10000) {
 			if (cancel) {
@@ -523,7 +523,7 @@ public class CladeAgeProbabilities {
 			}
 			// Update the progress bar.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[successful_simulations.length-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]/100);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
@@ -1272,7 +1272,7 @@ public class CladeAgeProbabilities {
 		// Part 2: Estimate clade age probability densities.
 
 		// Prepare the arrays raw_probabilities and successful simulations (those in which at least one taxon survives), and fill them with 0.
-		int[] successful_simulations = new int[number_of_ages];
+		int[] successful_simulations = new int[number_of_ages + 1];
 		
 		while (successful_simulations[successful_simulations.length-1] < 10000) {
 
@@ -1282,7 +1282,7 @@ public class CladeAgeProbabilities {
 
 			// Update the progress bar.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[successful_simulations.length-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]/100);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
@@ -2634,7 +2634,7 @@ public class CladeAgeProbabilities {
 		// Part 2: Estimate clade age probability densities.
 		
 		// Prepare the arrays raw_probabilities and successful simulations (those in which at least one taxon survives), and fill them with 0.
-		int[] successful_simulations = new int[number_of_ages];
+		int[] successful_simulations = new int[number_of_ages + 1];
 		
 		while (successful_simulations[successful_simulations.length-1] < 10000) {
 
@@ -2644,7 +2644,7 @@ public class CladeAgeProbabilities {
 
 			// Update the progress bar.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[successful_simulations.length-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]/100);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
