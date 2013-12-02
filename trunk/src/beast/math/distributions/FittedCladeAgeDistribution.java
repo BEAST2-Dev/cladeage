@@ -40,8 +40,20 @@ public class FittedCladeAgeDistribution implements ContinuousDistribution {
 	 	
 	@Override
 	public double cumulativeProbability(double age) throws MathException {
-		// XXX todo
-		return 0.0;
+		
+		double approximatedCumulativeProbability = 0;
+		if (age <= this.first_occurrence_age_min) {
+			return 0;
+		} else {
+			int numberOfRectangles = 100;
+			double rectangleWidth = age-this.first_occurrence_age_min / numberOfRectangles;
+			for (int i = 0; i < numberOfRectangles; i++) {
+				double rectangleHeight = density(age+(i+0.5)*rectangleWidth);
+				double rectangleArea = rectangleHeight*rectangleWidth;
+				approximatedCumulativeProbability += rectangleArea;
+			}
+		}
+		return approximatedCumulativeProbability;
 	}
 
 	@Override
@@ -50,9 +62,29 @@ public class FittedCladeAgeDistribution implements ContinuousDistribution {
 	}
 
 	@Override
-	public double inverseCumulativeProbability(double age) throws MathException {
-		// XXX todo
-		return 0.0;
+	public double inverseCumulativeProbability(double p) throws MathException {
+		if (p < 0 || p > 1) {
+			throw new MathException();
+		}
+		int numberOfIteration = 100;
+		double currentTestAge = this.first_occurrence_age_min+10.0;
+		double oldTestAge = this.first_occurrence_age_min;
+		for (int i = 0; i < numberOfIteration; i++){
+			if (cumulativeProbability(currentTestAge) <= p && cumulativeProbability(oldTestAge) <= p){
+				double newTestAge = currentTestAge + 1.5*Math.abs(currentTestAge-oldTestAge);
+				oldTestAge = currentTestAge;
+				currentTestAge = newTestAge;
+			} else if (cumulativeProbability(currentTestAge) >= p && cumulativeProbability(oldTestAge) >= p) {
+				double newTestAge = currentTestAge - 1.5*Math.abs(currentTestAge-oldTestAge);
+				oldTestAge = currentTestAge;
+				currentTestAge = newTestAge;
+			} else {
+				double newTestAge = (currentTestAge+oldTestAge)/2.0;
+				oldTestAge = currentTestAge;
+				currentTestAge = newTestAge;
+			}
+		}
+		return currentTestAge;
 	}
 	
 	@Override
