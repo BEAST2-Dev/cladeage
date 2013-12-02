@@ -634,6 +634,7 @@ public class CAPanel extends JPanel {
 								minSamplingRate, maxSamplingRate,
 								minSamplingGap, maxSamplingGap, dpb);
 					} catch (Exception e) {
+						e.printStackTrace();
 						throw new RuntimeException(e);
 					}
 					calcFit(dpb);
@@ -851,7 +852,7 @@ public class CAPanel extends JPanel {
 		            double fMaxValue = 1;
 	                fMinValue = ages[ages.length-1];
 	                fMaxValue = ages[0];
-		            double fXRange = fMaxValue - fMinValue;
+		            double fXRange = Math.abs(fMaxValue - fMinValue);
 		            // adjust fYMax so that the ticks come out right
 		            double fX0 = fMinValue;
 		            int k = 0;
