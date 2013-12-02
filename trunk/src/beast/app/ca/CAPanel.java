@@ -40,6 +40,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 
 import java.awt.Color;
@@ -62,6 +63,10 @@ import javax.swing.event.DocumentListener;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
+
+import sun.swing.SwingUtilities2;
+
+import com.sun.java.swing.SwingUtilities3;
 
 import beast.app.beauti.BeautiPanel;
 import beast.app.draw.ModelBuilder;
@@ -372,16 +377,21 @@ public class CAPanel extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					if (textField_maxSamplingGap != null) {
-						if (comboBox.getSelectedItem().toString().equals("empirical CladeAge")) {
-							textField_maxSamplingGap.setEnabled(true);
-							textField_minSamplingGap.setEnabled(true);
-						} else {
-							textField_maxSamplingGap.setEnabled(false);
-							textField_minSamplingGap.setEnabled(false);
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							if (textField_maxSamplingGap != null) {
+								if (comboBox.getSelectedItem().toString().equals("empirical CladeAge")) {
+									textField_maxSamplingGap.setEnabled(true);
+									textField_minSamplingGap.setEnabled(true);
+								} else {
+									textField_maxSamplingGap.setEnabled(false);
+									textField_minSamplingGap.setEnabled(false);
+								}
+							}
+							guiToData();
+							
 						}
-					}
-					guiToData();
+					});
 				}
 			});
 
@@ -994,7 +1004,7 @@ public class CAPanel extends JPanel {
 		                    	if (m_distr instanceof EmpiricalCladeAgeDistribution) {
 			                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);
 		                    	} else {
-		                    		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2 - minOccuranceAge);
+		                    		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);// - minOccuranceAge);X
 		                    	}
 		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
 		                        	fyPoints2[i] = 0;

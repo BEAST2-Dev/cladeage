@@ -162,6 +162,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 			try {
 				calibration.cladeAgeMethodInput.setValue(panel.getMethod(), calibration);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 	}
 
