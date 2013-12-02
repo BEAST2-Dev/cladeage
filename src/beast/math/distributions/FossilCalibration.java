@@ -187,4 +187,19 @@ public class FossilCalibration extends ParametricDistribution {
 		}
 	}
 
+//	public String toString() {
+//		String str = "";
+//		try {
+//			for (Input input : listInputs()) {
+//				str += input.getName() +" = " + input.get() + "\n";
+//			}
+//		} catch (IllegalArgumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return str;
+//	}
 }

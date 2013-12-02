@@ -50,7 +50,7 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 //        panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
 //        panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
         panel.setMaxSamplingGap(calibration.maxSamplingGapInput.get().getValue());
-        panel.setMethod(calibration.cladeAgeMethodInput.get());
+        //panel.setMethod(calibration.cladeAgeMethodInput.get());
         panel.dataToGUI();
         panel.setCalculateButtonText("Preview");
 
@@ -78,7 +78,7 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 //		setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
 		setValue(calibration.minSamplingGapInput, panel.getMinSamplingGap());
 		setValue(calibration.maxSamplingGapInput, panel.getMaxSamplingGap());
-		setValue(calibration.cladeAgeMethodInput, panel.getMethod());
+//		setValue(calibration.cladeAgeMethodInput, panel.getMethod());
 
 		panel.setMethod(calibration.cladeAgeMethodInput.get());
 		panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
