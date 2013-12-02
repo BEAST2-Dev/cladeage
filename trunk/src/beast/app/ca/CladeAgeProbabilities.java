@@ -238,15 +238,15 @@ public class CladeAgeProbabilities {
 		// Part 2: Estimate clade age probability densities
 		
 		// Prepare the arrays raw_probabilities and successful simulations (those in which at least one taxon survives), and fill them with 0.
-		int[] successful_simulations = new int[number_of_ages];
+		int[] successful_simulations = new int[number_of_ages + 1];
 		
-		while (successful_simulations[-1] < 10000) {
+		while (successful_simulations[successful_simulations.length-1] < 10000) {
 			if (cancel) {
 				return null;
 			}
 			// Increment the progress indicator.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
@@ -262,7 +262,7 @@ public class CladeAgeProbabilities {
 			double sampling_gap = sampling_gap_min + Math.random()*(sampling_gap_max-sampling_gap_min);
 			
 			// Determine the maximum tree duration.
-			double max_tree_duration = ages[-1] - first_occurrence_age;
+			double max_tree_duration = ages[ages.length-1] - first_occurrence_age;
 			
 			// Initiate arrays for branch origin and branch termination.
 			ArrayList<Double> branch_origin = new ArrayList<Double>();
@@ -517,13 +517,13 @@ public class CladeAgeProbabilities {
 		// Prepare the arrays raw_probabilities and successful simulations (those in which at least one taxon survives), and fill them with 0.
 		int[] successful_simulations = new int[number_of_ages];
 		
-		while (successful_simulations[-1] < 10000) {
+		while (successful_simulations[successful_simulations.length-1] < 10000) {
 			if (cancel) {
 				return null;
 			}
 			// Update the progress bar.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
@@ -533,7 +533,7 @@ public class CladeAgeProbabilities {
 			double lambda = ndr + mu;
 			
 			// Determine the maximum tree duration.
-			double max_tree_duration = ages[-1] - first_occurrence_age_min;
+			double max_tree_duration = ages[ages.length-1] - first_occurrence_age_min;
 			
 			// Initiate arrays for branch origin and branch termination.
 			ArrayList<Double> branch_origin = new ArrayList<Double>();
@@ -1274,7 +1274,7 @@ public class CladeAgeProbabilities {
 		// Prepare the arrays raw_probabilities and successful simulations (those in which at least one taxon survives), and fill them with 0.
 		int[] successful_simulations = new int[number_of_ages];
 		
-		while (successful_simulations[-1] < 10000) {
+		while (successful_simulations[successful_simulations.length-1] < 10000) {
 
 			if (cancel) {
 				return null;
@@ -1282,7 +1282,7 @@ public class CladeAgeProbabilities {
 
 			// Update the progress bar.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
@@ -1292,7 +1292,7 @@ public class CladeAgeProbabilities {
 			double lambda = ndr + mu;
 			
 			// Determine the maximum tree duration.
-			double max_tree_duration = ages[-1] - first_occurrence_age_min;
+			double max_tree_duration = ages[ages.length-1] - first_occurrence_age_min;
 			
 			// Initiate arrays for branch origin and branch termination.
 			ArrayList<Double> branch_origin = new ArrayList<Double>();
@@ -2636,7 +2636,7 @@ public class CladeAgeProbabilities {
 		// Prepare the arrays raw_probabilities and successful simulations (those in which at least one taxon survives), and fill them with 0.
 		int[] successful_simulations = new int[number_of_ages];
 		
-		while (successful_simulations[-1] < 10000) {
+		while (successful_simulations[successful_simulations.length-1] < 10000) {
 
 			if (cancel) {
 				return null;
@@ -2644,7 +2644,7 @@ public class CladeAgeProbabilities {
 
 			// Update the progress bar.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[-1]);
+				dpb.setValue(successful_simulations[successful_simulations.length-1]);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.
@@ -2654,7 +2654,7 @@ public class CladeAgeProbabilities {
 			double lambda = ndr + mu;
 			
 			// Determine the maximum tree duration.
-			double max_tree_duration = ages[-1] - first_occurrence_age_min;
+			double max_tree_duration = ages[ages.length-1] - first_occurrence_age_min;
 			
 			// Initiate arrays for branch origin and branch termination.
 			ArrayList<Double> branch_origin = new ArrayList<Double>();
