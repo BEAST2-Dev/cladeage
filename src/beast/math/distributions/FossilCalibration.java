@@ -1,7 +1,5 @@
 package beast.math.distributions;
 
-import javax.swing.JProgressBar;
-
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 
@@ -11,11 +9,52 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.math.distributions.ParametricDistribution;
 
 
 @Description("Distribution based on fossil information")
 public class FossilCalibration extends ParametricDistribution {
+	
+	
+    public static enum CladeAgeMethod {
+    	empirical("empirical CladeAge"), 
+    	fitted("fitted CladeAge"), 
+    	fitted_star("fitted CladeAge*"), 
+    	//fitted_rapid("fitted CladeAge rapid"), 
+    	standardLogNormal("Lognormal"), 
+    	standardGamma("Gamma"), 
+    	standardExponential("Exponential"), 
+    	standardNormal("Normal");
+
+    	CladeAgeMethod(final String name) {
+            this.ename = name;
+        }
+
+        public String toString() {
+            return ename;
+        }
+
+        private final String ename;
+    }
+
+	
+	public Input<CladeAgeMethod> cladeAgeMethodInput = new Input<FossilCalibration.CladeAgeMethod>("method", 
+	"	1.) "+CladeAgeMethod.empirical+" calculates probabilities for 100 ages and returns EmpiricalCladeAgeDistribution " +
+	"(this is the only method that allows a sampling gap) " +
+	"" +
+	"2.) "+CladeAgeMethod.fitted+" calculates probabilities for 100 ages and returns FittedCladeAgeDistribution " +
+	"" +
+	"3.) "+CladeAgeMethod.fitted_star+" calculates probabilities for 100 ages and returns a FittedCladeAgeDistribution based on only 4 ages " +
+	"(this is only there to visualize the fit of the next method, run_fitted_cladeage_rapid) " +
+	"" +
+	//"4.) "+CladeAgeMethod.fitted_rapid+" calculates probabilities for 4 ages only, and also returns a FittedCladeAgeDistribution based on these 4 ages " +
+	//"(this is supposed to be used repeatedly during the MCMC run with updated values for lambda and mu) " +
+	//"" +
+	"4.) "+CladeAgeMethod.standardLogNormal+", "+CladeAgeMethod.standardGamma+", "+CladeAgeMethod.standardExponential+", "+CladeAgeMethod.standardNormal+" standard calculates probabilities for 100 ages and returns LogNormalImpl, GammaDistributionImpl, ExponentialDistributionImpl, or NormalDistributionImpl, depending on its arguments."
+	, CladeAgeMethod.empirical);
+
+	
 	public Input<RealParameter> minOccuranceAgeInput = new Input<RealParameter>("minOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, Validate.REQUIRED);
 	public Input<RealParameter> maxOccuranceAgeInput = new Input<RealParameter>("maxOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, Validate.REQUIRED);
 
@@ -88,6 +127,7 @@ public class FossilCalibration extends ParametricDistribution {
 	}
 
 	private void updateEmpiricalCladeAgeDistribution() {
+		Log.info.println("Updating FossilCalibration " + getID());
 		CladeAgeProbabilities probs = new CladeAgeProbabilities();
 								
 //		if (maxOccuranceAge == minOccuranceAge) {
@@ -106,6 +146,8 @@ public class FossilCalibration extends ParametricDistribution {
 //			}
 //		}
 		try {
+			switch (cladeAgeMethodInput.get()) {
+			case empirical:
 			m_dist = probs.run_empirical_cladeage(
 					minOccuranceAge, maxOccuranceAge,
 					minDivRate, maxDivRate,
@@ -113,6 +155,33 @@ public class FossilCalibration extends ParametricDistribution {
 					minSamplingRate, maxSamplingRate,
 					minSamplingGap, maxSamplingGap,
 					null);
+			break;
+			case fitted:
+				m_dist = probs.run_fitted_cladeage(minOccuranceAge, maxOccuranceAge, minDivRate, maxDivRate, minTurnoverRate, maxTurnoverRate, minSamplingRate, maxSamplingRate, null);
+			break;
+			case fitted_star:
+				m_dist = probs.run_fitted_cladeage_star(minOccuranceAge, maxOccuranceAge, minDivRate, maxDivRate, minTurnoverRate, maxTurnoverRate, minSamplingRate, maxSamplingRate, null);
+			break;
+			//case fitted_rapid:
+			//	m_dist = probs.run_fitted_cladeage_rapid(minOccuranceAge, maxOccuranceAge, minDivRate, maxDivRate, minTurnoverRate, maxTurnoverRate, minSamplingRate, maxSamplingRate);
+			//break;
+			case standardLogNormal:
+				m_dist = probs.run_standard(minOccuranceAge, maxOccuranceAge, minDivRate, maxDivRate, minTurnoverRate, maxTurnoverRate, minSamplingRate, maxSamplingRate, 
+						"LogNormal", null);
+			break;
+			case standardGamma:
+				m_dist = probs.run_standard(minOccuranceAge, maxOccuranceAge, minDivRate, maxDivRate, minTurnoverRate, maxTurnoverRate, minSamplingRate, maxSamplingRate, 
+						"Gamma", null);
+				break;
+			case standardExponential:
+				m_dist = probs.run_standard(minOccuranceAge, maxOccuranceAge, minDivRate, maxDivRate, minTurnoverRate, maxTurnoverRate, minSamplingRate, maxSamplingRate, 
+						"Exponential", null);
+				break;
+			case standardNormal:
+				m_dist = probs.run_standard(minOccuranceAge, maxOccuranceAge, minDivRate, maxDivRate, minTurnoverRate, maxTurnoverRate, minSamplingRate, maxSamplingRate, 
+						"Normal", null);
+			break;
+			}				
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

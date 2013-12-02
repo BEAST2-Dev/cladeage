@@ -13,6 +13,7 @@ import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.FossilCalibration;
+import beast.math.distributions.FossilCalibration.CladeAgeMethod;
 
 
 public class FossilCalibrationInputEditor extends BEASTObjectInputEditor implements CAPanelListener {
@@ -37,6 +38,7 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
         m_plugin = plugin;
         calibration = (FossilCalibration) m_input.get();
         panel = new CAPanel(CAPanel.MODE_BEAUTI_BOTTOM);
+        panel.setMethod(calibration.cladeAgeMethodInput.get());
         panel.setMinOccuranceAge(calibration.minOccuranceAgeInput.get().getValue());
 //        panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
 //        panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
@@ -48,13 +50,14 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 //        panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
 //        panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
         panel.setMaxSamplingGap(calibration.maxSamplingGapInput.get().getValue());
+        panel.setMethod(calibration.cladeAgeMethodInput.get());
         panel.dataToGUI();
         panel.setCalculateButtonText("Preview");
 
         panel.addChangeListener(this);
         Dimension size = new Dimension(panel.getPreferredSize().width - 40, panel.getPreferredSize().height);
 
-        panel.getComboBox().setSelectedItem("Empirical");
+        //panel.getComboBox().setSelectedItem("Empirical");
         panel.setSize(size);
         panel.setPreferredSize(size);
         panel.setMinimumSize(size);
@@ -75,7 +78,9 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 //		setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
 		setValue(calibration.minSamplingGapInput, panel.getMinSamplingGap());
 		setValue(calibration.maxSamplingGapInput, panel.getMaxSamplingGap());
+		setValue(calibration.cladeAgeMethodInput, panel.getMethod());
 
+		panel.setMethod(calibration.cladeAgeMethodInput.get());
 		panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
 		panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
 		panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
@@ -93,7 +98,7 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 			
 		}
 	}
-	private void setValue(Input<Integer> input, int value) {
+	private void setValue(Input<CladeAgeMethod> input, CladeAgeMethod value) {
 		try {
 			input.setValue(value, calibration);
 		} catch (Exception e) {
