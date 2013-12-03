@@ -505,7 +505,7 @@ public class CladeAgeProbabilities {
 			
 		// Memorize the result as the max_simulation_age
 		double max_simulation_age = vertex0t + first_occurrence_age_min;
-				
+		
 		// Determine the ages.
 		ages[0] = first_occurrence_age_min;
 		for (int i = 0; i < number_of_ages; i++) {
@@ -642,18 +642,20 @@ public class CladeAgeProbabilities {
 			
 			int_probabilities[0] = 0.0;
 			for (int a = 1; a < ages.length; a++) {
+
 				double probability_mass = 0;
 				// If the difference between first_occurrence_age_max and first_occurrence_age_min is smaller than half the difference
 				// between two adjacent ages, the probability mass for a given age is simply the difference between first_occurrence_age_max
 				// and first_occurrence_age_min times the probability of that age.
 				if (first_occurrence_age_max-first_occurrence_age_min <= (ages[1]-ages[0])/2.0) {
 					probability_mass += fix_probabilities[a] * (first_occurrence_age_max-first_occurrence_age_min);
+
 				// If the difference between first_occurrence_age_max and first_occurrence_age_min is more than half the difference between
 				// two adjacent ages (this means the integral extends over more than one segment), three steps are necessary.
 				} else {
 					// i.) Half of the last segment is added in all cases.
 					probability_mass += fix_probabilities[a] * (ages[1]-ages[0])/2.0;
-					
+
 					// ii.) The first, or part of the first segment is added if the integral extends beyond or into it.
 					if (ages[a] - (first_occurrence_age_max-first_occurrence_age_min) < ages[0]) {
 						// Add half the first segment.
@@ -665,7 +667,7 @@ public class CladeAgeProbabilities {
 					
 					// iii.) For each segment between the first and the last, the whole segment, or part of that segment are added if the integral
 					// extends beyond or into it.
-					for (int aa = 1; aa < a; a++) {
+					for (int aa = 1; aa < a; aa++) {
 						if (ages[a] - (first_occurrence_age_max-first_occurrence_age_min) <= ages[aa] - (ages[1]-ages[0])/2.0) {
 							// Add the full segment.
 							probability_mass += fix_probabilities[aa] * (ages[1]-ages[0]);
@@ -675,8 +677,10 @@ public class CladeAgeProbabilities {
 						}
 					}
 				}
+				
 				// The probability mass is divided by the difference between first_occurrence_age_max first_occurrence_age_min.
 				int_probabilities[a] = probability_mass/(first_occurrence_age_max-first_occurrence_age_min);
+				
 			} // for (int a = 1; a < ages.length; a++) {
 			
 		} // if (first_occurrence_age_min == first_occurrence_age_max)
@@ -1424,7 +1428,7 @@ public class CladeAgeProbabilities {
 					
 					// iii.) For each segment between the first and the last, the whole segment, or part of that segment are added if the integral
 					// extends beyond or into it.
-					for (int aa = 1; aa < a; a++) {
+					for (int aa = 1; aa < a; aa++) {
 						if (ages[a] - (first_occurrence_age_max-first_occurrence_age_min) <= ages[aa] - (ages[1]-ages[0])/2.0) {
 							// Add the full segment.
 							probability_mass += fix_probabilities[aa] * (ages[1]-ages[0]);
@@ -2786,7 +2790,7 @@ public class CladeAgeProbabilities {
 					
 					// iii.) For each segment between the first and the last, the whole segment, or part of that segment are added if the integral
 					// extends beyond or into it.
-					for (int aa = 1; aa < a; a++) {
+					for (int aa = 1; aa < a; aa++) {
 						if (ages[a] - (first_occurrence_age_max-first_occurrence_age_min) <= ages[aa] - (ages[1]-ages[0])/2.0) {
 							// Add the full segment.
 							probability_mass += fix_probabilities[aa] * (ages[1]-ages[0]);
