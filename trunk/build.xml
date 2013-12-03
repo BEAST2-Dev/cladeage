@@ -10,6 +10,7 @@
 	<!-- set global properties for this build -->
 	<property name="versionCA" value="1.0.0" />
 	<property name="srcCA" location="src" />
+	<property name="docCA" location="doc" />
 	<property name="buildCA" location="build" />
 	<property name="libCA" location="lib" />
 	<property name="release_dir" value="release" />
@@ -175,6 +176,7 @@
 		<!-- Create the release directory -->
 		<mkdir dir="${Add_on_dir}" />
 		<mkdir dir="${Add_on_dir}/lib" />
+		<mkdir dir="${Add_on_dir}/doc" />
 		<mkdir dir="${Add_on_dir}/examples" />
 		<mkdir dir="${Add_on_dir}/templates" />
 
@@ -183,6 +185,9 @@
 		</copy>
 		<copy todir="${Add_on_dir}/examples">
 			<fileset dir="examples" />
+		</copy>
+		<copy todir="${Add_on_dir}/doc">
+			<fileset dir="doc" includes="cladeage.pdf"/>
 		</copy>
 		<copy todir="${Add_on_dir}/lib">
 			<fileset dir="${distCA}" includes="CA.addon.jar" />

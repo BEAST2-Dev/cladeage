@@ -2,6 +2,7 @@ package beast.app.ca;
 
 
 
+
 import jam.framework.DocumentFrame;
 
 import javax.swing.JPanel;
@@ -54,7 +55,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Box;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
@@ -62,19 +62,12 @@ import javax.swing.event.DocumentListener;
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
-import org.apache.commons.math.distribution.GammaDistributionImpl;
-
-import sun.swing.SwingUtilities2;
-
-import com.sun.java.swing.SwingUtilities3;
 
 import beast.app.beauti.BeautiPanel;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.util.Utils;
 import beast.math.distributions.EmpiricalCladeAgeDistribution;
-import beast.math.distributions.FittedCladeAgeDistribution;
-import beast.math.distributions.FossilCalibration;
 import beast.math.distributions.FossilCalibration.CladeAgeMethod;
 
 
