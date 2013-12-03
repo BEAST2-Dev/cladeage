@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [2][-]{subsection.1.1}{Windows}{section.1}
+\BOOKMARK [2][-]{subsection.1.2}{Mac}{section.1}
+\BOOKMARK [2][-]{subsection.1.3}{Linux}{section.1}
+\BOOKMARK [2][-]{subsection.1.4}{BEAST}{section.1}
+\BOOKMARK [1][-]{section.2}{How CladeAge works}{}
+\BOOKMARK [2][-]{subsection.2.1}{The sampling rate}{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Clade age probabilities}{section.2}
+\BOOKMARK [2][-]{subsection.2.3}{Probability distributions}{section.2}
+\BOOKMARK [2][-]{subsection.2.4}{Model parameters}{section.2}
+\BOOKMARK [2][-]{subsection.2.5}{Taking parameter uncertainties into account}{section.2}
+\BOOKMARK [1][-]{section.3}{CladeAge input}{}
+\BOOKMARK [1][-]{section.4}{Stand alone CladeAge}{}
+\BOOKMARK [1][-]{section.5}{CladeAge in BEAST}{}
+\BOOKMARK [2][-]{subsection.5.1}{Units}{section.5}
+\BOOKMARK [2][-]{subsection.5.2}{Which fossils to use}{section.5}
+\BOOKMARK [2][-]{subsection.5.3}{Which clades to use}{section.5}
