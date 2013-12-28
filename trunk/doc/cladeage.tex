@@ -194,7 +194,55 @@ See e.g. Alfaro et al. (2009), Santini et al. (2009), Jetz et al. (2012), and St
 {\bf Sampling gap}: The sampling gap represents the time period after a clade's origin during which it could not have fossilized (possibly due to small population size or limited geographic distribution), or its earliest fossils could not be recognized as part of this clade (as no recognisable morphological features of this clade may have evolved yet). Specifying a sampling gap is optional and it can only be used in combination with empirical probability distributions. A sampling gap of 0.0-2.0 Ma may be a reasonable assumption.
 \end{itemize}
 
-\section{Stand alone CladeAge}
+\section{Specifying CladeAge constraints}
+
+\subsection{Which fossils to use}
+CladeAge prior distributions are based on the age of the first occurrence of a given clade. Thus, only the oldest fossil of a clade should be used for the specification of CladeAge prior distributions, and younger fossils of that clade should be ignored. Obviously,  there should be morphological evidence that the putatively oldest fossil record of a clade is in fact a member of that clade. Based on morphology, the general assignment of fossils to clades (regardless of the fossil's position within the clade) is usually more robust than determining whether or not the fossil is a member of the crown or stem group of that clade. Therefore, CladeAge prior distributions are designed to apply to the origin of a clade regardless of whether its oldest fossil is part of the stem or the crown.
+
+For example, in the phylogeny shown in Fig.\ 3, we have a fossil (the red dot) associated with clade F
+containing a single lineage. The fossil calibration applies to the
+origin (the blue dot) of the lineage, so a density $f(t_o|\theta)$ (where $\theta$ represent the
+fossil calibration parameters, including time of fossil occurrence $t_f$) is contributed 
+to the posterior.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{tree1}
+\caption{The red dot symbolizes the first occurrence of clade F and constrains the origin of this clade, indicated with the blue dot.}
+\end{figure}
+
+\subsection{Which clades to use}
+As becomes obvious from the phylogeny shown in Fig.\ 3, phylogenies contain multiple clades, and often fossils are known for more than one of these clades. Thus, the origin of several clades could be constrained with CladeAge prior distributions. In the above phylogeny, both clades F and G have fossils with which the origins of clade F and G, and thus the same node (as F and G are sister lineageages), can be constrained (see Fig.\ 4). In other words, the two fossils from sister lineages F and G induce a contributing $f(t_o|\theta_A)f(t_o|\theta_B)$
+(where $\theta_A$ and $\theta_B$ the parameters for fossil A and fossil B respectively)
+to the posterior from the same node. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{tree2}
+\caption{Fossils for clades F and G can be used to constrain the same node.}
+\end{figure}
+
+Similarly, it may be that one and the same fossil represents the first occurrence for multiple clades. In Fig.\ 5, the fossil indicated with a red dot is the earliest known record of the clade combining A, B, and C, but also of the clade combining A, B, C, D, and E, and of the entire tree. Thus the question arises, which of these clades should be constrained with the fossil, and the corresponding CladeAge prior distribution? Several possibilities exist. We could either constrain the youngest clade, for which the fossil represents the first occurrence (this would be \{A, B, C\}), the oldest clade for which this is the case (here, this would be the entire tree, \{A, B, C, D, E, F, G\}), all clades for which this is the case, or a randomly chosen clade among them. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{tree3}
+\caption{The fossil indicated with a red dot represents the first occurrence for three more or less inclusive clades.}
+\end{figure}
+
+From a theoretical perspective, CladeAge priors apply to clades that are chosen \emph{a priori}, before comparison of their fossils with those of other clades, and bias would be introduced if only clades with particularly young or old fossils were chosen to be constrained. In practice this means that CladeAge prior constraints should be specified for either all clades that have fossils, or for a randomly sampled subset of these clades. Consequently, the fossil indicated with a red dot in Fig.\ 5 should be used to constrain all three clades \{A, B, C\}, \{A, B, C, D, E\}, and \{A, B, C, D, E, F, G\} (the full tree). Also, and perhaps counter-intuitively, both fossils indicated with red dots in Fig.\ 4 should be used to constrain the divergence between clades F and G, otherwise, the resulting age estimates would be over- (if only the older fossil were used) or underestimated (if the younger fossil would be used). These conclusions are also supported by analyses of simulated datasets (Matschiner \& Bouckaert, in prep.), which show that accurate and precise age estimates can be obtained when all clades with fossils are constrained with CladeAge prior constraints. There is one exception to this rule: For clades that are recovered in phylogenies, but are not supported by morphological synapomorphies, the sampling rate is effectively reduced to 0, as it would be impossible to assign fossils to these clades based on morphology. As a result, CladeAge priors that assume a homogeneous and positive sampling rate should not be applied to these clades. Thus, if for example no morphological synapomorphies were known for clade \{A, B, C, D, E\} in Fig.\ 5, the fossil marked as a red dot should be used to constrain clades \{A, B, C\} as well as clade \{A, B, C, D, E, F, G\} (the full tree), but not clade \{A, B, C, D, E\}.
+
+That said, our analyses of simulated simulated datasets have also shown that a second approach, that may in practice be easier to implement, leads to age estimates that are nearly as accurate and precise. In this approach, CladeAge prior distributions are used for the oldest of the clades, for which a given fossil represents the first occurrence, and hard minimum boundaries are specified for the youngest of these clades. Using this alternative approach, the fossil indicated with a red dot in Fig.\ 5 would be used to constrain the age of the entire tree, and a uniform prior would be used to constrain the age of clade \{A, B, C\} to ensure that resulting age estimate for this will be older than the fossil assigned to the clade. The uniform prior used for this purpose would therefore use the age of the fossil as a minimum, and a very old age that can safely be assumed to be older than the root (or Infinity) as the maximum. There's a complication to this scheme when the age of the oldest fossil of a clade is not known exactly. In this case, strictly uniform priors would not be appropriate to constrain the age of the youngest clade for which this fossil is the first occurrence, as priors with hard boundaries cannot account for the uncertainty in the age of the fossil. Instead we have implemented a new type of prior distribution that we name LinearUniform priors. These prior distributions are uniform between the maximum and the upper end of the uncertainty in the fossil's age, and then decrease linearly over the uncertainty range, so that they become 0 for the youngest possible age of the oldest fossil of a clade.
+
+\subsection{Units}
+Note that the units used for calibrations should match those used for other
+parts of the model, so if you specify fossil calibrations in millions of years, the
+clock prior should be in million of years as well. Obviously, the tree is interpreted
+in millions of years as well.
+
+
+\section{Using CladeAge}
+\subsection{Stand alone CladeAge}
 When starting CladeAge, something similar to this should show up:
 \begin{center}\includegraphics[width=\textwidth,clip=true,trim=0 0 0 0]{ca.png}\end{center}
 You can specify the fossil related parameters, and press 'Run' to get a preview
@@ -214,7 +262,7 @@ including citations you can copy.
 
 
 
-\section{CladeAge in BEAST}
+\subsection{CladeAge in BEAST}
 When CladeAge is installed, a new 'Fossil Priors' tab is added.
 \begin{center}\includegraphics[width=\textwidth,clip=true,trim=0 300 0 0]{fossilPriorsTab.png}\end{center}
 To specify a new fossil calibration, click the plus in the Fossil Priors tab, 
@@ -239,55 +287,12 @@ little triangle next to the clade name.
 After specifying minimum and maximum occurrence age (and optionally the sampling gap),
 you can use the 'preview' button to calculate a distribution. The pane at the bottom
 shows the shape of the distribution and some statistics such as 95\% highest probability
-density interval. Here, we specified a fossil occurrence age range of 3.5 to 4.5 million
+density interval. Here, we specified a first occurrence age range of 3.5 to 4.5 million
 year. The distribution shows a slight discontinuity at 4.5 million years as a result.
 
 By using the '+' button, as many fossil calibrations can be specified as you like.
 They appear as a list under the common parameters.
 \begin{center}\includegraphics[width=\textwidth,clip=true,trim=0 300 0 0]{fossilPriorsTab3.png}\end{center}
-
-\subsection{Units}
-Note that the units used for calibrations should match those used for other
-parts of the model, so if you specify fossil calibrations in millions of years, the
-clock prior should be in million of years as well. Obviously, the tree is interpreted
-in millions of years as well.
-
-\subsection{Which fossils to use}
-Obviously, only fossils for which there is morphological evidence that there are
-taxa in your alignment should be considered.
-If there are multiple fossils for a particular clade, only the oldest should be
-used in the analysis.
-
-If there are two fossils for two sister lineages, both fossils should be used, even
-though they put a restriction on the same node.
-
-\subsection{Which clades to use}
-The fossil calibration applies to the originate of the clade, not the clade itself.
-So, the contribution to the posterior comes from the age of the parent clade.
-For example, in the following tree we have a fossil associated with a clade
-containing a single lineage -- the red dot. The fossil calibration applies to the
-parent of the lineage, so a density $f(t_o|\theta)$ (where $\theta$ represent the
-fossil calibration parameters, including time of fossil occurrence $t_f$) is contributed 
-to the posterior.
-\begin{center}\includegraphics[width=0.5\textwidth,clip=true]{originate.png}\end{center}
-One implication is that if you have two fossils from sister lineages, they still
-should both be used even though they induce a contributing $f(t_o|\theta_A)f(t_o|\theta_B)$
-(where $\theta_A$ and $\theta_B$ the parameters for fossil A and fossil B respectively)
-to the posterior from the same node. 
-\begin{center}\includegraphics[width=0.5\textwidth,clip=true]{sisterLineages.png}\end{center}
-
-If a fossil is the oldest representative of a smaller clade, but also of a
-larger clade, the fossil calibration with the same parameters can be used for 
-both the smaller and the larger clade.  For example, in the figure below
-Fossil A is used for clade \{1,2,3\}, but also for clade \{1,2,3,4,5\}.
-\begin{center}\includegraphics[width=0.5\textwidth,clip=true]{clades.png}\end{center}
-Note that if fossil 1 and fossil 2 are on sister lineages, only the oldest of 
-the two should be used for the larger clade. In the figure above, fossil B
-is older than fossil C, so fossil C should be used for clade \{6\} but
-not for clade \{6,7\}. Likewise, fossil B is younger than fossil A, so 
-(assuming the image represents a subset of taxa, and there are more outside
-this set) fossil A can be used to calibrate \{1,2,3,4,5,6,7\}, but
-fossil B should not be used for this clade.
 
 
 
