@@ -52,7 +52,7 @@ public class FossilCalibration extends ParametricDistribution {
 	//"(this is supposed to be used repeatedly during the MCMC run with updated values for lambda and mu) " +
 	//"" +
 	"4.) "+CladeAgeMethod.standardLogNormal+", "+CladeAgeMethod.standardGamma+", "+CladeAgeMethod.standardExponential+", "+CladeAgeMethod.standardNormal+" standard calculates probabilities for 100 ages and returns LogNormalImpl, GammaDistributionImpl, ExponentialDistributionImpl, or NormalDistributionImpl, depending on its arguments."
-	, CladeAgeMethod.empirical);
+	, CladeAgeMethod.empirical, CladeAgeMethod.values());
 
 	
 	public Input<RealParameter> minOccuranceAgeInput = new Input<RealParameter>("minOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, Validate.REQUIRED);

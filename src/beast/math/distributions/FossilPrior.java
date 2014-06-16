@@ -10,7 +10,7 @@ import beast.math.distributions.MRCAPrior;
 
 
 @Description("Prior based on information from the fossil record")
-@Citation("Michael Matschiner and Remco Boucakert. A rough guide to CladeAge, 2013")
+@Citation("Michael Matschiner and Remco Bouckaert. A rough guide to CladeAge, 2013")
 public class FossilPrior extends MRCAPrior {
 	public Input<FossilCalibration> calibrationDistr = new Input<FossilCalibration>("fossilDistr", "", Validate.REQUIRED);
 
