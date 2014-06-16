@@ -2808,7 +2808,7 @@ public class CladeAgeProbabilities {
 
 		// Part 3: Distribution fitting.
 		
-		if (distribution_type == "Lognormal") {
+		if (distribution_type.equals("LogNormal")) {
 
 			// Set the number of Nelder Mead Downhill Simplex repetitions.
 			int nmRepetitions = 10;
@@ -3234,7 +3234,7 @@ public class CladeAgeProbabilities {
 			LogNormalDistributionModel lndm = new LogNormalDistributionModel(); 
 			return lndm.new LogNormalImpl(logMean, logStdev);
 	
-		} else if (distribution_type == "Gamma") {
+		} else if (distribution_type.equals("Gamma")) {
 
 			// Set the number of Nelder Mead Downhill Simplex repetitions.
 			int nmRepetitions = 10;
@@ -3768,7 +3768,7 @@ public class CladeAgeProbabilities {
 			
 			return new GammaDistributionImpl(gamShape, gamScale);						
 	
-		} else if (distribution_type == "Exponential") {
+		} else if (distribution_type.equals("Exponential")) {
 
 			// Set the number of Nelder Mead Downhill Simplex repetitions.
 			int nmRepetitions = 10;
@@ -4062,7 +4062,7 @@ public class CladeAgeProbabilities {
 
 			return new ExponentialDistributionImpl(expMean);		
 	
-		} else if (distribution_type == "Normal") {
+		} else if (distribution_type.equals("Normal")) {
 
 			// Set the number of Nelder Mead Downhill Simplex repetitions.
 			int nmRepetitions = 10;
@@ -4441,7 +4441,7 @@ public class CladeAgeProbabilities {
 			
 			return new NormalDistributionImpl(normMean, normStdev);
 	
-		} // if (distribution_type == "Lognormal")
+		} // if (distribution_type.equals("Lognormal"))
 
 		// Return null unless a distribution has been returned earlier.
 		return null;
