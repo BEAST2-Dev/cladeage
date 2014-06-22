@@ -157,6 +157,9 @@ public class EmpiricalCladeAgeDistribution implements ContinuousDistribution {
 			return this.ages[i];
 		}
 		i = -i-2;
+		if (i < 0) {
+			return ages[0];
+		}
 		double w = cummulative[i+1] - cummulative[i]; 
 		double a = 1.0 -  (p - cummulative[i])/w;
 		double age = this.ages[i] * a + this.ages[i+1] * (1.0 - a); 
@@ -180,6 +183,9 @@ public class EmpiricalCladeAgeDistribution implements ContinuousDistribution {
 			return densities[i];
 		}
 		i = -i-2;
+		if (i < 0) {
+			return 0;
+		}
 		double w = this.ages[i+1] - this.ages[i];
 		double a = 1.0 -  (age - this.ages[i])/w;
 		double density = this.densities[i] * a + this.densities[i+1] * (1-a); 
