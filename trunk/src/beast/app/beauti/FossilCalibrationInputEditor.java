@@ -3,13 +3,14 @@ package beast.app.beauti;
 
 
 
+
 import java.awt.Dimension;
 
 import beast.app.beauti.BeautiDoc;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
 import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.BEASTObject;
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.FossilCalibration;
@@ -33,7 +34,7 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 	FossilCalibration calibration;
 	
 	@Override
-	public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_input = input;
         m_plugin = plugin;
         calibration = (FossilCalibration) m_input.get();

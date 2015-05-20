@@ -15,6 +15,7 @@ import beast.app.beauti.TaxonSetDialog;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
 import beast.app.draw.BEASTObjectPanel;
+import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Input;
 import beast.core.Logger;
@@ -50,7 +51,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    FossilCalibration calibration;
 	    
 	    @Override
-	    public void init(Input<?> input, BEASTObject plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 	    	List<?> list = (List) input.get();
 	    	if (list.size() > 0) {
 	    		calibration = ((FossilPrior) list.get(0)).calibrationDistr.get();
@@ -71,7 +72,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    }
 	    
 	    @Override
-	    public List<BEASTObject> pluginSelector(Input<?> input, BEASTObject parent, List<String> sTabuList) {
+	    public List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> sTabuList) {
 	        FossilPrior prior = new FossilPrior();
 	        try {
 	        	
@@ -132,7 +133,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 //				fossilCallibration.setInputValue("maxSamplingGap", new RealParameter("0.0"));
 //				fossilCallibration.setInputValue("minSamplingGap", new RealParameter("0.0"));
 
-				List<BeautiSubTemplate> availablePlugins = doc.getInpuEditorFactory().getAvailableTemplates(
+				List<BeautiSubTemplate> availablePlugins = doc.getInputEditorFactory().getAvailableTemplates(
 						new Input<FossilCalibration>("fossil","",FossilCalibration.class), doc, null, doc);
 				FossilCalibration fossilCallibration = (FossilCalibration) availablePlugins.get(0).createSubNet(new PartitionContext(), false);
 	        	fossilCallibration.setID("FossilCallibration.0");
@@ -144,7 +145,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	        	e.printStackTrace();
 	            // TODO: handle exception
 	        }
-	        List<BEASTObject> selectedPlugins = new ArrayList<BEASTObject>();
+	        List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
 	        selectedPlugins.add(prior);
 	        g_collapsedIDs.add(prior.getID());	        
 	        return selectedPlugins;

@@ -14,6 +14,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.MRCAPriorInputEditor;
 import beast.app.beauti.PriorInputEditor;
 import beast.app.beauti.TaxonSetDialog;
+import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Input;
 import beast.evolution.alignment.Taxon;
@@ -35,7 +36,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTObject plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.tree");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.distr");
 		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.monophyletic");
@@ -106,7 +107,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         Set<Taxon> candidates = new HashSet<Taxon>();
         for (String sTaxon : prior.treeInput.get().getTaxaNames()) {
             Taxon taxon = null;
-            for (Taxon taxon2 : doc.taxaset) {
+            for (Taxon taxon2 : doc.taxaset.values()) {
                 if (taxon2.getID().equals(sTaxon)) {
                     taxon = taxon2;
                     break;
@@ -115,7 +116,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
             if (taxon == null) {
                 taxon = new Taxon();
                 taxon.setID(sTaxon);
-                doc.taxaset.add(taxon);
+                doc.taxaset.put(sTaxon, taxon);
             }
             candidates.add(taxon);
         }
