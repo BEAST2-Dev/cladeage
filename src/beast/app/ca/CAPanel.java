@@ -629,7 +629,7 @@ public class CAPanel extends JPanel {
 		JPanel panel2b = new JPanel();
 		panel2b.setLayout(new BorderLayout());
 		
-		JLabel lblIcon = new MyJLabel(BeautiPanel.getIcon(CA_ICON));
+		JLabel lblIcon = new MyJLabel(Utils.getIcon(CA_ICON));
 		if (mode == MODE_BEAUTI_BOTTOM) {
 			lblIcon.setMinimumSize(new Dimension(84,84));
 			lblIcon.setPreferredSize(new Dimension(84,84));
@@ -1471,7 +1471,7 @@ public class CAPanel extends JPanel {
 		    String title = text.substring(0, text.indexOf(":"));
 		    title = title.replaceAll("<html>", "");
 			//JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE);
-			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE, BeautiPanel.getIcon(CA_ICON2));
+			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE, Utils.getIcon(CA_ICON2));
 		
 	}
 
@@ -1720,7 +1720,7 @@ public class CAPanel extends JPanel {
         
 		frame.setSize(1024, 728);
 		
-        ImageIcon icon = BeautiPanel.getIcon(CA_ICON);
+        ImageIcon icon = Utils.getIcon(CA_ICON);
         if (icon != null) {
             frame.setIconImage(icon.getImage());
         }
