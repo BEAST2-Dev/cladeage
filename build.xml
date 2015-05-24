@@ -15,7 +15,7 @@
 	<property name="libCA" location="lib" />
 	<property name="release_dir" value="release" />
 	<property name="distCA" location="${buildCA}/dist" />
-	<property name="beast2path" location="../beast2.1.3"/>
+	<property name="beast2path" location="../beast2"/>
 	<property name="libBeast2" location="${beast2path}/lib" />
 	<property name="srcBeast2" location="${beast2path}/src" />
 	<property name="beast2classpath" location="${beast2path}/build" />
@@ -74,8 +74,8 @@
 		       fork="true"
 		       memoryinitialsize="256m"
 		       memorymaximumsize="256m"
-			   source="1.6"
-		       target="1.6">
+			   source="1.8"
+		       target="1.8">
 			<include name="beast/**/**" />
 			<!-- compile JUnit test classes -->
 			<include name="test/beast/**" />
@@ -324,7 +324,7 @@
 		            name="${CladeAge_name}"
 		            mainclass="${main_class_CladeAge}"
 		            icon="${common_dirCA}/icons/cladeage.icns"
-		            jvmversion="1.6+"
+		            jvmversion="1.8+"
 		            vmoptions="-Xmx1024M"
 		            arguments="-window -working -options"
 		            version="${versionCA}"
