@@ -1,15 +1,19 @@
 package beast.math.distributions;
 
 import java.awt.geom.Point2D.Double;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
+
 import beast.core.Description;
 
 @Description("Continuous distribution defined by a set of empirically determined densities")
-public class EmpiricalCladeAgeDistribution implements ContinuousDistribution {
+public class EmpiricalCladeAgeDistribution implements ContinuousDistribution, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	// The ages of points, sorted from lowest to highest.
 	double [] ages;

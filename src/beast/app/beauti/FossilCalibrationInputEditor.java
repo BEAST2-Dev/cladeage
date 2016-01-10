@@ -36,7 +36,7 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
 	@Override
 	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = plugin;
         calibration = (FossilCalibration) m_input.get();
         panel = new CAPanel(CAPanel.MODE_BEAUTI_BOTTOM);
         panel.setMethod(calibration.cladeAgeMethodInput.get());

@@ -14,7 +14,7 @@ import beast.core.State;
 @Description("Takes a collection of fossil priors and combines them into the compound of these distributions.")
 public class CompoundFossilPrior extends Distribution {
     public Input<List<FossilPrior>> distributionsInput =
-            new Input<List<FossilPrior>>("fossilPrior", "individual priors based on the fossil record", new ArrayList<FossilPrior>());
+            new Input<>("fossilPrior", "individual priors based on the fossil record", new ArrayList<FossilPrior>());
     
     List<FossilPrior> distributions;
 

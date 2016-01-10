@@ -37,17 +37,17 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 
 	@Override
 	public void init(Input<?> input, BEASTInterface plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.tree");
-		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.distr");
-		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.monophyletic");
-		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.useOriginate");
-		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.tipsonly");
-		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilPrior.taxonset");
-		doc.beautiConfig.suppressPlugins.add("beast.math.distributions.FossilCalibration.offset");
+		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.tree");
+		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.distr");
+		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.monophyletic");
+		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.useOriginate");
+		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.tipsonly");
+		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.taxonset");
+		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilCalibration.offset");
 
         m_bAddButtons = bAddButtons;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = plugin;
         this.itemNr= listItemNr;
 		
         Box itemBox = Box.createHorizontalBox();
