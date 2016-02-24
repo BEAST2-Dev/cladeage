@@ -19,7 +19,7 @@ public class CompoundFossilPrior extends Distribution {
     List<FossilPrior> distributions;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	distributions = distributionsInput.get();
         if (distributions.size() == 0) {
             logP = 0;
@@ -27,7 +27,7 @@ public class CompoundFossilPrior extends Distribution {
     }
 
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         logP = 0;
         for (Distribution dists : distributions) {
             if (dists.isDirtyCalculation()) {

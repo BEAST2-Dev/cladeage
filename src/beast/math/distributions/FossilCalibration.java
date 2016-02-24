@@ -1,5 +1,13 @@
 package beast.math.distributions;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 
@@ -14,10 +22,11 @@ import beast.math.distributions.ParametricDistribution;
 
 
 @Description("Distribution based on fossil information")
-public class FossilCalibration extends ParametricDistribution {
-	
-	
-    public static enum CladeAgeMethod {
+public class FossilCalibration extends ParametricDistribution implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	public static enum CladeAgeMethod {
     	empirical("empirical CladeAge"), 
     	fitted("fitted CladeAge"), 
     	fitted_star("fitted CladeAge*"), 
@@ -102,7 +111,7 @@ public class FossilCalibration extends ParametricDistribution {
 	private double maxSamplingGap;
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		minOccuranceAge = minOccuranceAgeInput.get().getValue();
 		minDivRate = minDivRateInput.get().getValue();
 		minTurnoverRate = minTurnoverRateInput.get().getValue();
@@ -121,7 +130,34 @@ public class FossilCalibration extends ParametricDistribution {
 	@Override
 	public Distribution getDistribution() {
 		if (m_dist == null) {
-			updateEmpiricalCladeAgeDistribution();
+			if (true) {
+				updateEmpiricalCladeAgeDistribution();
+			} else {
+				File serialisedDist = new File(getID() + ".ser");
+				if (serialisedDist.exists()) {
+					try {
+						FileInputStream fis = new FileInputStream(serialisedDist);
+						ObjectInputStream in = new ObjectInputStream(fis);
+						m_dist = (EmpiricalCladeAgeDistribution) in.readObject();
+						in.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+						Log.err.println(e.getMessage());
+						updateEmpiricalCladeAgeDistribution();
+					}
+				} else {
+					updateEmpiricalCladeAgeDistribution();
+					try {
+						FileOutputStream fos = new FileOutputStream(serialisedDist);
+						ObjectOutputStream out = new ObjectOutputStream(fos);
+						out.writeObject(m_dist);
+						out.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+						Log.err.println(e.getMessage());
+					}
+				}
+			}
 		}
 		return m_dist;
 	}

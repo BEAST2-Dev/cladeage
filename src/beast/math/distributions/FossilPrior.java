@@ -18,7 +18,7 @@ public class FossilPrior extends MRCAPrior {
 		distInput.setRule(Validate.OPTIONAL);
 	}
 	
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		// this only makes sense as a prior on the parent of a clade,
 		// so tipsonly and useOriginate will be set to reflect this.
 		onlyUseTipsInput.setValue(false, this);
@@ -34,7 +34,7 @@ public class FossilPrior extends MRCAPrior {
      * Loggable interface implementation follows *
      */
     @Override
-    public void init(final PrintStream out) throws Exception {
+    public void init(final PrintStream out) {
     	String id = (taxonsetInput.get() != null ? taxonsetInput.get().getID() : null);
     	if (id == null) {
     		id = getID();
