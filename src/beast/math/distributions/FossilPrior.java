@@ -16,6 +16,7 @@ public class FossilPrior extends MRCAPrior {
 
 	public FossilPrior() {
 		distInput.setRule(Validate.OPTIONAL);
+		isMonophyleticInput.setValue(true, this);
 	}
 	
 	public void initAndValidate() {

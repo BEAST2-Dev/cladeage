@@ -635,9 +635,11 @@ public class CAPanel extends JPanel {
 			lblIcon.setPreferredSize(new Dimension(84,84));
 		} else {
 			lblIcon.setMinimumSize(new Dimension(160,160));
-			lblIcon.setPreferredSize(new Dimension(128,128));
-		}			
-		panel2b.add(lblIcon, BorderLayout.NORTH);
+			lblIcon.setPreferredSize(new Dimension(160,160));
+		}
+		JPanel iconPanel = new JPanel();
+		iconPanel.add(lblIcon);
+		panel2b.add(iconPanel, BorderLayout.NORTH);
 		
 		btnCalculate = new JButton("Run");
 		btnCalculate.setMinimumSize(new Dimension(128, 20));
@@ -1056,11 +1058,11 @@ public class CAPanel extends JPanel {
 		            if (m_distr != null) {
 			            int statoffsetx = getWidth() - 120;
 			            int statoffsety = graphoffset + 10;
-		            	String text = getFitParameters();
-		            	String [] strs = text.split("\n");
-		            	for (int i = 0; i < strs.length; i++) {
-			                g.drawString(strs[i], statoffsetx, statoffsety + i * 10);
-		            	}
+//		            	String text = getFitParameters();
+//		            	String [] strs = text.split("\n");
+//		            	for (int i = 0; i < strs.length; i++) {
+//			                g.drawString(strs[i], statoffsetx, statoffsety + i * 10);
+//		            	}
 		            }
 				}
 			};

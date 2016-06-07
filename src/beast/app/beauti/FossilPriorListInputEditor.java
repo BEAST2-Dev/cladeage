@@ -5,6 +5,7 @@ package beast.app.beauti;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import beast.app.beauti.BeautiDoc;
@@ -52,6 +53,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    
 	    @Override
 	    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 	    	List<?> list = (List) input.get();
 	    	if (list.size() > 0) {
 	    		calibration = ((FossilPrior) list.get(0)).calibrationDistr.get();
@@ -65,10 +67,9 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            panel.setMethod(calibration.cladeAgeMethodInput.get());
 	            panel.dataToGUI();
 	            panel.addChangeListener(this);
-
+	            panel.setVisible(true);
 	            add(panel);
 	    	}
-	    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 	    }
 	    
 	    @Override

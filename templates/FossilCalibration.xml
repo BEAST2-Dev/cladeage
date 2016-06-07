@@ -76,7 +76,7 @@
 <!--
             path='distribution/distribution[id="prior"]/distribution[id="fossilCalibrations"]/fossilPrior'
 -->
-	<panel spec='BeautiPanelConfig' panelname="Fossil Priors" tiptext="Priors based on fossil record"
+	<panel spec='BeautiPanelConfig' panelname="Clade Ages" tiptext="Priors based on fossil record"
             path='distribution/distribution[id="fossilCalibrations"]/distribution'
             hasPartitions="none" icon='7.png.x' forceExpansion='TRUE_START_COLLAPSED'
             type='beast.math.distributions.FossilPrior'
