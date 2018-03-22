@@ -8,7 +8,7 @@
 	</description>
 
 	<!-- set global properties for this build -->
-	<property name="versionCA" value="1.2.1" />
+	<property name="versionCA" value="1.3.0" />
 	<property name="srcCA" location="src" />
 	<property name="docCA" location="doc" />
 	<property name="buildCA" location="build" />
