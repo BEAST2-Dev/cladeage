@@ -122,24 +122,22 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            CompoundDistribution compoundPrior = (CompoundDistribution) doc.pluginmap.get("fossilCalibrations");
 	            compoundPrior.pDistributions.setValue(prior, compoundPrior);
 
-//				FossilCalibration fossilCallibration = new FossilCalibration();
-//				fossilCallibration.setInputValue("minOccuranceAge",new RealParameter("0.0"));
-//				fossilCallibration.setInputValue("maxOccuranceAge",new RealParameter("0.0"));
-//				fossilCallibration.setInputValue("minDivRate",     new RealParameter("0.01"));
-//				fossilCallibration.setInputValue("maxDivRate",     new RealParameter("0.01"));
-//				fossilCallibration.setInputValue("maxSamplingRate",new RealParameter("0.01"));
-//				fossilCallibration.setInputValue("minSamplingRate",new RealParameter("0.01"));
-//				fossilCallibration.setInputValue("minTurnoverRate",new RealParameter("0.001"));
-//				fossilCallibration.setInputValue("maxTurnoverRate",new RealParameter("0.001"));
-//				fossilCallibration.setInputValue("maxSamplingGap", new RealParameter("0.0"));
-//				fossilCallibration.setInputValue("minSamplingGap", new RealParameter("0.0"));
+//				FossilCalibration fossilCalibration = new FossilCalibration();
+//				fossilCalibration.setInputValue("minOccuranceAge",new RealParameter("0.0"));
+//				fossilCalibration.setInputValue("maxOccuranceAge",new RealParameter("0.0"));
+//				fossilCalibration.setInputValue("minDivRate",     new RealParameter("0.01"));
+//				fossilCalibration.setInputValue("maxDivRate",     new RealParameter("0.01"));
+//				fossilCalibration.setInputValue("maxSamplingRate",new RealParameter("0.01"));
+//				fossilCalibration.setInputValue("minSamplingRate",new RealParameter("0.01"));
+//				fossilCalibration.setInputValue("minTurnoverRate",new RealParameter("0.001"));
+//				fossilCalibration.setInputValue("maxTurnoverRate",new RealParameter("0.001"));
 
 				List<BeautiSubTemplate> availablePlugins = doc.getInputEditorFactory().getAvailableTemplates(
 						new Input<FossilCalibration>("fossil","",FossilCalibration.class), doc, null, doc);
-				FossilCalibration fossilCallibration = (FossilCalibration) availablePlugins.get(0).createSubNet(new PartitionContext(), false);
-	        	fossilCallibration.setID("FossilCallibration.0");
-	        	doc.registerPlugin(fossilCallibration);
-		        prior.calibrationDistr.setValue(fossilCallibration, prior);
+				FossilCalibration fossilCalibration = (FossilCalibration) availablePlugins.get(0).createSubNet(new PartitionContext(), false);
+	        	fossilCalibration.setID("FossilCalibration.0");
+	        	doc.registerPlugin(fossilCalibration);
+		        prior.calibrationDistr.setValue(fossilCalibration, prior);
 
 	            
 	        } catch (Exception e) {

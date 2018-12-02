@@ -13,10 +13,10 @@ import beast.math.distributions.MRCAPrior;
 @Citation("Matschiner M, Musilova Z, Barth JMI, Starostova Z, Salzburger W, Steel M, and\n" +
 	"  Bouckaert R (2017) Bayesian phylogenetic estimation of clade ages supports\n" + 
 	"  trans-Atlantic dispersal of cichlid fishes. Systematic Biology 66: 3–22.")
-public class FossilPrior extends MRCAPrior {
-	public Input<FossilCalibration> calibrationDistr = new Input<>("fossilDistr", "", Validate.REQUIRED);
+public class DuoFossilPrior extends MRCAPrior {
+	public Input<DuoFossilCalibration> calibrationDistr = new Input<>("duoFossilDistr", "", Validate.REQUIRED);
 
-	public FossilPrior() {
+	public DuoFossilPrior() {
 		distInput.setRule(Validate.OPTIONAL);
 		isMonophyleticInput.setValue(true, this);
 	}

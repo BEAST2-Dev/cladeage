@@ -10,8 +10,8 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 
 import beast.core.Description;
 
-@Description("Continuous distribution defined by a set of empirically determined densities")
-public class EmpiricalCladeAgeDistribution implements ContinuousDistribution, Serializable {
+@Description("Continuous distribution defined by a set of densities determined through simulation")
+public class CladeAgeDistribution implements ContinuousDistribution, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,7 +34,7 @@ public class EmpiricalCladeAgeDistribution implements ContinuousDistribution, Se
 	// The normaliser for the distribution.
 	double normaliser = 0;
 	
-	public EmpiricalCladeAgeDistribution(double[] ages, double[] densities, boolean useExponentialTail) throws Exception {
+	public CladeAgeDistribution(double[] ages, double[] densities, boolean useExponentialTail) throws Exception {
 		if (ages.length != densities.length) {
 			throw new Exception("Arrays 'ages' and 'densitites' should be of same length!");
 		}

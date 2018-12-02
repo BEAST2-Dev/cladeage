@@ -21,13 +21,13 @@ import beast.core.util.Log;
 import beast.math.distributions.ParametricDistribution;
 
 
-@Description("Distribution based the age of a single fossil")
-public class FossilCalibration extends ParametricDistribution implements Serializable {
+@Description("Distribution based on the ages of two fossils")
+public class DuoFossilCalibration extends ParametricDistribution implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public static enum CladeAgeMethod {
-    	standard("standard CladeAge"); 
+    	duo("duo CladeAge"); 
 
     	CladeAgeMethod(final String name) {
             this.ename = name;
@@ -41,14 +41,21 @@ public class FossilCalibration extends ParametricDistribution implements Seriali
     }
 
 	
-	public Input<CladeAgeMethod> cladeAgeMethodInput = new Input<FossilCalibration.CladeAgeMethod>("method", 
-		CladeAgeMethod.standard+" calculates probabilities for 100 ages and returns CladeAgeDistribution ",
-		CladeAgeMethod.standard,
+	public Input<CladeAgeMethod> cladeAgeMethodInput = new Input<DuoFossilCalibration.CladeAgeMethod>("method", 
+		CladeAgeMethod.duo+" calculates probabilities for 100 ages and returns CladeAgeDistribution.",
+		CladeAgeMethod.duo,
 		CladeAgeMethod.values());
 
 	
-	public Input<RealParameter> minOccuranceAgeInput = new Input<RealParameter>("minOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, Validate.REQUIRED);
-	public Input<RealParameter> maxOccuranceAgeInput = new Input<RealParameter>("maxOccuranceAge", CAPanel.OCCURRENCE_AGE_HELP, Validate.REQUIRED);
+	public Input<RealParameter> minYoungerOccuranceAgeInput = new Input<RealParameter>("minYoungerOccuranceAge", CAPanel.YOUNGER_OCCURRENCE_AGE_HELP, Validate.REQUIRED);
+	public Input<RealParameter> maxYoungerOccuranceAgeInput = new Input<RealParameter>("maxYoungerOccuranceAge", CAPanel.YOUNGER_OCCURRENCE_AGE_HELP, Validate.REQUIRED);
+
+	public Input<RealParameter> minOlderOccuranceAgeInput = new Input<RealParameter>("minOlderOccuranceAge", CAPanel.OLDER_OCCURRENCE_AGE_HELP, Validate.REQUIRED);
+	public Input<RealParameter> maxOlderOccuranceAgeInput = new Input<RealParameter>("maxOlderOccuranceAge", CAPanel.OLDER_OCCURRENCE_AGE_HELP, Validate.REQUIRED);
+
+	public Input<RealParameter> weightYoungerOccuranceInput = new Input<RealParameter>("weightYoungerOccurance", CAPanel.WEIGHT_YOUNGER_OCCURRENCE_HELP, Validate.REQUIRED);
+
+	public Input<RealParameter> weightOlderOccuranceInput = new Input<RealParameter>("weightOlderOccurance", CAPanel.WEIGHT_OLDER_OCCURRENCE_HELP, Validate.REQUIRED);
 
 	public Input<RealParameter> minDivRateInput = new Input<RealParameter>("minDivRate", CAPanel.DIV_RATE_HELP, Validate.REQUIRED);
 	public Input<RealParameter> maxDivRateInput = new Input<RealParameter>("maxDivRate", CAPanel.DIV_RATE_HELP, Validate.REQUIRED);
@@ -62,27 +69,37 @@ public class FossilCalibration extends ParametricDistribution implements Seriali
 	
     ContinuousDistribution m_dist = null;
 
-	private double minOccuranceAge;
+	private double minYoungerOccuranceAge;
+	private double minOlderOccuranceAge;
 	private double minDivRate;
 	private double minTurnoverRate;
 	private double minSamplingRate;
 
-	private double maxOccuranceAge;
+	private double maxYoungerOccuranceAge;
+	private double maxOlderOccuranceAge;
 	private double maxDivRate;
 	private double maxTurnoverRate;
 	private double maxSamplingRate;
 
+	private double weightYoungerOccurance;
+	private double weightOlderOccurance;
+
 	@Override
 	public void initAndValidate() {
-		minOccuranceAge = minOccuranceAgeInput.get().getValue();
+		minYoungerOccuranceAge = minYoungerOccuranceAgeInput.get().getValue();
+		minOlderOccuranceAge = minOlderOccuranceAgeInput.get().getValue();
 		minDivRate = minDivRateInput.get().getValue();
 		minTurnoverRate = minTurnoverRateInput.get().getValue();
 		minSamplingRate = minSamplingRateInput.get().getValue();
 
-		maxOccuranceAge = maxOccuranceAgeInput.get().getValue();
+		maxYoungerOccuranceAge = maxYoungerOccuranceAgeInput.get().getValue();
+		maxOlderOccuranceAge = maxOlderOccuranceAgeInput.get().getValue();
 		maxDivRate = maxDivRateInput.get().getValue();
 		maxTurnoverRate = maxTurnoverRateInput.get().getValue();
 		maxSamplingRate = maxSamplingRateInput.get().getValue();
+
+		weightYoungerOccurance = weightYoungerOccuranceInput.get().getValue();
+		weightOlderOccurance = weightOlderOccuranceInput.get().getValue();
 	}
     
 	@Override
@@ -126,9 +143,10 @@ public class FossilCalibration extends ParametricDistribution implements Seriali
 								
 		try {
 			switch (cladeAgeMethodInput.get()) {
-			case standard:
-			m_dist = probs.run_standard_cladeage(
-					minOccuranceAge, maxOccuranceAge,
+			case duo:
+			m_dist = probs.run_duo_cladeage(
+					minYoungerOccuranceAge, maxYoungerOccuranceAge, weightYoungerOccurance,
+					minOlderOccuranceAge, maxOlderOccuranceAge, weightOlderOccurance,
 					minDivRate, maxDivRate,
 					minTurnoverRate, maxTurnoverRate,
 					minSamplingRate, maxSamplingRate,

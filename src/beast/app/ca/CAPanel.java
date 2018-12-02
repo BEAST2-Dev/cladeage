@@ -67,7 +67,7 @@ import beast.app.beauti.BeautiPanel;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.util.Utils;
-import beast.math.distributions.EmpiricalCladeAgeDistribution;
+import beast.math.distributions.CladeAgeDistribution;
 import beast.math.distributions.FossilCalibration.CladeAgeMethod;
 
 
@@ -88,6 +88,32 @@ public class CAPanel extends JPanel {
 		"(33.9-0.1 to 23.03-0.05 Ma). The uncertainties in the boundaries are small <br/>" +
 		"enough to be ignored, so the minimum is 23.03 and maximum 33.9 if you want <br/>" +
 		"to express ages in millions of years. <br/>" +
+		"</html>";
+
+	final public static String YOUNGER_OCCURRENCE_AGE_HELP = "<html>Younger potential first occurrence age:<br/>"+
+		"<br/>"+
+		"In cases where it is uncertain which of two occurrences represents the first <br/>"+
+		"occurrence of a clade, this is the age of the younger of the two occurrences. <br/>"+
+		"</html>";
+
+	final public static String WEIGHT_YOUNGER_OCCURRENCE_HELP = "<html>Weight of the younger potential first occurrence:<br/>"+
+		"<br/>"+
+		"In cases where it is uncertain which of two occurrences represents the first <br/>"+
+		"occurrence of a clade, this is the relative probability for the younger of <br/>"+
+		"the two occurrences. <br/>"+
+		"</html>";
+
+	final public static String WEIGHT_OLDER_OCCURRENCE_HELP = "<html>Weight of the older potential first occurrence:<br/>"+
+		"<br/>"+
+		"In cases where it is uncertain which of two occurrences represents the first <br/>"+
+		"occurrence of a clade, this is the relative probability for the older of <br/>"+
+		"the two occurrences. <br/>"+
+		"</html>";
+
+	final public static String OLDER_OCCURRENCE_AGE_HELP = "<html>Older potential first occurrence age:<br/>"+
+		"<br/>"+
+		"In cases where it is uncertain which of two occurrences represents the first <br/>"+
+		"occurrence of a clade, this is the age of the older of the two occurrences. <br/>"+
 		"</html>";
 
 	final static String RATE_HELP = 
@@ -140,16 +166,6 @@ public class CAPanel extends JPanel {
 		"Friedman & Brazeau (2011), <br/>"+
 		"<a href='http://www.ncbi.nlm.nih.gov/pubmed/20739322'>http://www.ncbi.nlm.nih.gov/pubmed/20739322</a></html>";
 
-	final public static String SAMPLING_GAP_HELP = "<html>Sampling gap:<br/>"+
-		"<br/>"+
-		"The sampling gap represents the time period after a clade's <br/>"+
-		"origin during which it could not have fossilized (possibly due to <br/>"+
-		"small population size or limited geographic distribution), or its <br/>"+
-		"earliest fossils could not be recognized as part of this clade (as <br/>"+
-		"no apomorphies may have evolved yet). Specifying a sampling gap <br/>"+
-		"is optional. A sampling gap of 0.0-2.0 Ma may be a <br/>"+
-		"reasonable assumption.</html>";
-
 	final public static String ABOUT_HELP = "<html>CladeAge:<br/><br/>" +
 		"Copyright 2013<br/><br/>" +
 		"Michael Matschiner<br/>michaelmatschiner@mac.com<br/>" +
@@ -162,12 +178,10 @@ public class CAPanel extends JPanel {
 	private JTextField textField_maxDivRate;
 	private JTextField textField_maxTurnoverRate;
 	private JTextField textField_maxSamplingRate;
-	private JTextField textField_maxSamplingGap;
 	private JTextField textField_minOccuranceAge;
 	private JTextField textField_minDivRate;
 	private JTextField textField_minTurnoverRate;
 	private JTextField textField_minSamplingRate;
-	private JTextField textField_minSamplingGap;
 	JButton btnFindApproximation;
 	JButton btnCalculate;
 	public void setCalculateButtonText(String text) {btnCalculate.setText(text);}
@@ -184,39 +198,33 @@ public class CAPanel extends JPanel {
 	private double minDivRate = 0.01;
 	private double minTurnoverRate = 0.1;
 	private double minSamplingRate = 0.01;
-	private double minSamplingGap = 0;
 
 	private double maxOccuranceAge = minOccuranceAge;
 	private double maxDivRate = minDivRate;
 	private double maxTurnoverRate = minTurnoverRate;
 	private double maxSamplingRate = minSamplingRate;
-	private double maxSamplingGap = minSamplingGap;
 
-	private CladeAgeMethod cladeAgeMethod = CladeAgeMethod.empirical;
+	private CladeAgeMethod cladeAgeMethod = CladeAgeMethod.standard;
 	
 	public double getMinOccuranceAge() { return	minOccuranceAge;}
 	public double getMinDivRate() { return	minDivRate;}
 	public double getMinTurnoverRate() { return	minTurnoverRate;}
 	public double getMinSamplingRate() { return	minSamplingRate;}
-	public double getMinSamplingGap() { return	minSamplingGap;}
 
 	public double getMaxOccuranceAge() { return	maxOccuranceAge;}
 	public double getMaxDivRate() { return	maxDivRate;}
 	public double getMaxTurnoverRate() { return	maxTurnoverRate;}
 	public double getMaxSamplingRate() { return	maxSamplingRate;}
-	public double getMaxSamplingGap() { return	maxSamplingGap;}
 	
 	public void setMinOccuranceAge(double minOccuranceAge) {this.minOccuranceAge = minOccuranceAge;}
 	public void setMinDivRate(double minDivRate) {this.minDivRate = minDivRate;}
 	public void setMinTurnoverRate(double minTurnoverRate) {this.minTurnoverRate = minTurnoverRate;}
 	public void setMinSamplingRate(double minSamplingRate) {this.minSamplingRate = minSamplingRate;}
-	public void setMinSamplingGap(double minSamplingGap) {this.minSamplingGap = minSamplingGap;}
 	   	
 	public void setMaxOccuranceAge(double maxOccuranceAge) {this.maxOccuranceAge = maxOccuranceAge;}
 	public void setMaxDivRate(double maxDivRate) {this.maxDivRate = maxDivRate;}
 	public void setMaxTurnoverRate(double maxTurnoverRate) {this.maxTurnoverRate = maxTurnoverRate;}
 	public void setMaxSamplingRate(double maxSamplingRate) {this.maxSamplingRate = maxSamplingRate;}
-	public void setMaxSamplingGap(double maxSamplingGap) {this.maxSamplingGap = maxSamplingGap;}
 	
 	public void setMethod(CladeAgeMethod method) {
 		cladeAgeMethod = method;
@@ -359,7 +367,7 @@ public class CAPanel extends JPanel {
 		comboBox.setSelectedItem(cladeAgeMethod);
 
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
-					//new String[]{"empirical CladeAge","fitted CladeAge","fitted CladeAge*","Lognormal", "Gamma", "Exponential", "Normal"});
+					//new String[]{"standard CladeAge"});
 			GridBagConstraints gbc_comboBox = new GridBagConstraints();
 			gbc_comboBox.insets = new Insets(0, 0, 0, 5);
 			gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -372,15 +380,15 @@ public class CAPanel extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
-							if (textField_maxSamplingGap != null) {
-								if (comboBox.getSelectedItem().toString().equals("empirical CladeAge")) {
-									textField_maxSamplingGap.setEnabled(true);
-									textField_minSamplingGap.setEnabled(true);
-								} else {
-									textField_maxSamplingGap.setEnabled(false);
-									textField_minSamplingGap.setEnabled(false);
-								}
-							}
+							// if (textField_maxSamplingGap != null) {
+							// 	if (comboBox.getSelectedItem().toString().equals("standard CladeAge")) {
+							// 		textField_maxSamplingGap.setEnabled(true);
+							// 		textField_minSamplingGap.setEnabled(true);
+							// 	} else {
+							// 		textField_maxSamplingGap.setEnabled(false);
+							// 		textField_minSamplingGap.setEnabled(false);
+							// 	}
+							// }
 							guiToData();
 							
 						}
@@ -517,27 +525,27 @@ public class CAPanel extends JPanel {
 		}
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			JLabel lblNewLabel = new JLabel("Sampling gap:");
-			lblNewLabel.setToolTipText(SAMPLING_GAP_HELP);
-			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-			gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
-			gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
-			gbc_lblNewLabel.gridx = 0;
-			gbc_lblNewLabel.gridy = 5;
-			panel.add(lblNewLabel, gbc_lblNewLabel);
+			// JLabel lblNewLabel = new JLabel("Sampling gap:");
+			// lblNewLabel.setToolTipText(SAMPLING_GAP_HELP);
+			// GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+			// gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
+			// gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+			// gbc_lblNewLabel.gridx = 0;
+			// gbc_lblNewLabel.gridy = 5;
+			// panel.add(lblNewLabel, gbc_lblNewLabel);
 
-			textField_minSamplingGap = newTextField();
-			textField_minSamplingGap.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_minSamplingGap.setColumns(10);
+			// textField_minSamplingGap = newTextField();
+			// textField_minSamplingGap.addActionListener(new ActionListener() {
+			// 	public void actionPerformed(ActionEvent e) {
+			// 	}
+			// });
+			// textField_minSamplingGap.setColumns(10);
 			GridBagConstraints gbc_textField_11 = new GridBagConstraints();
 			gbc_textField_11.insets = new Insets(0, 0, 0, 5);
 			gbc_textField_11.fill = GridBagConstraints.HORIZONTAL;
 			gbc_textField_11.gridx = 1;
 			gbc_textField_11.gridy = 5;
-			panel.add(textField_minSamplingGap, gbc_textField_11);
+			// panel.add(textField_minSamplingGap, gbc_textField_11);
 			
 			JLabel label_4 = new JLabel("-");
 			GridBagConstraints gbc_label_4 = new GridBagConstraints();
@@ -546,17 +554,17 @@ public class CAPanel extends JPanel {
 			gbc_label_4.gridy = 5;
 			panel.add(label_4, gbc_label_4);
 			
-			textField_maxSamplingGap = newTextField();
-			textField_maxSamplingGap.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_maxSamplingGap.setColumns(10);
+			// textField_maxSamplingGap = newTextField();
+			// textField_maxSamplingGap.addActionListener(new ActionListener() {
+			// 	public void actionPerformed(ActionEvent e) {
+			// 	}
+			// });
+			// textField_maxSamplingGap.setColumns(10);
 			GridBagConstraints gbc_textField_5 = new GridBagConstraints();
 			gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
 			gbc_textField_5.gridx = 3;
 			gbc_textField_5.gridy = 5;
-			panel.add(textField_maxSamplingGap, gbc_textField_5);
+			// panel.add(textField_maxSamplingGap, gbc_textField_5);
 	
 			// help buttons for panel1
 			JButton btnHelpButtonFirstOccurance = newHelpButton();
@@ -612,19 +620,19 @@ public class CAPanel extends JPanel {
 			});
 		}
 		
-		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			JButton btnHelpButton5= newHelpButton();
-			GridBagConstraints gbc_btnNewButton5 = new GridBagConstraints();
-			gbc_btnNewButton5.gridx = 5;
-			gbc_btnNewButton5.gridy = 5;
-			panel.add(btnHelpButton5, gbc_btnNewButton5);
-			btnHelpButton5.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					showHelp(SAMPLING_GAP_HELP);
-				}
-			});
-		}
+		// if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
+		// 	JButton btnHelpButton5= newHelpButton();
+		// 	GridBagConstraints gbc_btnNewButton5 = new GridBagConstraints();
+		// 	gbc_btnNewButton5.gridx = 5;
+		// 	gbc_btnNewButton5.gridy = 5;
+		// 	panel.add(btnHelpButton5, gbc_btnNewButton5);
+		// 	btnHelpButton5.addActionListener(new ActionListener() {
+		// 		@Override
+		// 		public void actionPerformed(ActionEvent e) {
+		// 			showHelp(SAMPLING_GAP_HELP);
+		// 		}
+		// 	});
+		// }
 				
 		JPanel panel2b = new JPanel();
 		panel2b.setLayout(new BorderLayout());
@@ -679,8 +687,8 @@ public class CAPanel extends JPanel {
 			      public void run() {
 //					try {
 //						String method = comboBox.getSelectedItem().toString();
-//						if (method.equals("empirical CladeAge")) {
-//							probs.run_empirical_cladeage(
+//						if (method.equals("standard CladeAge")) {
+//							probs.run_standard_cladeage(
 //									minOccuranceAge, maxOccuranceAge,
 //									minDivRate, maxDivRate,
 //									minTurnoverRate, maxTurnoverRate,
@@ -688,59 +696,7 @@ public class CAPanel extends JPanel {
 //									minSamplingGap, maxSamplingGap, dpb);
 //							m_rmsd = 0.0;
 //						}
-//						if (method.equals("fitted CladeAge")) {
-//							probs.run_fitted_cladeage(
-//									minOccuranceAge, maxOccuranceAge,
-//									minDivRate, maxDivRate,
-//									minTurnoverRate, maxTurnoverRate,
-//									minSamplingRate, maxSamplingRate,
-//									dpb);
-//						}
-//						if (method.equals("fitted CladeAge*")) {
-//							probs.run_fitted_cladeage_star(
-//									minOccuranceAge, maxOccuranceAge,
-//									minDivRate, maxDivRate,
-//									minTurnoverRate, maxTurnoverRate,
-//									minSamplingRate, maxSamplingRate,
-//									dpb);
-//						}
-//						if (method.equals("Lognormal")) {
-//							probs.run_standard(
-//									minOccuranceAge, maxOccuranceAge,
-//									minDivRate, maxDivRate,
-//									minTurnoverRate, maxTurnoverRate,
-//									minSamplingRate, maxSamplingRate,
-//									"LogNormal",
-//									dpb);
-//						}
-//						if (method.equals("Gamma")) {
-//							probs.run_standard(
-//									minOccuranceAge, maxOccuranceAge,
-//									minDivRate, maxDivRate,
-//									minTurnoverRate, maxTurnoverRate,
-//									minSamplingRate, maxSamplingRate,
-//									"Gamma",
-//									dpb);
-//						}
-//						if (method.equals("Exponential" )) {
-//							probs.run_standard(
-//									minOccuranceAge, maxOccuranceAge,
-//									minDivRate, maxDivRate,
-//									minTurnoverRate, maxTurnoverRate,
-//									minSamplingRate, maxSamplingRate,
-//									"Exponential",
-//									dpb);
-//						}
-//						if (method.equals("Normal") ) {
-//							probs.run_standard(
-//									minOccuranceAge, maxOccuranceAge,
-//									minDivRate, maxDivRate,
-//									minTurnoverRate, maxTurnoverRate,
-//									minSamplingRate, maxSamplingRate,
-//									"Normal",
-//									dpb);
-//						}
-//						if (!method.equals("empirical CladeAge")) {
+//						if (!method.equals("standard CladeAge")) {
 //							m_rmsd = probs.getDistribution_rmsd();
 //						}
 //
@@ -996,7 +952,7 @@ public class CAPanel extends JPanel {
 		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints2;  
 		                if (m_distr != null) {
 		                    try {
-		                    	if (m_distr instanceof EmpiricalCladeAgeDistribution) {
+		                    	if (m_distr instanceof CladeAgeDistribution) {
 			                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);
 		                    	} else {
 		                    		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);// - minOccuranceAge);X
@@ -1223,12 +1179,12 @@ public class CAPanel extends JPanel {
 		setToolTipText(textField_maxDivRate, DIV_RATE_HELP);
 		setToolTipText(textField_maxTurnoverRate, TURNOVER_RATE_HELP);
 		setToolTipText(textField_maxSamplingRate, SAMPLING_RATE_HELP);
-		setToolTipText(textField_maxSamplingGap, SAMPLING_GAP_HELP);
+		// setToolTipText(textField_maxSamplingGap, SAMPLING_GAP_HELP);
 		setToolTipText(textField_minOccuranceAge, OCCURRENCE_AGE_HELP);
 		setToolTipText(textField_minDivRate, DIV_RATE_HELP);
 		setToolTipText(textField_minTurnoverRate, TURNOVER_RATE_HELP);
 		setToolTipText(textField_minSamplingRate, SAMPLING_RATE_HELP);
-		setToolTipText(textField_minSamplingGap, SAMPLING_GAP_HELP);
+		// setToolTipText(textField_minSamplingGap, SAMPLING_GAP_HELP);
 	}
 
 	private void setToolTipText(JComponent component, String text) {
@@ -1244,67 +1200,14 @@ public class CAPanel extends JPanel {
 	public void calcFit(JProgressBar progress) {
 		String type = comboBox.getSelectedItem().toString();
 		
-		if (type.equals("empirical CladeAge")) {
+		if (type.equals("standard CladeAge")) {
 			try {
-				m_distr = probs.run_empirical_cladeage(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,minSamplingGap,maxSamplingGap, progress);
+				m_distr = probs.run_standard_cladeage(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate, progress);
+				// m_distr = probs.run_standard_cladeage(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,minSamplingGap,maxSamplingGap, progress);
 			} catch (Exception e) {
 				return;
 			}
 			m_rmsd = 0;
-			return;
-		}
-		if (type.equals("fitted CladeAge")) {
-			try {
-				m_distr = probs.run_fitted_cladeage(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate, progress);
-			} catch (Exception e) {
-				return;
-			}
-			m_rmsd = probs.getDistribution_rmsd();
-			return;
-		}
-		if (type.equals("fitted CladeAge*")) {
-			try {
-				m_distr = probs.run_fitted_cladeage_star(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate, progress);
-			} catch (Exception e) {
-				return;
-			}
-			m_rmsd = probs.getDistribution_rmsd();
-			return;
-		}		
-		if (type.equals("Lognormal")) {
-			try {
-				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Lognormal", progress);
-			} catch (Exception e) {
-				return;
-			}
-			m_rmsd = probs.getDistribution_rmsd();
-			return;
-		}
-		if (type.equals("Gamma")) {
-			try {
-				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Gamma", progress);
-			} catch (Exception e) {
-				return;
-			}
-			m_rmsd = probs.getDistribution_rmsd();
-			return;
-		}
-		if (type.equals("Exponential")) {
-			try {
-				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Exponential", progress);
-			} catch (Exception e) {
-				return;
-			}
-			m_rmsd = probs.getDistribution_rmsd();
-			return;
-		}
-		if (type.equals("Normal")) {
-			try {
-				m_distr = probs.run_standard(minOccuranceAge,maxOccuranceAge,minDivRate,maxDivRate,minTurnoverRate,maxTurnoverRate,minSamplingRate,maxSamplingRate,"Normal", progress);
-			} catch (Exception e) {
-				return;
-			}
-			m_rmsd = probs.getDistribution_rmsd();
 			return;
 		}
 		
@@ -1315,18 +1218,18 @@ public class CAPanel extends JPanel {
 			
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
 			textField_minOccuranceAge.setText(minOccuranceAge + "");
-			textField_minSamplingGap.setText(minSamplingGap + "");
+			// textField_minSamplingGap.setText(minSamplingGap + "");
 
 			if (maxOccuranceAge != minOccuranceAge) {
 				textField_maxOccuranceAge.setText(maxOccuranceAge + "");
 			} else {
 				textField_maxOccuranceAge.setText("As minimum");
 			}
-			if (maxSamplingGap != minSamplingGap) {
-				textField_maxSamplingGap.setText(maxSamplingGap + "");
-			} else {
-				textField_maxSamplingGap.setText("As minimum");
-			}
+			// if (maxSamplingGap != minSamplingGap) {
+			// 	textField_maxSamplingGap.setText(maxSamplingGap + "");
+			// } else {
+			// 	textField_maxSamplingGap.setText("As minimum");
+			// }
 		}
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
 			textField_minDivRate.setText(minDivRate + "");
@@ -1357,7 +1260,7 @@ public class CAPanel extends JPanel {
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
 			maxOccuranceAge = parseDouble(textField_maxOccuranceAge.getText());
-			maxSamplingGap = parseDouble(textField_maxSamplingGap.getText());
+			// maxSamplingGap = parseDouble(textField_maxSamplingGap.getText());
 			minOccuranceAge = parseDouble(textField_minOccuranceAge.getText());
 			if (minOccuranceAge < 0) {
 				minOccuranceAge = 0;
@@ -1365,13 +1268,13 @@ public class CAPanel extends JPanel {
 			if (Double.isInfinite(maxOccuranceAge) || maxOccuranceAge < minOccuranceAge) {
 				maxOccuranceAge = minOccuranceAge;
 			}
-			minSamplingGap = parseDouble(textField_minSamplingGap.getText());
-			if (minSamplingGap < 0) {
-				minSamplingGap = 0;
-			}
-			if (Double.isInfinite(maxSamplingGap) || maxSamplingGap < minSamplingGap) {
-				maxSamplingGap = minSamplingGap;
-			}
+			// minSamplingGap = parseDouble(textField_minSamplingGap.getText());
+			// if (minSamplingGap < 0) {
+			// 	minSamplingGap = 0;
+			// }
+			// if (Double.isInfinite(maxSamplingGap) || maxSamplingGap < minSamplingGap) {
+			// 	maxSamplingGap = minSamplingGap;
+			// }
 		}
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
 			maxDivRate = parseDouble(textField_maxDivRate.getText());
@@ -1515,7 +1418,7 @@ public class CAPanel extends JPanel {
 //            text += "weight: " + format(weight,5) + "\n";
 //        }
         try {
-        	if (m_distr instanceof EmpiricalCladeAgeDistribution) {
+        	if (m_distr instanceof CladeAgeDistribution) {
     	        text += "\nmedian: " + format(m_distr.inverseCumulativeProbability(0.5), 5) + "\n";
     	        text += "\n95% HPD: " + "\n" + 
     	        		format(m_distr.inverseCumulativeProbability(0.025), 5) + 
