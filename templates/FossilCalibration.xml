@@ -39,8 +39,6 @@
 			<maxTurnoverRate idref="maxTurnoverRate"/>
 			<maxSamplingRate idref="maxSamplingRate"/>
 			<minSamplingRate idref="minSamplingRate"/>
-			<parameter name='maxSamplingGap' value="0.0"/>
-			<parameter name='minSamplingGap' value="0.0"/>
 		</distr>
 ]]>
         </subtemplate>
