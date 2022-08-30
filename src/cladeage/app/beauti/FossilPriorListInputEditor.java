@@ -1,4 +1,4 @@
-package beast.app.beauti;
+package cladeage.app.beauti;
 
 
 
@@ -13,8 +13,8 @@ import beastfx.app.inputeditor.BeautiSubTemplate;
 import beast.base.parser.PartitionContext;
 import beastfx.app.beauti.PriorListInputEditor;
 import beastfx.app.inputeditor.TaxonSetDialog;
-import beast.app.ca.CAPanel;
-import beast.app.ca.CAPanelListener;
+import cladeage.app.ca.CAPanel;
+import cladeage.app.ca.CAPanelListener;
 import beastfx.app.inputeditor.BEASTObjectPanel;
 import beast.base.core.BEASTInterface;
 import beast.base.core.BEASTObject;
@@ -26,8 +26,8 @@ import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.CompoundDistribution;
 import beast.base.evolution.alignment.TaxonSet;
 import beast.base.evolution.tree.Tree;
-import beast.math.distributions.FossilCalibration;
-import beast.math.distributions.FossilPrior;
+import cladeage.math.distributions.FossilCalibration;
+import cladeage.math.distributions.FossilPrior;
 import beast.base.inference.distribution.OneOnX;
 
 

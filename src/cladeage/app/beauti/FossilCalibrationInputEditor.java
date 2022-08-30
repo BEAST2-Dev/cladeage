@@ -1,4 +1,4 @@
-package beast.app.beauti;
+package cladeage.app.beauti;
 
 
 
@@ -7,14 +7,14 @@ package beast.app.beauti;
 
 import beastfx.app.inputeditor.BeautiDoc;
 import javafx.geometry.Dimension2D;
-import beast.app.ca.CAPanel;
-import beast.app.ca.CAPanelListener;
+import cladeage.app.ca.CAPanel;
+import cladeage.app.ca.CAPanelListener;
 import beastfx.app.inputeditor.BEASTObjectInputEditor;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
-import beast.math.distributions.FossilCalibration;
-import beast.math.distributions.FossilCalibration.CladeAgeMethod;
+import cladeage.math.distributions.FossilCalibration;
+import cladeage.math.distributions.FossilCalibration.CladeAgeMethod;
 
 
 public class FossilCalibrationInputEditor extends BEASTObjectInputEditor implements CAPanelListener {

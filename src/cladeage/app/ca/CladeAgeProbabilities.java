@@ -1,4 +1,4 @@
-package beast.app.ca;
+package cladeage.app.ca;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,8 @@ import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 // Import CladeAge distributions.
-import beast.math.distributions.CladeAgeDistribution;
+import cladeage.math.distributions.CladeAgeDistribution;
+import javafx.scene.control.ProgressBar;
 
 public class CladeAgeProbabilities {
 
@@ -94,7 +95,7 @@ public class CladeAgeProbabilities {
 		return cancel;
 	}
 
-	public CladeAgeDistribution run_standard_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, JProgressBar dpb) throws Exception {
+	public CladeAgeDistribution run_standard_cladeage(double first_occurrence_age_min, double first_occurrence_age_max, double ndr_min, double ndr_max, double epsilon_min, double epsilon_max, double psi_min, double psi_max, ProgressBar dpb) throws Exception {
 
 		// Make sure cancel is set to false.
 		cancel = false;
@@ -250,7 +251,7 @@ public class CladeAgeProbabilities {
 			}
 			// Increment the progress indicator.
 			if (dpb != null) {
-				dpb.setValue(successful_simulations[successful_simulations.length-1]/100);
+				dpb.setProgress(successful_simulations[successful_simulations.length-1]/100);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.

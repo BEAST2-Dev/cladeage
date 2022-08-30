@@ -1,4 +1,4 @@
-package beast.math.distributions;
+package cladeage.math.distributions;
 
 import java.awt.geom.Point2D.Double;
 import java.io.Serializable;

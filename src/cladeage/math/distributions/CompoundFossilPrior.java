@@ -1,4 +1,4 @@
-package beast.math.distributions;
+package cladeage.math.distributions;
 
 import java.util.ArrayList;
 import java.util.List;

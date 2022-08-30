@@ -1,4 +1,4 @@
-package beast.app.beauti;
+package cladeage.app.beauti;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,7 @@ import beast.base.core.BEASTObject;
 import beast.base.core.Input;
 import beast.base.evolution.alignment.Taxon;
 import beast.base.evolution.alignment.TaxonSet;
-import beast.math.distributions.FossilPrior;
+import cladeage.math.distributions.FossilPrior;
 import beast.base.evolution.tree.MRCAPrior;
 import beast.base.inference.distribution.OneOnX;
 

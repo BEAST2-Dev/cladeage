@@ -1,4 +1,4 @@
-package beast.app.ca;
+package cladeage.app.ca;
 
 
 
@@ -20,26 +20,30 @@ import beastfx.app.tools.ModelBuilder;
 import beastfx.app.inputeditor.MyAction;
 import beastfx.app.inputeditor.SmallButton;
 import beastfx.app.util.Alert;
+import beastfx.app.util.FXUtils;
 import beastfx.app.util.Utils;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import beast.math.distributions.CladeAgeDistribution;
-import beast.math.distributions.FossilCalibration.CladeAgeMethod;
+import cladeage.math.distributions.CladeAgeDistribution;
+import cladeage.math.distributions.FossilCalibration.CladeAgeMethod;
 import beast.pkgmgmt.BEASTClassLoader;
 
 
 public class CAPanel extends Pane {
 	private static final long serialVersionUID = 1L;
 
-	static final String CA_ICON = "beast/app/ca/icons/cladeage_256x256px.png";
-	static final String CA_ICON2 = "beast/app/ca/icons/cladeage_128x128px.png";
+	static final String CA_ICON = "cladeage/app/ca/icons/cladeage_256x256px.png";
+	static final String CA_ICON2 = "cladeage/app/ca/icons/cladeage_128x128px.png";
 
 	final public static String OCCURRENCE_AGE_HELP = "<html>First occurrence age:<br/>"+
 		"<br/>"+
@@ -1097,8 +1101,8 @@ public class CAPanel extends Pane {
 		return new SmallButton("?",true);
 	}
 	
-	public void calcFit(JProgressBar progress) {
-		String type = comboBox.getSelectedItem().toString();
+	public void calcFit(ProgressBar progress) {
+		String type = comboBox.getValue().toString();
 		
 		if (type.equals("standard CladeAge")) {
 			try {
@@ -1150,7 +1154,7 @@ public class CAPanel extends Pane {
 			} else {
 				textField_maxSamplingRate.setText("As minimum");
 			}
-			comboBox.setSelectedItem(cladeAgeMethod);
+			comboBox.setValue(cladeAgeMethod);
 		}
 
 		processingDataToGui = false;
@@ -1248,38 +1252,18 @@ public class CAPanel extends Pane {
 	}
 
 	static void showHelp(String text) {
-//		JTextPane k = new JTextPane();
-//		k.setContentType("text/html");
-//		k.setText(text);
-		
-		   final JEditorPane pane = new JEditorPane();
-		   pane.setContentType("text/html");
-		   pane.setText(text);
-		    pane.setEditable(false);
-		    ToolTipManager.sharedInstance().registerComponent(pane);
-
-//		    HyperlinkListener l = new HyperlinkListener() {
-//		        @Override
-//		        public void hyperlinkUpdate(HyperlinkEvent e) {
-//		            if (HyperlinkEvent.EventType.ACTIVATED == e.getEventType()) {
-//		                try {
-//		                    pane.setPage(e.getURL());
-//		                } catch (Exception e1) {
-//		                    e1.printStackTrace();
-//		                }
-//		            }
-//
-//		        }
-//
-//		    };
-//		    pane.addHyperlinkListener(l);
 		    String title = text.substring(0, text.indexOf(":"));
-		    title = title.replaceAll("<html>", "");
-			//JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE);
-			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE, Utils.getIcon(CA_ICON2));
-			
-			
-			Alert.showMessageDialog(null, message, header, Alert.PLAIN_MESSAGE);
+
+		    TextArea textArea = new TextArea(text);
+	    	textArea.setPrefRowCount(30);
+	    	textArea.setPrefColumnCount(70);
+	    	textArea.setEditable(true);
+	    	
+			HBox box = FXUtils.newHBox();
+	    	box.getChildren().add(FXUtils.getIcon(CA_ICON2));
+            box.getChildren().add(textArea);
+            
+            Alert.showMessageDialog(null, box, title, Alert.INFORMATION_MESSAGE);
 	}
 
     private String getFitParameters() {
