@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<beast beautitemplate="Standard" beautistatus="" namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" version="2.0">
+<beast beautitemplate="Standard" beautistatus="" namespace="beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" version="2.0">
 
 <!--
 XML produced with beauti.rb:
@@ -91,16 +91,16 @@ Base frequencies:        estimated
 		<sequence id="concatenated_138_cp2_zeufab" taxon="zeufab" totalcount="4" value="tacgcccgaggtatgtgttatgaagttgtcacactgttgctgactttttgagtacactattcagtcgaggtgtgagttatactatgaccaaactgcttcaaaatgtttggaccccgtatagtatagcaaatctactggcgctctcttgagttacaactcccctgcaaaatcgaggggcctaccagtccgttgaaagtgtgtcggggcccagcgac-cccgacgcaagctgagaaatatatgaaccaacacgtcttgcaataatgaaa----------------------------------------------------------------------------------------------------------------------actgtttcacctaaacataggccttgccgaggaattgctttccatatatcaaaggctaccctcgatgctgtttaagcttactattaaccttgcgatgagatttcttaacctaacttgaagatcatttaagctctcctaatcccctactaagactgactgagaatttgaaatgaacctgaaaaatggccttagttcagtagcacttacgcctaacaagagcctatccaaaataatatatcgagaccttacacacggaaatagggtagaacttcaaaaatacatcatgctcttgcttctccttcagaacagaccttttatacgtttggtggtcattagcgaattgagaactgtgactgaccgggcttacttgctatcagaaggtatcgagtgtccggcggttagagggcattagaatctggccactcgtctttttaacttcgttgttttcacgacctactgccaactcggccatattcgctctttctcttctcagacatctccacaactcagctaagcgtttaatattcttgcgtctgcgtgcacctttgagcgtgagcgactgcagatggccgagtgggcatcacggctcagatacacccgctttgaagtttggatgctaagggaaattatcagcacattgtgggagaacataatacaatcttgttaccattagtatacgctgttcgcttctacccttccgcggtcaatcgcactatagagctacgatctagtaactcgtgtacacttataataagaatcttaccgaaccccccatacttagaatactatcc----------------------------------------------------------------------------------------------------acggagtcaccattggactaaagatctccattttgacaggtgtgaggtgtgaacctttctcaaacgtcgagtgtatagctaggaaggatcgagagctcctgttgaacttcctgagtattagttagggagtcagcgtcgccatttagaattatctgctgagcgtatagtacaagtaaacgtggcactatctaccac--atagggagtgccatcgagctgacggctgattgatgtctaggaactgtccgtgcactacctagctcgttcaaagtgctacctcatcttctcctgtagcccctgaactagttcgggcgtctgactcatttcatcctaacacctgttatggcaaaagactttgccattactgggaagctattgatcgagatagaacgcgatgctaggacataaatagctgcgtaggactggtaaagcggacaccgttactcaccctgaagaaaaaaatgtcgtcgttatgacgttagttactcacgatgaataatatgatgtgaaaataacctaatacttaaaggttggaaccacgtcgaaagaggatcacttatattaaacaaagcattttatatagtggaccgtttgaaatctttacatatcaactattgaaaagtaaatttgcaatataaacgctgaccgcgatctaagtattcacattccaaccttgtctttaggatgtcacccaaaggtttctggttttatgcaccaacgacattatggcaaaaggtatacttctggccaagcgggtgtatcttggaattcatttctctgctccttggcagttatcgttcttggtacctgttaatttaataagtctgctattcatctgtgcgtcctccatatttctgtcagtttcctgctcacttgaaaagcatcatttagtgaagatgaacaccacatctattgtctagtccctggtgcaatt-----------------------------------------------------------ggatcttattgtaggtcgaacatttcaatggattaattaccacccgcactgtatattaaaaacgtaaagaactatatatttgacaaacattgactcccataaaaaggcacactatgtccaatttaaaactggacggatttaacaataatacaggagttataggtttcgcctaagttatgcttatttcattacagataagtcactcgttaggaaaaagttagtaacgactcggattcttatttatgatgaacattacgctaccttcctttacccttaactatcttagattgtcatcctcggctccgaggactctatagaatctcgcataatctccgctactggcaaaaattcccacacaatcatcataaatctaaggaaaataatcacaaatccttaa-accttcagacgcgactctggcacccaaaaactgttcgttattaagaaacagatttcatattgtcaaatccattagtaagaccgctgccctaccccgcacttctctaaggga"/>
 	</data>
 
-	<map name="Beta">beast.math.distributions.Beta</map>
-	<map name="Exponential">beast.math.distributions.Exponential</map>
-	<map name="InverseGamma">beast.math.distributions.InverseGamma</map>
-	<map name="LogNormal">beast.math.distributions.LogNormalDistributionModel</map>
-	<map name="Gamma">beast.math.distributions.Gamma</map>
-	<map name="Uniform">beast.math.distributions.Uniform</map>
-	<map name="prior">beast.math.distributions.Prior</map>
-	<map name="LaplaceDistribution">beast.math.distributions.LaplaceDistribution</map>
-	<map name="OneOnX">beast.math.distributions.OneOnX</map>
-	<map name="Normal">beast.math.distributions.Normal</map>
+	<map name="Beta">beast.base.inference.distribution.Beta</map>
+	<map name="Exponential">beast.base.inference.distribution.Exponential</map>
+	<map name="InverseGamma">beast.base.inference.distribution.InverseGamma</map>
+	<map name="LogNormal">beast.base.inference.distribution.LogNormalDistributionModel</map>
+	<map name="Gamma">beast.base.inference.distribution.Gamma</map>
+	<map name="Uniform">beast.base.inference.distribution.Uniform</map>
+	<map name="prior">beast.base.inference.distribution.Prior</map>
+	<map name="LaplaceDistribution">beast.base.inference.distribution.LaplaceDistribution</map>
+	<map name="OneOnX">beast.base.inference.distribution.OneOnX</map>
+	<map name="Normal">beast.base.inference.distribution.Normal</map>
 
 	<run chainLength="200000000" id="mcmc" spec="MCMC" storeEvery="100000">
 
@@ -211,17 +211,17 @@ Base frequencies:        estimated
 		</state>
 
 		<!-- Intitators -->
-		<init spec="beast.util.TreeParser" id="NewickTree.t:concatenated_138_cp2"
+		<init spec="beast.base.evolution.tree.TreeParser" id="NewickTree.t:concatenated_138_cp2"
 			initial="@tree.t:Species" taxa="@concatenated_138_cp2"
 			IsLabelledNewick="true"
 		newick="(lepocu:320.0016598358154,((sclfor:247.67512655766805,(angang:16.74703672794501,angjap:16.74703672794501):230.92808972422281):38.918368427475286,((cluhar:198.53062172317505,(danrer:139.23289752133687,(astmex:124.33297332668305,eleele:124.33297332668305):14.89992418193816):59.2977242225806):48.04038615353903,((esoluc:94.49584519163768,salsal:94.49584519163768):113.6619760672251,((borant:121.12298622290292,osmepe:121.12298622290292):71.20099718181294,(guealt:168.84715862378476,((parfra:114.79081878217062,synsyn:114.79081878217062):48.67411606687155,(bengla:152.95263725280762,(((poljap:123.85377210816056,(pertra:52.25311708005269,typsub:52.25311708005269):71.60065497613262):11.430728635625925,((cytros:29.154767195304235,zeufab:29.154767195304235):79.98299557717641,(stycho:76.33389157517752,(batmel:42.19169019158681,gadmor:42.19169019158681):34.142201386451724):32.80387124228477):26.146737913846962):9.26062380357584,((lamgut:45.33284570089976,reggle:45.33284570089976):94.22609848880766,((dirpau:44.50159603468577,gepdar:44.50159603468577):85.2785665113131,(((acalue:104.8874229367574,berspl:104.8874229367574):13.898037601133183,(holruf:54.249287910620374,myrjac:54.249287910620374):64.53617259470622):6.37025524594884,((brobar:76.05718946965536,caracu:76.05718946965536):37.89085880327225,((chamel:40.69302602275213,opsbet:40.69302602275213):67.70139945634206,((lessan:46.571431758085886,persch:46.571431758085886):56.37387022304535,(((thualb:2.00245844450593,thuori:2.00245844450593):90.2943446598053,((dacvol:71.18973244380952,mulsur:71.18973244380952):13.390288372099391,((aedstr:59.12921485996246,macsco:59.12921485996246):20.96568775343895,(fistab:74.06455459054311,((dordac:38.14143492428462,(entaeq:11.697419275204341,neroph:11.697419275204341):26.44401564677556):18.6478079533577,((hipcom:10.401621471762656,(hipcud:1.3501865525618195,hipwhi:1.3501865525618195):9.051434909681479):26.001617216110226,(synsco:13.998073006868362,(synros:4.571772324422995,syntyp:4.571772324422995):9.42630067994197):22.405165672938026):20.386004222790405):17.275311734596883):6.030347994277875):4.4851181745777495):7.716782315452903):6.355521248837306,(((epiaen:61.477649099985754,(aulstr:48.822058707555136,gasacu:48.822058707555136):12.655590373416736):21.687954330285393,(symmel:73.24790258979797,(takrub:32.85261668880781,tetnig:32.85261668880781):40.39528589757283):9.91770084412893):9.663896440466246,(((anates:67.50296079858144,monalb:67.50296079858144):15.039289292713008,(carmel:65.6124463335673,cynsem:65.6124463335673):16.92980373177926):6.830776963422693,((chrchr:64.86629092693329,psefus:64.86629092693329):12.366007989992696,((ampcit:49.954901374340054,orenil:49.954901374340054):20.22525448807081,(orylat:53.78969809087118,(poefor:15.624370819250743,xipmac:15.624370819250743):38.165327274163566):16.390457774778206):7.052143073091898):12.140728106598061):3.4564728021671414):5.822824506421881):4.29297761207323):5.4491235151688215):5.553622774918878):11.2076675500075):4.624446770091836):9.778781614422797):4.986180339266866):8.407512680848441):10.512297580171094):5.382223887484798):23.476824699401874):15.83383787214754):38.41318661228817):40.022487044493346):33.408165165525816)"/>
 
 
 		<!-- The posterior -->
-		<distribution id="posterior" spec="util.CompoundDistribution">
+		<distribution id="posterior" spec="beast.base.inference.CompoundDistribution">
 
 			<!-- Part 1 of the posterior: the prior -->
-			<distribution id="prior" spec="util.CompoundDistribution">
+			<distribution id="prior" spec="beast.base.inference.CompoundDistribution">
 
 				<!-- Divergence age priors -->
                 <distribution id="Holostei.prior" spec="beast.math.distributions.FossilPrior" tree="@tree.t:Species" monophyletic="true">
@@ -242,7 +242,7 @@ Base frequencies:        estimated
                 </distribution>
 
 				<!-- The Birth Death tree prior -->
-				<distribution id="birthDeath.t:Species" birthDiffRate="@birthRate.t:Species" relativeDeathRate="@relativeDeathRate.t:Species" spec="beast.evolution.speciation.BirthDeathGernhard08Model" tree="@tree.t:Species"/>
+				<distribution id="birthDeath.t:Species" birthDiffRate="@birthRate.t:Species" relativeDeathRate="@relativeDeathRate.t:Species" spec="beast.base.evolution.speciation.BirthDeathGernhard08Model" tree="@tree.t:Species"/>
 
 				<!-- Priors on the birth and death rates -->
 				<prior id="birthRatePrior" name="distribution" x="@birthRate.t:Species">
@@ -288,7 +288,7 @@ Base frequencies:        estimated
 			</distribution>
 
 			<!-- Part 2 of the posterior: the Likelihood -->
-			<distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
+			<distribution id="likelihood" spec="beast.base.inference.CompoundDistribution" useThreads="true">
 
 				<!-- Likelihoods for each alignment -->
 				<distribution id="treeLikelihood:concatenated_138_cp2" data="@concatenated_138_cp2" spec="TreeLikelihood" tree="@tree.t:Species">
@@ -297,7 +297,7 @@ Base frequencies:        estimated
 							<frequencies frequencies="@freqParameter.s:concatenated_138_cp2" id="estimatedFreqs.s:concatenated_138_cp2" spec="Frequencies"/>
 						</substModel>
 					</siteModel>
-					<branchRateModel id="RelaxedClock.c:concatenated_138_cp2" clock.rate="1.0" rateCategories="@rateCategories.c:Species" spec="beast.evolution.branchratemodel.UCRelaxedClockModel" tree="@tree.t:Species">
+					<branchRateModel id="RelaxedClock.c:concatenated_138_cp2" clock.rate="1.0" rateCategories="@rateCategories.c:Species" spec="beast.base.evolution.branchratemodel.UCRelaxedClockModel" tree="@tree.t:Species">
 						<LogNormal id="LogNormalDistributionModel.c:concatenated_138_cp2" name="distr" M="1.0" meanInRealSpace="true" S="@ucldStdev.c:Species"/>
 					</branchRateModel>
 				</distribution>
@@ -375,7 +375,7 @@ Base frequencies:        estimated
 			<log idref="likelihood"/>
 			<log idref="prior"/>
 			<log idref="treeLikelihood:concatenated_138_cp2"/>
-			<log id="TreeHeight.t:Species" spec="beast.evolution.tree.TreeHeightLogger" tree="@tree.t:Species"/>
+			<log id="TreeHeight.t:Species" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@tree.t:Species"/>
 			<log idref="birthRate.t:Species"/>
 			<log idref="relativeDeathRate.t:Species"/>
 			<log idref="Holostei.prior"/>
@@ -383,7 +383,7 @@ Base frequencies:        estimated
 
 		<!-- The tree output -->
 		<logger fileName="cladeage_example.trees" id="treelog.t:Species" logEvery="100000" mode="tree">
-			<log id="TreeWithMetaDataLogger.t:Species" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@tree.t:Species"/>
+			<log id="TreeWithMetaDataLogger.t:Species" spec="beast.base.evolution.tree.TreeWithMetaDataLogger" tree="@tree.t:Species"/>
 		</logger>
 
 	</run>

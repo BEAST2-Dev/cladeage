@@ -8,31 +8,30 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import beast.app.beauti.BeautiDoc;
-import beast.app.beauti.BeautiSubTemplate;
-import beast.app.beauti.PartitionContext;
-import beast.app.beauti.PriorListInputEditor;
-import beast.app.beauti.TaxonSetDialog;
+import beastfx.app.inputeditor.BeautiDoc;
+import beastfx.app.inputeditor.BeautiSubTemplate;
+import beast.base.parser.PartitionContext;
+import beastfx.app.beauti.PriorListInputEditor;
+import beastfx.app.inputeditor.TaxonSetDialog;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
-import beast.app.draw.BEASTObjectPanel;
-import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
-import beast.core.Input;
-import beast.core.Logger;
-import beast.core.State;
-import beast.core.StateNode;
-import beast.core.parameter.RealParameter;
-import beast.core.util.CompoundDistribution;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.tree.Tree;
+import beastfx.app.inputeditor.BEASTObjectPanel;
+import beast.base.core.BEASTInterface;
+import beast.base.core.BEASTObject;
+import beast.base.core.Input;
+import beast.base.inference.Logger;
+import beast.base.inference.State;
+import beast.base.inference.StateNode;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.inference.CompoundDistribution;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.tree.Tree;
 import beast.math.distributions.FossilCalibration;
 import beast.math.distributions.FossilPrior;
-import beast.math.distributions.OneOnX;
+import beast.base.inference.distribution.OneOnX;
 
 
 public class FossilPriorListInputEditor extends PriorListInputEditor implements CAPanelListener {
-	    private static final long serialVersionUID = 1L;
 
 		public FossilPriorListInputEditor(BeautiDoc doc) {
 			super(doc);
@@ -68,7 +67,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            panel.dataToGUI();
 	            panel.addChangeListener(this);
 	            panel.setVisible(true);
-	            add(panel);
+	            getChildren().add(panel);
 	    	}
 	    }
 	    
@@ -101,7 +100,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            prior.treeInput.setValue(trees.get(iTree), prior);
 	            TaxonSet taxonSet = new TaxonSet();
 
-	            TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior), doc);
+	            TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior, doc), doc);
 	            if (!dlg.showDialog() || dlg.taxonSet.getID() == null) {
 	                return null;
 	            }

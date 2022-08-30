@@ -70,7 +70,7 @@
 		<mkdir dir="${buildCA}" />
 
 		<!-- Compile the java code from ${srcCA} into ${buildCA} /bin -->
-		<javac srcdir="${srcCA}" destdir="${buildCA}" classpathref="classpath" 
+		<javac target="1.8" srcdir="${srcCA}" destdir="${buildCA}" classpathref="classpath" 
 		       fork="true"
 		       memoryinitialsize="256m"
 		       memorymaximumsize="256m"

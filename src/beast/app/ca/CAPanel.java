@@ -3,50 +3,7 @@ package beast.app.ca;
 
 
 
-import jam.framework.DocumentFrame;
 
-import javax.swing.JPanel;
-
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-
-import javax.swing.JLabel;
-import java.awt.Insets;
-import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
-
-import java.awt.Color;
-import javax.swing.border.LineBorder;
-import java.awt.Component;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -55,23 +12,30 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.border.TitledBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 
-import beast.app.beauti.BeautiPanel;
-import beast.app.draw.ModelBuilder;
-import beast.app.draw.MyAction;
-import beast.app.util.Utils;
+import beastfx.app.beauti.BeautiTabPane;
+import beastfx.app.tools.ModelBuilder;
+import beastfx.app.inputeditor.MyAction;
+import beastfx.app.inputeditor.SmallButton;
+import beastfx.app.util.Alert;
+import beastfx.app.util.Utils;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import beast.math.distributions.CladeAgeDistribution;
 import beast.math.distributions.FossilCalibration.CladeAgeMethod;
+import beast.pkgmgmt.BEASTClassLoader;
 
 
-public class CAPanel extends JPanel {
+public class CAPanel extends Pane {
 	private static final long serialVersionUID = 1L;
 
 	static final String CA_ICON = "beast/app/ca/icons/cladeage_256x256px.png";
@@ -174,23 +138,22 @@ public class CAPanel extends JPanel {
 		"</html>";
 	
     // GUI components
-	private JTextField textField_maxOccuranceAge;
-	private JTextField textField_maxDivRate;
-	private JTextField textField_maxTurnoverRate;
-	private JTextField textField_maxSamplingRate;
-	private JTextField textField_minOccuranceAge;
-	private JTextField textField_minDivRate;
-	private JTextField textField_minTurnoverRate;
-	private JTextField textField_minSamplingRate;
-	JButton btnFindApproximation;
-	JButton btnCalculate;
+	private TextField textField_maxOccuranceAge;
+	private TextField textField_maxDivRate;
+	private TextField textField_maxTurnoverRate;
+	private TextField textField_maxSamplingRate;
+	private TextField textField_minOccuranceAge;
+	private TextField textField_minDivRate;
+	private TextField textField_minTurnoverRate;
+	private TextField textField_minSamplingRate;
+	Button btnFindApproximation;
+	Button btnCalculate;
 	public void setCalculateButtonText(String text) {btnCalculate.setText(text);}
-	JComboBox comboBox;
+	ComboBox comboBox;
 //	public JComboBox getComboBox() {return comboBox;}
-	JPanel panel;
+	Pane panel;
 	//JPanel panel2;
-	JPanel panel_1;
-	GridBagConstraints gbc_panel2;
+	Pane panel_1;
 	
 	CladeAgeProbabilities probs = null;
 	
@@ -229,12 +192,12 @@ public class CAPanel extends JPanel {
 	public void setMethod(CladeAgeMethod method) {
 		cladeAgeMethod = method;
 		if (comboBox != null) {
-			comboBox.setSelectedItem(method);
+			comboBox.setValue(method);
 		}
 	}
 	public CladeAgeMethod getMethod() {
 		if (comboBox != null) {
-			cladeAgeMethod = (CladeAgeMethod) comboBox.getSelectedItem();
+			cladeAgeMethod = (CladeAgeMethod) comboBox.getValue();
 		}
 		return cladeAgeMethod;
 	}
@@ -254,126 +217,112 @@ public class CAPanel extends JPanel {
 	public final static int MODE_BEAUTI_BOTTOM = 2;
 	int mode = MODE_STAND_ALONE;
 
-
-	GridBagLayout gridBagLayout = new GridBagLayout();
 	
 	public CAPanel(int mode) {
 		this.mode = mode;
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		//gridBagLayout.columnWidths = new int[]{525, 375, 100};
 		switch (mode) {
 		case MODE_STAND_ALONE:
-			gridBagLayout.columnWidths = new int[]{800, 100, 200};
-			gridBagLayout.columnWidths = new int[]{450, 80, 200};
-			gridBagLayout.columnWidths = new int[]{350, 40, 150};
-			gridBagLayout.columnWidths = new int[]{0};
-			gridBagLayout.rowHeights = new int[]{180, 450};
-			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
-			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+//			gridBagLayout.columnWidths = new int[]{800, 100, 200};
+//			gridBagLayout.columnWidths = new int[]{450, 80, 200};
+//			gridBagLayout.columnWidths = new int[]{350, 40, 150};
+//			gridBagLayout.columnWidths = new int[]{0};
+//			gridBagLayout.rowHeights = new int[]{180, 450};
+//			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
+//			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
 			break;
 		case MODE_BEAUTI_BOTTOM:
-			gridBagLayout.columnWidths = new int[]{0};
-			gridBagLayout.rowHeights = new int[]{80, 450};
-			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
-			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+//			gridBagLayout.columnWidths = new int[]{0};
+//			gridBagLayout.rowHeights = new int[]{80, 450};
+//			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
+//			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
 			break;
 		case MODE_BEAUTI_TOP:
-			gridBagLayout.columnWidths = new int[]{0};
-			gridBagLayout.rowHeights = new int[]{180};
-			gridBagLayout.columnWeights = new double[]{1.0};
-			gridBagLayout.rowWeights = new double[]{1.0};
+//			gridBagLayout.columnWidths = new int[]{0};
+//			gridBagLayout.rowHeights = new int[]{180};
+//			gridBagLayout.columnWeights = new double[]{1.0};
+//			gridBagLayout.rowWeights = new double[]{1.0};
 			break;			
 		}
-		setLayout(gridBagLayout);
+//		setLayout(gridBagLayout);
 		
-		panel = new JPanel();
-		panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Model parameters", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 0;
-		add(panel, gbc_panel);
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+		panel = new Pane();
+		//panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Model parameters", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		//gbc_panel.fill = GridBagConstraints.BOTH;
+//		//gbc_panel.gridx = 0;
+//		//gbc_panel.gridy = 0;
+		add(panel, //gbc_panel);
+//		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
+//		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
+//		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0};
+//		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		panel.setLayout(gbl_panel);
 
-		JLabel lblNewLabel_2 = new JLabel("Minimum");
-		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_2.gridx = 1;
-		gbc_lblNewLabel_2.gridy = 0;
-		panel.add(lblNewLabel_2, gbc_lblNewLabel_2);
+		Label lblNewLabel_2 = new Label("Minimum");
+//		GridBagConstraints //gbc_lblNewLabel_2 = new GridBagConstraints();
+//		//gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
+//		//gbc_lblNewLabel_2.gridx = 1;
+//		//gbc_lblNewLabel_2.gridy = 0;
+		panel.add(lblNewLabel_2); //gbc_lblNewLabel_2);
 		
-		JLabel lblNewLabel_3 = new JLabel("Maximum");
-		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
-		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_3.gridx = 3;
-		gbc_lblNewLabel_3.gridy = 0;
-		panel.add(lblNewLabel_3, gbc_lblNewLabel_3);
+		Label lblNewLabel_3 = new Label("Maximum");
+		//GridBagConstraints //gbc_lblNewLabel_3 = new GridBagConstraints();
+		//gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
+		//gbc_lblNewLabel_3.gridx = 3;
+		//gbc_lblNewLabel_3.gridy = 0;
+		panel.add(lblNewLabel_3); //gbc_lblNewLabel_3);
 		
 		
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			JLabel lblBirt = new JLabel("First occurance age:");
-			lblBirt.setToolTipText(OCCURRENCE_AGE_HELP);
-			GridBagConstraints gbc_lblBirt = new GridBagConstraints();
-			gbc_lblBirt.anchor = GridBagConstraints.EAST;
-			gbc_lblBirt.insets = new Insets(0, 0, 5, 5);
-			gbc_lblBirt.gridx = 0;
-			gbc_lblBirt.gridy = 1;
-			panel.add(lblBirt, gbc_lblBirt);
+			Label lblBirt = new Label("First occurance age:");
+			lblBirt.setTooltip(new Tooltip(OCCURRENCE_AGE_HELP));
+			//GridBagConstraints //gbc_lblBirt = new GridBagConstraints();
+			//gbc_lblBirt.anchor = GridBagConstraints.EAST;
+			//gbc_lblBirt.insets = new Insets(0, 0, 5, 5);
+			//gbc_lblBirt.gridx = 0;
+			//gbc_lblBirt.gridy = 1;
+			panel.add(lblBirt, //gbc_lblBirt);
 
 			textField_minOccuranceAge = newTextField();
-			textField_minOccuranceAge.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_minOccuranceAge.setColumns(10);
-			GridBagConstraints gbc_textField_7 = new GridBagConstraints();
-			gbc_textField_7.insets = new Insets(0, 0, 5, 5);
-			gbc_textField_7.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_7.gridx = 1;
-			gbc_textField_7.gridy = 1;
-			panel.add(textField_minOccuranceAge, gbc_textField_7);
+			textField_minOccuranceAge.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_7 = new GridBagConstraints();
+			//gbc_textField_7.insets = new Insets(0, 0, 5, 5);
+			//gbc_textField_7.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_7.gridx = 1;
+			//gbc_textField_7.gridy = 1;
+			panel.add(textField_minOccuranceAge, //gbc_textField_7);
 			
-			JLabel label = new JLabel("-");
-			GridBagConstraints gbc_label = new GridBagConstraints();
-			gbc_label.insets = new Insets(0, 0, 5, 5);
-			gbc_label.anchor = GridBagConstraints.EAST;
-			gbc_label.gridx = 2;
-			gbc_label.gridy = 1;
-			panel.add(label, gbc_label);
+			Label label = new Label("-");
+			//GridBagConstraints //gbc_label = new GridBagConstraints();
+			//gbc_label.insets = new Insets(0, 0, 5, 5);
+			//gbc_label.anchor = GridBagConstraints.EAST;
+			//gbc_label.gridx = 2;
+			//gbc_label.gridy = 1;
+			panel.add(label, //gbc_label);
 			
 			textField_maxOccuranceAge = newTextField();
-			textField_maxOccuranceAge.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_maxOccuranceAge.setColumns(10);
-			GridBagConstraints gbc_textField_1_1 = new GridBagConstraints();
-			gbc_textField_1_1.insets = new Insets(0, 0, 5, 0);
-			gbc_textField_1_1.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_1_1.gridx = 3;
-			gbc_textField_1_1.gridy = 1;
-			panel.add(textField_maxOccuranceAge, gbc_textField_1_1);
+			textField_maxOccuranceAge.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_1_1 = new GridBagConstraints();
+			//gbc_textField_1_1.insets = new Insets(0, 0, 5, 0);
+			//gbc_textField_1_1.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_1_1.gridx = 3;
+			//gbc_textField_1_1.gridy = 1;
+			panel.add(textField_maxOccuranceAge, //gbc_textField_1_1);
 		}
 		
 		// always create the combobox, even when it is not displayed
 		CladeAgeMethod[] values = CladeAgeMethod.values();
-		comboBox = new JComboBox(values);
+		comboBox = new ComboBox(values);
 		comboBox.setSelectedItem(cladeAgeMethod);
 
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
 					//new String[]{"standard CladeAge"});
-			GridBagConstraints gbc_comboBox = new GridBagConstraints();
-			gbc_comboBox.insets = new Insets(0, 0, 0, 5);
-			gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-			gbc_comboBox.gridx = 0;
-			gbc_comboBox.gridy = 0;
-			panel.add(comboBox, gbc_comboBox);
+			//GridBagConstraints //gbc_comboBox = new GridBagConstraints();
+			//gbc_comboBox.insets = new Insets(0, 0, 0, 5);
+			//gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_comboBox.gridx = 0;
+			//gbc_comboBox.gridy = 0;
+			panel.add(comboBox, //gbc_comboBox);
 			comboBox.addActionListener(new ActionListener() {
 				
 				@Override
@@ -396,236 +345,203 @@ public class CAPanel extends JPanel {
 				}
 			});
 
-			JLabel lblNetDiversificationRate = new JLabel("<html>Net&nbsp;diversification&nbsp;rate&nbsp;&lambda;&minus;&mu;:</html>");
-			GridBagConstraints gbc_lblNetDiversificationRate = new GridBagConstraints();
-			gbc_lblNetDiversificationRate.anchor = GridBagConstraints.EAST;
-			gbc_lblNetDiversificationRate.insets = new Insets(0, 0, 5, 5);
-			gbc_lblNetDiversificationRate.gridx = 0;
-			gbc_lblNetDiversificationRate.gridy = 2;
-			panel.add(lblNetDiversificationRate, gbc_lblNetDiversificationRate);
+			Label lblNetDiversificationRate = new Label("<html>Net&nbsp;diversification&nbsp;rate&nbsp;&lambda;&minus;&mu;:</html>");
+			//GridBagConstraints //gbc_lblNetDiversificationRate = new GridBagConstraints();
+			//gbc_lblNetDiversificationRate.anchor = GridBagConstraints.EAST;
+			//gbc_lblNetDiversificationRate.insets = new Insets(0, 0, 5, 5);
+			//gbc_lblNetDiversificationRate.gridx = 0;
+			//gbc_lblNetDiversificationRate.gridy = 2;
+			panel.add(lblNetDiversificationRate, //gbc_lblNetDiversificationRate);
 			
 			textField_minDivRate = newTextField();
-			textField_minDivRate.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_minDivRate.setColumns(10);
-			GridBagConstraints gbc_textField_8 = new GridBagConstraints();
-			gbc_textField_8.insets = new Insets(0, 0, 5, 5);
-			gbc_textField_8.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_8.gridx = 1;
-			gbc_textField_8.gridy = 2;
-			panel.add(textField_minDivRate, gbc_textField_8);
+			textField_minDivRate.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_8 = new GridBagConstraints();
+			//gbc_textField_8.insets = new Insets(0, 0, 5, 5);
+			//gbc_textField_8.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_8.gridx = 1;
+			//gbc_textField_8.gridy = 2;
+			panel.add(textField_minDivRate, //gbc_textField_8);
 			
-			JLabel label_1 = new JLabel("-");
-			GridBagConstraints gbc_label_1 = new GridBagConstraints();
-			gbc_label_1.insets = new Insets(0, 0, 5, 5);
-			gbc_label_1.gridx = 2;
-			gbc_label_1.gridy = 2;
-			panel.add(label_1, gbc_label_1);
+			Label label_1 = new Label("-");
+			//GridBagConstraints //gbc_label_1 = new GridBagConstraints();
+			//gbc_label_1.insets = new Insets(0, 0, 5, 5);
+			//gbc_label_1.gridx = 2;
+			//gbc_label_1.gridy = 2;
+			panel.add(label_1, //gbc_label_1);
 			
 			textField_maxDivRate = newTextField();
-			textField_maxDivRate.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_maxDivRate.setColumns(10);
-			GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-			gbc_textField_2.insets = new Insets(0, 0, 5, 0);
-			gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_2.gridx = 3;
-			gbc_textField_2.gridy = 2;
-			panel.add(textField_maxDivRate, gbc_textField_2);
+			textField_maxDivRate.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_2 = new GridBagConstraints();
+			//gbc_textField_2.insets = new Insets(0, 0, 5, 0);
+			//gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_2.gridx = 3;
+			//gbc_textField_2.gridy = 2;
+			panel.add(textField_maxDivRate, //gbc_textField_2);
 			
-			JLabel lblRurnoverRateDb = new JLabel("<html>Turnover&nbsp;rate&nbsp;&mu;/&lambda;:</html>");
-			GridBagConstraints gbc_lblRurnoverRateDb = new GridBagConstraints();
-			gbc_lblRurnoverRateDb.anchor = GridBagConstraints.EAST;
-			gbc_lblRurnoverRateDb.insets = new Insets(0, 0, 5, 5);
-			gbc_lblRurnoverRateDb.gridx = 0;
-			gbc_lblRurnoverRateDb.gridy = 3;
-			panel.add(lblRurnoverRateDb, gbc_lblRurnoverRateDb);
+			Label lblRurnoverRateDb = new Label("<html>Turnover&nbsp;rate&nbsp;&mu;/&lambda;:</html>");
+			//GridBagConstraints //gbc_lblRurnoverRateDb = new GridBagConstraints();
+			//gbc_lblRurnoverRateDb.anchor = GridBagConstraints.EAST;
+			//gbc_lblRurnoverRateDb.insets = new Insets(0, 0, 5, 5);
+			//gbc_lblRurnoverRateDb.gridx = 0;
+			//gbc_lblRurnoverRateDb.gridy = 3;
+			panel.add(lblRurnoverRateDb, //gbc_lblRurnoverRateDb);
 			
 			textField_minTurnoverRate = newTextField();
-			textField_minTurnoverRate.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_minTurnoverRate.setColumns(10);
-			GridBagConstraints gbc_textField_9 = new GridBagConstraints();
-			gbc_textField_9.insets = new Insets(0, 0, 5, 5);
-			gbc_textField_9.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_9.gridx = 1;
-			gbc_textField_9.gridy = 3;
-			panel.add(textField_minTurnoverRate, gbc_textField_9);
+			textField_minTurnoverRate.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_9 = new GridBagConstraints();
+			//gbc_textField_9.insets = new Insets(0, 0, 5, 5);
+			//gbc_textField_9.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_9.gridx = 1;
+			//gbc_textField_9.gridy = 3;
+			panel.add(textField_minTurnoverRate, //gbc_textField_9);
 			
-			JLabel label_2 = new JLabel("-");
-			GridBagConstraints gbc_label_2 = new GridBagConstraints();
-			gbc_label_2.insets = new Insets(0, 0, 5, 5);
-			gbc_label_2.gridx = 2;
-			gbc_label_2.gridy = 3;
-			panel.add(label_2, gbc_label_2);
+			Label label_2 = new Label("-");
+			//GridBagConstraints //gbc_label_2 = new GridBagConstraints();
+			//gbc_label_2.insets = new Insets(0, 0, 5, 5);
+			//gbc_label_2.gridx = 2;
+			//gbc_label_2.gridy = 3;
+			panel.add(label_2, //gbc_label_2);
 			
 			textField_maxTurnoverRate = newTextField();
-			textField_maxTurnoverRate.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_maxTurnoverRate.setColumns(10);
-			GridBagConstraints gbc_textField_3 = new GridBagConstraints();
-			gbc_textField_3.insets = new Insets(0, 0, 5, 0);
-			gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_3.gridx = 3;
-			gbc_textField_3.gridy = 3;
-			panel.add(textField_maxTurnoverRate, gbc_textField_3);
+			textField_maxTurnoverRate.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_3 = new GridBagConstraints();
+			//gbc_textField_3.insets = new Insets(0, 0, 5, 0);
+			//gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_3.gridx = 3;
+			//gbc_textField_3.gridy = 3;
+			panel.add(textField_maxTurnoverRate, //gbc_textField_3);
 			
-			JLabel lblSamplingRate = new JLabel("<html>Sampling&nbsp;rate&nbsp;&psi;:</html>");
-			GridBagConstraints gbc_lblSamplingRate = new GridBagConstraints();
-			gbc_lblSamplingRate.anchor = GridBagConstraints.EAST;
-			gbc_lblSamplingRate.insets = new Insets(0, 0, 5, 5);
-			gbc_lblSamplingRate.gridx = 0;
-			gbc_lblSamplingRate.gridy = 4;
-			panel.add(lblSamplingRate, gbc_lblSamplingRate);
+			Label lblSamplingRate = new Label("<html>Sampling&nbsp;rate&nbsp;&psi;:</html>");
+			//GridBagConstraints //gbc_lblSamplingRate = new GridBagConstraints();
+			//gbc_lblSamplingRate.anchor = GridBagConstraints.EAST;
+			//gbc_lblSamplingRate.insets = new Insets(0, 0, 5, 5);
+			//gbc_lblSamplingRate.gridx = 0;
+			//gbc_lblSamplingRate.gridy = 4;
+			panel.add(lblSamplingRate, //gbc_lblSamplingRate);
 			
 			textField_minSamplingRate = newTextField();
 			textField_minSamplingRate.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 				}
 			});
-			textField_minSamplingRate.setColumns(10);
-			GridBagConstraints gbc_textField_10 = new GridBagConstraints();
-			gbc_textField_10.insets = new Insets(0, 0, 5, 5);
-			gbc_textField_10.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_10.gridx = 1;
-			gbc_textField_10.gridy = 4;
-			panel.add(textField_minSamplingRate, gbc_textField_10);
+			textField_minSamplingRate.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_10 = new GridBagConstraints();
+			//gbc_textField_10.insets = new Insets(0, 0, 5, 5);
+			//gbc_textField_10.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_10.gridx = 1;
+			//gbc_textField_10.gridy = 4;
+			panel.add(textField_minSamplingRate, //gbc_textField_10);
 			
-			JLabel label_3 = new JLabel("-");
-			GridBagConstraints gbc_label_3 = new GridBagConstraints();
-			gbc_label_3.insets = new Insets(0, 0, 5, 5);
-			gbc_label_3.gridx = 2;
-			gbc_label_3.gridy = 4;
-			panel.add(label_3, gbc_label_3);
+			Label label_3 = new Label("-");
+			//GridBagConstraints //gbc_label_3 = new GridBagConstraints();
+			//gbc_label_3.insets = new Insets(0, 0, 5, 5);
+			//gbc_label_3.gridx = 2;
+			//gbc_label_3.gridy = 4;
+			panel.add(label_3, //gbc_label_3);
 			
 			textField_maxSamplingRate = newTextField();
-			textField_maxSamplingRate.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
-			textField_maxSamplingRate.setColumns(10);
-			GridBagConstraints gbc_textField_4 = new GridBagConstraints();
-			gbc_textField_4.insets = new Insets(0, 0, 5, 0);
-			gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_4.gridx = 3;
-			gbc_textField_4.gridy = 4;
-			panel.add(textField_maxSamplingRate, gbc_textField_4);
+			textField_maxSamplingRate.setPrefColumnCount(10);
+			//GridBagConstraints //gbc_textField_4 = new GridBagConstraints();
+			//gbc_textField_4.insets = new Insets(0, 0, 5, 0);
+			//gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_4.gridx = 3;
+			//gbc_textField_4.gridy = 4;
+			panel.add(textField_maxSamplingRate, //gbc_textField_4);
 			
-			lblNetDiversificationRate.setToolTipText(DIV_RATE_HELP);
-			lblRurnoverRateDb.setToolTipText(TURNOVER_RATE_HELP);
-			lblSamplingRate.setToolTipText(SAMPLING_RATE_HELP);
+			lblNetDiversificationRate.setTooltip(new Tooltip(DIV_RATE_HELP);
+			lblRurnoverRateDb.setTooltip(new Tooltip(TURNOVER_RATE_HELP);
+			lblSamplingRate.setTooltip(new Tooltip(SAMPLING_RATE_HELP);
 		}
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			// JLabel lblNewLabel = new JLabel("Sampling gap:");
-			// lblNewLabel.setToolTipText(SAMPLING_GAP_HELP);
-			// GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-			// gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
-			// gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
-			// gbc_lblNewLabel.gridx = 0;
-			// gbc_lblNewLabel.gridy = 5;
-			// panel.add(lblNewLabel, gbc_lblNewLabel);
+			// Label lblNewLabel = new Label("Sampling gap:");
+			// lblNewLabel.setTooltip(new Tooltip(SAMPLING_GAP_HELP);
+			// GridBagConstraints //gbc_lblNewLabel = new GridBagConstraints();
+			// //gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
+			// //gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+			// //gbc_lblNewLabel.gridx = 0;
+			// //gbc_lblNewLabel.gridy = 5;
+			// panel.add(lblNewLabel, //gbc_lblNewLabel);
 
 			// textField_minSamplingGap = newTextField();
 			// textField_minSamplingGap.addActionListener(new ActionListener() {
 			// 	public void actionPerformed(ActionEvent e) {
 			// 	}
 			// });
-			// textField_minSamplingGap.setColumns(10);
-			GridBagConstraints gbc_textField_11 = new GridBagConstraints();
-			gbc_textField_11.insets = new Insets(0, 0, 0, 5);
-			gbc_textField_11.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_11.gridx = 1;
-			gbc_textField_11.gridy = 5;
-			// panel.add(textField_minSamplingGap, gbc_textField_11);
+			// textField_minSamplingGap.setPrefColumnCount(10);
+			GridBagConstraints //gbc_textField_11 = new GridBagConstraints();
+			//gbc_textField_11.insets = new Insets(0, 0, 0, 5);
+			//gbc_textField_11.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_11.gridx = 1;
+			//gbc_textField_11.gridy = 5;
+			// panel.add(textField_minSamplingGap, //gbc_textField_11);
 			
-			JLabel label_4 = new JLabel("-");
-			GridBagConstraints gbc_label_4 = new GridBagConstraints();
-			gbc_label_4.insets = new Insets(0, 0, 0, 5);
-			gbc_label_4.gridx = 2;
-			gbc_label_4.gridy = 5;
-			panel.add(label_4, gbc_label_4);
+			Label label_4 = new Label("-");
+			GridBagConstraints //gbc_label_4 = new GridBagConstraints();
+			//gbc_label_4.insets = new Insets(0, 0, 0, 5);
+			//gbc_label_4.gridx = 2;
+			//gbc_label_4.gridy = 5;
+			panel.add(label_4, //gbc_label_4);
 			
 			// textField_maxSamplingGap = newTextField();
 			// textField_maxSamplingGap.addActionListener(new ActionListener() {
 			// 	public void actionPerformed(ActionEvent e) {
 			// 	}
 			// });
-			// textField_maxSamplingGap.setColumns(10);
-			GridBagConstraints gbc_textField_5 = new GridBagConstraints();
-			gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textField_5.gridx = 3;
-			gbc_textField_5.gridy = 5;
-			// panel.add(textField_maxSamplingGap, gbc_textField_5);
+			// textField_maxSamplingGap.setPrefColumnCount(10);
+			GridBagConstraints //gbc_textField_5 = new GridBagConstraints();
+			//gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
+			//gbc_textField_5.gridx = 3;
+			//gbc_textField_5.gridy = 5;
+			// panel.add(textField_maxSamplingGap, //gbc_textField_5);
 	
 			// help buttons for panel1
-			JButton btnHelpButtonFirstOccurance = newHelpButton();
-			GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-			gbc_btnNewButton.gridx = 5;
-			gbc_btnNewButton.gridy = 1;
-			panel.add(btnHelpButtonFirstOccurance, gbc_btnNewButton);
-			btnHelpButtonFirstOccurance.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					showHelp(OCCURRENCE_AGE_HELP);
-				}
-	
-			});
+			Button btnHelpButtonFirstOccurance = newHelpButton();
+			GridBagConstraints //gbc_btnNewButton = new GridBagConstraints();
+			//gbc_btnNewButton.gridx = 5;
+			//gbc_btnNewButton.gridy = 1;
+			panel.add(btnHelpButtonFirstOccurance, //gbc_btnNewButton);
+			btnHelpButtonFirstOccurance.setOnAction(e ->
+					showHelp(OCCURRENCE_AGE_HELP)
+			);
 
 		}
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
-			JButton btnHelpButton2= newHelpButton();
-			GridBagConstraints gbc_btnNewButton2 = new GridBagConstraints();
-			gbc_btnNewButton2.gridx = 5;
-			gbc_btnNewButton2.gridy = 2;
-			panel.add(btnHelpButton2, gbc_btnNewButton2);
-			btnHelpButton2.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					showHelp(DIV_RATE_HELP);
-				}
-			});
+			Button btnHelpButton2= newHelpButton();
+			GridBagConstraints //gbc_btnNewButton2 = new GridBagConstraints();
+			//gbc_btnNewButton2.gridx = 5;
+			//gbc_btnNewButton2.gridy = 2;
+			panel.add(btnHelpButton2, //gbc_btnNewButton2);
+			btnHelpButton2.setOnAction(e ->
+					showHelp(DIV_RATE_HELP)
+			);
 
-			JButton btnHelpButton3= newHelpButton();
-			GridBagConstraints gbc_btnNewButton3 = new GridBagConstraints();
-			gbc_btnNewButton3.gridx = 5;
-			gbc_btnNewButton3.gridy = 3;
-			panel.add(btnHelpButton3, gbc_btnNewButton3);
-			btnHelpButton3.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					showHelp(TURNOVER_RATE_HELP);
-				}
-			});
+			Button btnHelpButton3= newHelpButton();
+			GridBagConstraints //gbc_btnNewButton3 = new GridBagConstraints();
+			//gbc_btnNewButton3.gridx = 5;
+			//gbc_btnNewButton3.gridy = 3;
+			panel.add(btnHelpButton3, //gbc_btnNewButton3);
+			btnHelpButton3.setOnAction(e ->
+					showHelp(TURNOVER_RATE_HELP)
+			);
 	
-			JButton btnHelpButton4= newHelpButton();
-			GridBagConstraints gbc_btnNewButton4 = new GridBagConstraints();
-			gbc_btnNewButton4.gridx = 5;
-			gbc_btnNewButton4.gridy = 4;
-			panel.add(btnHelpButton4, gbc_btnNewButton4);
-			btnHelpButton4.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					showHelp(SAMPLING_RATE_HELP);
-				}
-			});
+			Button btnHelpButton4= newHelpButton();
+			GridBagConstraints //gbc_btnNewButton4 = new GridBagConstraints();
+			//gbc_btnNewButton4.gridx = 5;
+			//gbc_btnNewButton4.gridy = 4;
+			panel.add(btnHelpButton4, //gbc_btnNewButton4);
+			btnHelpButton4.setOnAction(e ->
+					showHelp(SAMPLING_RATE_HELP)
+			);
 		}
 		
 		// if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-		// 	JButton btnHelpButton5= newHelpButton();
-		// 	GridBagConstraints gbc_btnNewButton5 = new GridBagConstraints();
-		// 	gbc_btnNewButton5.gridx = 5;
-		// 	gbc_btnNewButton5.gridy = 5;
-		// 	panel.add(btnHelpButton5, gbc_btnNewButton5);
+		// 	Button btnHelpButton5= newHelpButton();
+		// 	GridBagConstraints //gbc_btnNewButton5 = new GridBagConstraints();
+		// 	//gbc_btnNewButton5.gridx = 5;
+		// 	//gbc_btnNewButton5.gridy = 5;
+		// 	panel.add(btnHelpButton5, //gbc_btnNewButton5);
 		// 	btnHelpButton5.addActionListener(new ActionListener() {
 		// 		@Override
 		// 		public void actionPerformed(ActionEvent e) {
@@ -637,7 +553,7 @@ public class CAPanel extends JPanel {
 		JPanel panel2b = new JPanel();
 		panel2b.setLayout(new BorderLayout());
 		
-		JLabel lblIcon = new MyJLabel(Utils.getIcon(CA_ICON));
+		Label lblIcon = new MyLabel(Utils.getIcon(CA_ICON));
 		if (mode == MODE_BEAUTI_BOTTOM) {
 			lblIcon.setMinimumSize(new Dimension(84,84));
 			lblIcon.setPreferredSize(new Dimension(84,84));
@@ -649,10 +565,9 @@ public class CAPanel extends JPanel {
 		iconPanel.add(lblIcon);
 		panel2b.add(iconPanel, BorderLayout.NORTH);
 		
-		btnCalculate = new JButton("Run");
+		btnCalculate = new Button("Run");
 		btnCalculate.setMinimumSize(new Dimension(128, 20));
-		btnCalculate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnCalculate.setOnAction(e -> {
 				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				guiToData();
 				dataToGUI();
@@ -662,7 +577,7 @@ public class CAPanel extends JPanel {
 				Frame parentFrame = Frame.getFrames()[0];
 			    final JDialog dlg = new JDialog(parentFrame, "Progress Dialog", true);
 			    final JProgressBar dpb = new JProgressBar(0, 100);
-			    final JButton cancelButton = new JButton("Cancel");
+			    final Button cancelButton = new Button("Cancel");
 			    cancelButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -677,7 +592,7 @@ public class CAPanel extends JPanel {
 					}
 				});
 			    dlg.add(BorderLayout.CENTER, dpb);
-			    dlg.add(BorderLayout.NORTH, new JLabel("Progress..."));
+			    dlg.add(BorderLayout.NORTH, new Label("Progress..."));
 			    dlg.add(BorderLayout.EAST, cancelButton);
 			    dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 			    dlg.setSize(300, 75);
@@ -730,23 +645,23 @@ public class CAPanel extends JPanel {
 				panel_1.repaint();
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));				
 			}
-		});
-//		GridBagConstraints gbc_btnCalculate = new GridBagConstraints();
-//		gbc_btnCalculate.gridwidth = 2;
-//		gbc_btnCalculate.insets = new Insets(0, 0, 5, 0);
-//		gbc_btnCalculate.gridx = 0;
-//		gbc_btnCalculate.gridy = 4;
+		);
+//		GridBagConstraints //gbc_btnCalculate = new GridBagConstraints();
+//		//gbc_btnCalculate.gridwidth = 2;
+//		//gbc_btnCalculate.insets = new Insets(0, 0, 5, 0);
+//		//gbc_btnCalculate.gridx = 0;
+//		//gbc_btnCalculate.gridy = 4;
 		panel2b.add(btnCalculate, BorderLayout.CENTER);
 		
-		GridBagConstraints gbc_lblIcon = new GridBagConstraints();
-		gbc_lblIcon.insets = new Insets(5, 0, 5, 5);
-		gbc_lblIcon.anchor = GridBagConstraints.EAST;
-		gbc_lblIcon.gridx = 2;
-		gbc_lblIcon.gridy = 0;
-		gbc_lblIcon.gridwidth = 2;
+		GridBagConstraints //gbc_lblIcon = new GridBagConstraints();
+		//gbc_lblIcon.insets = new Insets(5, 0, 5, 5);
+		//gbc_lblIcon.anchor = GridBagConstraints.EAST;
+		//gbc_lblIcon.gridx = 2;
+		//gbc_lblIcon.gridy = 0;
+		//gbc_lblIcon.gridwidth = 2;
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			add(panel2b, gbc_lblIcon);
+			add(panel2b, //gbc_lblIcon);
 		}
 
 // The below is not needed anymore, as parameters numberOfTreeSimulations, maxNrOfBranches, and samplingReplicatesPer don't exist anymore.
@@ -756,78 +671,78 @@ public class CAPanel extends JPanel {
 //			public void actionPerformed(ActionEvent e) {
 //			}
 //		});
-//		GridBagConstraints gbc_textField = new GridBagConstraints();
-//		gbc_textField.insets = new Insets(0, 0, 5, 0);
-//		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-//		gbc_textField.gridx = 1;
-//		gbc_textField.gridy = 1;
-//		panel2.add(textField_NumberOfTreeSimulations, gbc_textField);
-//		textField_NumberOfTreeSimulations.setColumns(10);
+//		GridBagConstraints //gbc_textField = new GridBagConstraints();
+//		//gbc_textField.insets = new Insets(0, 0, 5, 0);
+//		//gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+//		//gbc_textField.gridx = 1;
+//		//gbc_textField.gridy = 1;
+//		panel2.add(textField_NumberOfTreeSimulations, //gbc_textField);
+//		textField_NumberOfTreeSimulations.setPrefColumnCount(10);
 //		
 //		textField_MaxNrOfBranches = newTextField();
 //		textField_MaxNrOfBranches.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent e) {
 //			}
 //		});
-//		textField_MaxNrOfBranches.setColumns(10);
-//		GridBagConstraints gbc_textField_12 = new GridBagConstraints();
-//		gbc_textField_12.insets = new Insets(0, 0, 5, 0);
-//		gbc_textField_12.fill = GridBagConstraints.HORIZONTAL;
-//		gbc_textField_12.gridx = 1;
-//		gbc_textField_12.gridy = 2;
-//		panel2.add(textField_MaxNrOfBranches, gbc_textField_12);
+//		textField_MaxNrOfBranches.setPrefColumnCount(10);
+//		GridBagConstraints //gbc_textField_12 = new GridBagConstraints();
+//		//gbc_textField_12.insets = new Insets(0, 0, 5, 0);
+//		//gbc_textField_12.fill = GridBagConstraints.HORIZONTAL;
+//		//gbc_textField_12.gridx = 1;
+//		//gbc_textField_12.gridy = 2;
+//		panel2.add(textField_MaxNrOfBranches, //gbc_textField_12);
 //		
-//		JLabel lblSamplingReplicatesPer = new JLabel("Sampling replicates per tree:");
-//		GridBagConstraints gbc_lblSamplingReplicatesPer = new GridBagConstraints();
-//		gbc_lblSamplingReplicatesPer.insets = new Insets(0, 0, 5, 5);
-//		gbc_lblSamplingReplicatesPer.anchor = GridBagConstraints.EAST;
-//		gbc_lblSamplingReplicatesPer.gridx = 0;
-//		gbc_lblSamplingReplicatesPer.gridy = 3;
-//		panel2.add(lblSamplingReplicatesPer, gbc_lblSamplingReplicatesPer);
+//		Label lblSamplingReplicatesPer = new Label("Sampling replicates per tree:");
+//		GridBagConstraints //gbc_lblSamplingReplicatesPer = new GridBagConstraints();
+//		//gbc_lblSamplingReplicatesPer.insets = new Insets(0, 0, 5, 5);
+//		//gbc_lblSamplingReplicatesPer.anchor = GridBagConstraints.EAST;
+//		//gbc_lblSamplingReplicatesPer.gridx = 0;
+//		//gbc_lblSamplingReplicatesPer.gridy = 3;
+//		panel2.add(lblSamplingReplicatesPer, //gbc_lblSamplingReplicatesPer);
 //		
 //		textField_SamplingReplicatesPerTree = newTextField();
 //		textField_SamplingReplicatesPerTree.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent e) {
 //			}
 //		});
-//		textField_SamplingReplicatesPerTree.setColumns(10);
-//		GridBagConstraints gbc_textField_13 = new GridBagConstraints();
-//		gbc_textField_13.insets = new Insets(0, 0, 5, 0);
-//		gbc_textField_13.fill = GridBagConstraints.HORIZONTAL;
-//		gbc_textField_13.gridx = 1;
-//		gbc_textField_13.gridy = 3;
-//		panel2.add(textField_SamplingReplicatesPerTree, gbc_textField_13);
+//		textField_SamplingReplicatesPerTree.setPrefColumnCount(10);
+//		GridBagConstraints //gbc_textField_13 = new GridBagConstraints();
+//		//gbc_textField_13.insets = new Insets(0, 0, 5, 0);
+//		//gbc_textField_13.fill = GridBagConstraints.HORIZONTAL;
+//		//gbc_textField_13.gridx = 1;
+//		//gbc_textField_13.gridy = 3;
+//		panel2.add(textField_SamplingReplicatesPerTree, //gbc_textField_13);
 //				
-//		JLabel lblMaximumNumberOf = new JLabel("Maximum number of branches:");
-//		GridBagConstraints gbc_lblMaximumNumberOf = new GridBagConstraints();
-//		gbc_lblMaximumNumberOf.anchor = GridBagConstraints.EAST;
-//		gbc_lblMaximumNumberOf.insets = new Insets(0, 0, 5, 5);
-//		gbc_lblMaximumNumberOf.gridx = 0;
-//		gbc_lblMaximumNumberOf.gridy = 2;
-//		panel2.add(lblMaximumNumberOf, gbc_lblMaximumNumberOf);
+//		Label lblMaximumNumberOf = new Label("Maximum number of branches:");
+//		GridBagConstraints //gbc_lblMaximumNumberOf = new GridBagConstraints();
+//		//gbc_lblMaximumNumberOf.anchor = GridBagConstraints.EAST;
+//		//gbc_lblMaximumNumberOf.insets = new Insets(0, 0, 5, 5);
+//		//gbc_lblMaximumNumberOf.gridx = 0;
+//		//gbc_lblMaximumNumberOf.gridy = 2;
+//		panel2.add(lblMaximumNumberOf, //gbc_lblMaximumNumberOf);
 //		
-//		JLabel lblNewLabel_1 = new JLabel("Number of tree simulations:");
-//		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-//		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-//		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
-//		gbc_lblNewLabel_1.gridx = 0;
-//		gbc_lblNewLabel_1.gridy = 1;
-//		panel2.add(lblNewLabel_1, gbc_lblNewLabel_1);
+//		Label lblNewLabel_1 = new Label("Number of tree simulations:");
+//		GridBagConstraints //gbc_lblNewLabel_1 = new GridBagConstraints();
+//		//gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
+//		//gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
+//		//gbc_lblNewLabel_1.gridx = 0;
+//		//gbc_lblNewLabel_1.gridy = 1;
+//		panel2.add(lblNewLabel_1, //gbc_lblNewLabel_1);
 //		
 //		Component verticalGlue = Box.createVerticalGlue();
-//		GridBagConstraints gbc_verticalGlue = new GridBagConstraints();
-//		gbc_verticalGlue.gridwidth = 2;
-//		gbc_verticalGlue.insets = new Insets(0, 0, 5, 5);
-//		gbc_verticalGlue.gridx = 0;
-//		gbc_verticalGlue.gridy = 5;
-//		panel2.add(verticalGlue, gbc_verticalGlue);
+//		GridBagConstraints //gbc_verticalGlue = new GridBagConstraints();
+//		//gbc_verticalGlue.gridwidth = 2;
+//		//gbc_verticalGlue.insets = new Insets(0, 0, 5, 5);
+//		//gbc_verticalGlue.gridx = 0;
+//		//gbc_verticalGlue.gridy = 5;
+//		panel2.add(verticalGlue, //gbc_verticalGlue);
 //
 //		// help buttons for panel2
-//		JButton btnHelpNrSimulateions = newHelpButton();
-//		GridBagConstraints gbc_btnNewButton12 = new GridBagConstraints();
-//		gbc_btnNewButton12.gridx = 3;
-//		gbc_btnNewButton12.gridy = 1;
-//		panel2.add(btnHelpNrSimulateions, gbc_btnNewButton12);
+//		Button btnHelpNrSimulateions = newHelpButton();
+//		GridBagConstraints //gbc_btnNewButton12 = new GridBagConstraints();
+//		//gbc_btnNewButton12.gridx = 3;
+//		//gbc_btnNewButton12.gridy = 1;
+//		panel2.add(btnHelpNrSimulateions, //gbc_btnNewButton12);
 //		btnHelpNrSimulateions.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
@@ -835,11 +750,11 @@ public class CAPanel extends JPanel {
 //			}
 //		});
 //		
-//		JButton btnHelpNrBranches = newHelpButton();
-//		GridBagConstraints gbc_btnNewButton13 = new GridBagConstraints();
-//		gbc_btnNewButton13.gridx = 3;
-//		gbc_btnNewButton13.gridy = 2;
-//		panel2.add(btnHelpNrBranches, gbc_btnNewButton13);
+//		Button btnHelpNrBranches = newHelpButton();
+//		GridBagConstraints //gbc_btnNewButton13 = new GridBagConstraints();
+//		//gbc_btnNewButton13.gridx = 3;
+//		//gbc_btnNewButton13.gridy = 2;
+//		panel2.add(btnHelpNrBranches, //gbc_btnNewButton13);
 //		btnHelpNrBranches.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
@@ -847,11 +762,11 @@ public class CAPanel extends JPanel {
 //			}
 //		});
 //
-//		JButton btnHelpReplicates = newHelpButton();
-//		GridBagConstraints gbc_btnNewButton14 = new GridBagConstraints();
-//		gbc_btnNewButton14.gridx = 3;
-//		gbc_btnNewButton14.gridy = 3;
-//		panel2.add(btnHelpReplicates, gbc_btnNewButton14);
+//		Button btnHelpReplicates = newHelpButton();
+//		GridBagConstraints //gbc_btnNewButton14 = new GridBagConstraints();
+//		//gbc_btnNewButton14.gridx = 3;
+//		//gbc_btnNewButton14.gridy = 3;
+//		panel2.add(btnHelpReplicates, //gbc_btnNewButton14);
 //		btnHelpReplicates.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
@@ -861,14 +776,14 @@ public class CAPanel extends JPanel {
 		
 		JPanel panel3 = new JPanel();
 		panel3.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Clade age probabilities", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		GridBagConstraints gbc_panel3 = new GridBagConstraints();
-		gbc_panel3.anchor = GridBagConstraints.WEST;
-		gbc_panel3.fill = GridBagConstraints.BOTH;
-		gbc_panel3.gridx = 0;
-		gbc_panel3.gridy = 1;
-		gbc_panel3.gridwidth = 3;
+		GridBagConstraints //gbc_panel3 = new GridBagConstraints();
+		//gbc_panel3.anchor = GridBagConstraints.WEST;
+		//gbc_panel3.fill = GridBagConstraints.BOTH;
+		//gbc_panel3.gridx = 0;
+		//gbc_panel3.gridy = 1;
+		//gbc_panel3.gridwidth = 3;
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			add(panel3, gbc_panel3);
+			add(panel3, //gbc_panel3);
 		}
 		GridBagLayout gbl_panel3 = new GridBagLayout();
 		gbl_panel3.columnWidths = new int[]{0};
@@ -877,7 +792,7 @@ public class CAPanel extends JPanel {
 		gbl_panel3.rowWeights = new double[]{Double.MIN_VALUE, 1.0};
 		panel3.setLayout(gbl_panel3);
 		
-		panel_1 = new JPanel() {
+		panel_1 = new Pane() {
 			protected void paintComponent(java.awt.Graphics g) {
 				g.setColor(new Color(241, 241, 241));
 				g.fillRect(0, 0, getWidth(), getHeight());
@@ -1054,45 +969,30 @@ public class CAPanel extends JPanel {
 	        
 
 		};
-		panel_1.setToolTipText("Click to show parameters of fit");
-		panel_1.addMouseListener(new MouseListener() {
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
+		panel_1.setTooltip(new Tooltip("Click to show parameters of fit");
+		panel_1.setOnMouseClicked(e->{
 				String text = getFitParameters();
 				text = text.replaceAll("\n", "<br/>");
 				showHelp("<html>Distribution fit:<br/>" + text + "</html>");
 			}
-		});
+		);
 		
 		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_1.setBackground(Color.gray);
 		panel_1.setPreferredSize(new Dimension(1024,400));
-		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-		gbc_panel_1.fill = GridBagConstraints.BOTH;
-		gbc_panel_1.gridx = 0;
-		gbc_panel_1.gridy = 1;
-		panel3.add(panel_1, gbc_panel_1);
+		GridBagConstraints //gbc_panel_1 = new GridBagConstraints();
+		//gbc_panel_1.fill = GridBagConstraints.BOTH;
+		//gbc_panel_1.gridx = 0;
+		//gbc_panel_1.gridy = 1;
+		panel3.add(panel_1, //gbc_panel_1);
 //		JPanel panel4 = new JPanel();
 //		panel4.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Approximation", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-//		GridBagConstraints gbc_panel4 = new GridBagConstraints();
-//		gbc_panel4.fill = GridBagConstraints.BOTH;
-//		gbc_panel4.gridx = 0;
-//		gbc_panel4.gridy = 2;
-//		gbc_panel4.gridwidth = 3;
-//		add(panel4, gbc_panel4);
+//		GridBagConstraints //gbc_panel4 = new GridBagConstraints();
+//		//gbc_panel4.fill = GridBagConstraints.BOTH;
+//		//gbc_panel4.gridx = 0;
+//		//gbc_panel4.gridy = 2;
+//		//gbc_panel4.gridwidth = 3;
+//		add(panel4, //gbc_panel4);
 //		GridBagLayout gbl_panel4 = new GridBagLayout();
 //		gbl_panel4.columnWidths = new int[]{0, 0, 0, 0};
 //		gbl_panel4.rowHeights = new int[]{0, 0, 0};
@@ -1100,16 +1000,16 @@ public class CAPanel extends JPanel {
 //		gbl_panel4.rowWeights = new double[]{Double.MIN_VALUE, 0.0, 0.0};
 //		panel4.setLayout(gbl_panel4);
 //		
-//		JLabel lblDistributionType = new JLabel("Distribution type:");
-//		GridBagConstraints gbc_lblDistributionType = new GridBagConstraints();
-//		gbc_lblDistributionType.insets = new Insets(0, 0, 0, 5);
-//		gbc_lblDistributionType.anchor = GridBagConstraints.EAST;
-//		gbc_lblDistributionType.gridx = 0;
-//		gbc_lblDistributionType.gridy = 2;
-//		panel4.add(lblDistributionType, gbc_lblDistributionType);
+//		Label lblDistributionType = new Label("Distribution type:");
+//		GridBagConstraints //gbc_lblDistributionType = new GridBagConstraints();
+//		//gbc_lblDistributionType.insets = new Insets(0, 0, 0, 5);
+//		//gbc_lblDistributionType.anchor = GridBagConstraints.EAST;
+//		//gbc_lblDistributionType.gridx = 0;
+//		//gbc_lblDistributionType.gridy = 2;
+//		panel4.add(lblDistributionType, //gbc_lblDistributionType);
 //		
 //		
-//		btnFindApproximation = new JButton("Find approximation");
+//		btnFindApproximation = new Button("Find approximation");
 //		btnFindApproximation.setEnabled(false);
 //		btnFindApproximation.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent e) {
@@ -1161,17 +1061,17 @@ public class CAPanel extends JPanel {
 //			}
 //
 //		});
-//		GridBagConstraints gbc_btnFindApproximation = new GridBagConstraints();
-//		gbc_btnFindApproximation.insets = new Insets(0, 0, 0, 5);
-//		gbc_btnFindApproximation.gridx = 2;
-//		gbc_btnFindApproximation.gridy = 2;
-//		panel4.add(btnFindApproximation, gbc_btnFindApproximation);
+//		GridBagConstraints //gbc_btnFindApproximation = new GridBagConstraints();
+//		//gbc_btnFindApproximation.insets = new Insets(0, 0, 0, 5);
+//		//gbc_btnFindApproximation.gridx = 2;
+//		//gbc_btnFindApproximation.gridy = 2;
+//		panel4.add(btnFindApproximation, //gbc_btnFindApproximation);
 //		
 //		Component horizontalGlue = Box.createHorizontalGlue();
-//		GridBagConstraints gbc_horizontalGlue = new GridBagConstraints();
-//		gbc_horizontalGlue.gridx = 3;
-//		gbc_horizontalGlue.gridy = 2;
-//		panel4.add(horizontalGlue, gbc_horizontalGlue);
+//		GridBagConstraints //gbc_horizontalGlue = new GridBagConstraints();
+//		//gbc_horizontalGlue.gridx = 3;
+//		//gbc_horizontalGlue.gridy = 2;
+//		panel4.add(horizontalGlue, //gbc_horizontalGlue);
 		
 		dataToGUI();
 
@@ -1187,14 +1087,14 @@ public class CAPanel extends JPanel {
 		// setToolTipText(textField_minSamplingGap, SAMPLING_GAP_HELP);
 	}
 
-	private void setToolTipText(JComponent component, String text) {
+	private void setToolTipText(Control component, String text) {
 		if (component != null) {
-			component.setToolTipText(text);
+			component.setTooltip(new Tooltip(text));
 		}
 	}
 	
-	private JButton newHelpButton() {
-		return new HelpButton("?",true);
+	private Button newHelpButton() {
+		return new SmallButton("?",true);
 	}
 	
 	public void calcFit(JProgressBar progress) {
@@ -1301,7 +1201,7 @@ public class CAPanel extends JPanel {
 			if (Double.isInfinite(maxSamplingRate) || maxSamplingRate < minSamplingRate) {
 				maxSamplingRate = minSamplingRate;
 			}
-			cladeAgeMethod = (CladeAgeMethod) comboBox.getSelectedItem();
+			cladeAgeMethod = (CladeAgeMethod) comboBox.getValue();
 		}	
 
 		// something changed, so the probabilities are not valid any more
@@ -1331,10 +1231,10 @@ public class CAPanel extends JPanel {
 		return 0;
 	}
 	
-	class MyJLabel extends JLabel {
+	class MyLabel extends Label {
 		private static final long serialVersionUID = 1L;
 		ImageIcon imageIcon;
-	    public MyJLabel(ImageIcon icon)
+	    public MyLabel(ImageIcon icon)
 	    {
 	        super();
 	        this.imageIcon = icon;
@@ -1377,7 +1277,9 @@ public class CAPanel extends JPanel {
 		    title = title.replaceAll("<html>", "");
 			//JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE);
 			JOptionPane.showMessageDialog(null, pane, title, JOptionPane.PLAIN_MESSAGE, Utils.getIcon(CA_ICON2));
-		
+			
+			
+			Alert.showMessageDialog(null, message, header, Alert.PLAIN_MESSAGE);
 	}
 
     private String getFitParameters() {
@@ -1495,7 +1397,7 @@ public class CAPanel extends JPanel {
 ////                panel2.setVisible(bAdvancedFeatures);
 //                if (bAdvancedFeatures) {
 //                	//gridBagLayout.columnWidths = new int[]{525, 375, 100};
-//            		add(panel2, gbc_panel2);
+//            		add(panel2, //gbc_panel2);
 //                	
 //                } else {
 //                    //gridBagLayout.columnWidths = new int[]{800, 0, 100};
@@ -1544,8 +1446,8 @@ public class CAPanel extends JPanel {
 		listeners.add(o);
 	}
 
-	JTextField newTextField() {
-		JTextField entry = new JTextField();
+	TextField newTextField() {
+		TextField entry = new TextField();
 	    entry.getDocument().addDocumentListener(new DocumentListener() {
 	        @Override
 	        public void removeUpdate(DocumentEvent e) {
@@ -1576,11 +1478,8 @@ public class CAPanel extends JPanel {
             // set up application about-menu for Mac
             // Mac-only stuff
         	try {
-            URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beauti.png");
-            Icon icon = null;
-            if (url != null) {
-                icon = new ImageIcon(url);
-            } else {
+            ImageIcon icon = Utils.getIcon(ModelBuilder.ICONPATH + "beauti.png");
+            if (icon == null) {
                 System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
             }
             jam.framework.Application application = new jam.framework.MultiDocApplication(null, "CladeAge", "about" , icon) {

@@ -2,11 +2,11 @@ package beast.math.distributions;
 
 import java.io.PrintStream;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.math.distributions.MRCAPrior;
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.evolution.tree.MRCAPrior;
 
 
 @Description("Prior based on information from the fossil record")

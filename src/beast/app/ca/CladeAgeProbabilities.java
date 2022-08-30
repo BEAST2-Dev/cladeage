@@ -6,7 +6,7 @@ import javax.swing.JProgressBar;
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
-import beast.math.distributions.LogNormalDistributionModel;
+import beast.base.inference.distribution.LogNormalDistributionModel;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 

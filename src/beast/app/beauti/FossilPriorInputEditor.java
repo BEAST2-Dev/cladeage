@@ -10,18 +10,23 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
-import beast.app.beauti.BeautiDoc;
-import beast.app.beauti.MRCAPriorInputEditor;
-import beast.app.beauti.PriorInputEditor;
-import beast.app.beauti.TaxonSetDialog;
-import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
-import beast.core.Input;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
+import beastfx.app.inputeditor.BeautiDoc;
+import beastfx.app.inputeditor.MRCAPriorInputEditor;
+import beastfx.app.beauti.PriorInputEditor;
+import beastfx.app.inputeditor.TaxonSetDialog;
+import beastfx.app.util.FXUtils;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import beast.base.core.BEASTInterface;
+import beast.base.core.BEASTObject;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.Taxon;
+import beast.base.evolution.alignment.TaxonSet;
 import beast.math.distributions.FossilPrior;
-import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.OneOnX;
+import beast.base.evolution.tree.MRCAPrior;
+import beast.base.inference.distribution.OneOnX;
 
 
 public class FossilPriorInputEditor extends MRCAPriorInputEditor {
@@ -50,21 +55,19 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         m_beastObject = plugin;
         this.itemNr= listItemNr;
 		
-        Box itemBox = Box.createHorizontalBox();
+        HBox itemBox = FXUtils.newHBox();
 
         MRCAPrior prior = (MRCAPrior) plugin;
         String sText = prior.taxonsetInput.get().getID();
 
-        JButton taxonButton = new JButton(sText);
-        taxonButton.setMinimumSize(PriorInputEditor.PREFERRED_SIZE);
-        taxonButton.setPreferredSize(PriorInputEditor.PREFERRED_SIZE);
-        itemBox.add(taxonButton);
-        taxonButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton taxonButton = (JButton) e.getSource();
+        Button taxonButton = new Button(sText);
+        taxonButton.setMinSize(PriorInputEditor.PREFERRED_SIZE.getWidth(), PriorInputEditor.PREFERRED_SIZE.getHeight());
+        taxonButton.setPrefSize(PriorInputEditor.PREFERRED_SIZE.getWidth(), PriorInputEditor.PREFERRED_SIZE.getHeight());
+        itemBox.getChildren().add(taxonButton);
+        taxonButton.setOnAction(e-> {
+                //JButton taxonButton = (JButton) e.getSource();
                 List<?> list = (List<?>) m_input.get();
-                MRCAPrior prior = (MRCAPrior) list.get(itemNr);
+                //MRCAPrior prior = (MRCAPrior) list.get(itemNr);
                 try {
                     TaxonSet taxonset = prior.taxonsetInput.get();
                     Set<Taxon> candidates = getTaxonCandidates(prior);
@@ -78,8 +81,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
                     e1.printStackTrace();
                 }
                 refreshPanel();
-            }
-        });
+            });
 
 
         if (prior.distInput.getType() == null) {
@@ -92,15 +94,17 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 
         }
 
-        JCheckBox isMonophyleticdBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.isMonophyleticInput.getName()));
-        isMonophyleticdBox.setName(sText+".isMonophyletic");
+        CheckBox isMonophyleticdBox = new CheckBox(doc.beautiConfig.getInputLabel(prior, prior.isMonophyleticInput.getName()));
+        isMonophyleticdBox.setId(sText+".isMonophyletic");
         isMonophyleticdBox.setSelected(prior.isMonophyleticInput.get());
-        isMonophyleticdBox.setToolTipText(prior.isMonophyleticInput.getTipText());
-        isMonophyleticdBox.addActionListener(new MRCAPriorActionListener(prior));
-        itemBox.add(isMonophyleticdBox);
-        itemBox.add(Box.createGlue());
+        isMonophyleticdBox.setTooltip(new Tooltip(prior.isMonophyleticInput.getTipText()));
+        isMonophyleticdBox.setOnAction(e->{
+            prior.isMonophyleticInput.setValue(isMonophyleticdBox.isSelected(), prior);
+        });
+        itemBox.getChildren().add(isMonophyleticdBox);
+        //itemBox.getChildren().add(Box.createGlue());
 
-        add(itemBox);
+        getChildren().add(itemBox);
 	}
 	
     Set<Taxon> getTaxonCandidates(FossilPrior prior) {

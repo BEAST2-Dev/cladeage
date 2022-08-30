@@ -4,15 +4,15 @@ package beast.app.beauti;
 
 
 
-import java.awt.Dimension;
 
-import beast.app.beauti.BeautiDoc;
+import beastfx.app.inputeditor.BeautiDoc;
+import javafx.geometry.Dimension2D;
 import beast.app.ca.CAPanel;
 import beast.app.ca.CAPanelListener;
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
+import beastfx.app.inputeditor.BEASTObjectInputEditor;
+import beast.base.core.BEASTInterface;
+import beast.base.core.Input;
+import beast.base.inference.parameter.RealParameter;
 import beast.math.distributions.FossilCalibration;
 import beast.math.distributions.FossilCalibration.CladeAgeMethod;
 
@@ -54,13 +54,12 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
         panel.setCalculateButtonText("Preview");
 
         panel.addChangeListener(this);
-        Dimension size = new Dimension(panel.getPreferredSize().width - 40, panel.getPreferredSize().height);
+        Dimension2D size = new Dimension2D(panel.getPrefWidth() - 40, panel.getPrefHeight());
 
-        panel.setSize(size);
-        panel.setPreferredSize(size);
-        panel.setMinimumSize(size);
-        panel.setMaximumSize(size);
-        add (panel);
+        panel.setPrefSize(size.getWidth(), size.getHeight());
+        panel.setMinSize(size.getWidth(), size.getHeight());
+        panel.setMaxSize(size.getWidth(), size.getHeight());
+        getChildren().add(panel);
 	}
 
 	@Override

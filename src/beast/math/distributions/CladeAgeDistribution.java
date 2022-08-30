@@ -8,7 +8,7 @@ import java.util.Comparator;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 
-import beast.core.Description;
+import beast.base.core.Description;
 
 @Description("Continuous distribution defined by a set of densities determined through simulation")
 public class CladeAgeDistribution implements ContinuousDistribution, Serializable {
