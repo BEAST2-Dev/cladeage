@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
@@ -22,18 +23,28 @@ import beastfx.app.inputeditor.SmallButton;
 import beastfx.app.util.Alert;
 import beastfx.app.util.FXUtils;
 import beastfx.app.util.Utils;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import cladeage.math.distributions.CladeAgeDistribution;
 import cladeage.math.distributions.FossilCalibration.CladeAgeMethod;
 import beast.pkgmgmt.BEASTClassLoader;
@@ -155,9 +166,9 @@ public class CAPanel extends Pane {
 	public void setCalculateButtonText(String text) {btnCalculate.setText(text);}
 	ComboBox comboBox;
 //	public JComboBox getComboBox() {return comboBox;}
-	Pane panel;
+	GridPane panel;
 	//JPanel panel2;
-	Pane panel_1;
+	GridPane panel_1;
 	
 	CladeAgeProbabilities probs = null;
 	
@@ -193,6 +204,9 @@ public class CAPanel extends Pane {
 	public void setMaxTurnoverRate(double maxTurnoverRate) {this.maxTurnoverRate = maxTurnoverRate;}
 	public void setMaxSamplingRate(double maxSamplingRate) {this.maxSamplingRate = maxSamplingRate;}
 	
+	private LineChart chart;
+	LineChart.Series series;
+	
 	public void setMethod(CladeAgeMethod method) {
 		cladeAgeMethod = method;
 		if (comboBox != null) {
@@ -224,56 +238,56 @@ public class CAPanel extends Pane {
 	
 	public CAPanel(int mode) {
 		this.mode = mode;
-		switch (mode) {
-		case MODE_STAND_ALONE:
-//			gridBagLayout.columnWidths = new int[]{800, 100, 200};
-//			gridBagLayout.columnWidths = new int[]{450, 80, 200};
-//			gridBagLayout.columnWidths = new int[]{350, 40, 150};
-//			gridBagLayout.columnWidths = new int[]{0};
-//			gridBagLayout.rowHeights = new int[]{180, 450};
-//			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
-//			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
-			break;
-		case MODE_BEAUTI_BOTTOM:
-//			gridBagLayout.columnWidths = new int[]{0};
-//			gridBagLayout.rowHeights = new int[]{80, 450};
-//			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
-//			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
-			break;
-		case MODE_BEAUTI_TOP:
-//			gridBagLayout.columnWidths = new int[]{0};
-//			gridBagLayout.rowHeights = new int[]{180};
-//			gridBagLayout.columnWeights = new double[]{1.0};
-//			gridBagLayout.rowWeights = new double[]{1.0};
-			break;			
-		}
-//		setLayout(gridBagLayout);
+//		switch (mode) {
+//		case MODE_STAND_ALONE:
+////			gridBagLayout.columnWidths = new int[]{800, 100, 200};
+////			gridBagLayout.columnWidths = new int[]{450, 80, 200};
+////			gridBagLayout.columnWidths = new int[]{350, 40, 150};
+////			gridBagLayout.columnWidths = new int[]{0};
+////			gridBagLayout.rowHeights = new int[]{180, 450};
+////			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
+////			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+//			break;
+//		case MODE_BEAUTI_BOTTOM:
+////			gridBagLayout.columnWidths = new int[]{0};
+////			gridBagLayout.rowHeights = new int[]{80, 450};
+////			gridBagLayout.columnWeights = new double[]{1.0, 0.0, 1.0};
+////			gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+//			break;
+//		case MODE_BEAUTI_TOP:
+////			gridBagLayout.columnWidths = new int[]{0};
+////			gridBagLayout.rowHeights = new int[]{180};
+////			gridBagLayout.columnWeights = new double[]{1.0};
+////			gridBagLayout.rowWeights = new double[]{1.0};
+//			break;			
+//		}
+////		setLayout(gridBagLayout);
 		
-		panel = new Pane();
+		panel = new GridPane();
 		//panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Model parameters", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 //		//gbc_panel.fill = GridBagConstraints.BOTH;
 //		//gbc_panel.gridx = 0;
 //		//gbc_panel.gridy = 0;
-		add(panel, //gbc_panel);
+		getChildren().add(panel); //gbc_panel);
 //		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
 //		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
 //		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0};
 //		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-		panel.setLayout(gbl_panel);
+//		panel.setLayout(gbl_panel);
 
 		Label lblNewLabel_2 = new Label("Minimum");
 //		GridBagConstraints //gbc_lblNewLabel_2 = new GridBagConstraints();
 //		//gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
 //		//gbc_lblNewLabel_2.gridx = 1;
 //		//gbc_lblNewLabel_2.gridy = 0;
-		panel.add(lblNewLabel_2); //gbc_lblNewLabel_2);
+		panel.add(lblNewLabel_2, 1, 0, 1, 0); //gbc_lblNewLabel_2);
 		
 		Label lblNewLabel_3 = new Label("Maximum");
 		//GridBagConstraints //gbc_lblNewLabel_3 = new GridBagConstraints();
 		//gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
 		//gbc_lblNewLabel_3.gridx = 3;
 		//gbc_lblNewLabel_3.gridy = 0;
-		panel.add(lblNewLabel_3); //gbc_lblNewLabel_3);
+		panel.add(lblNewLabel_3, 3, 0, 3, 0); //gbc_lblNewLabel_3);
 		
 		
 		
@@ -285,7 +299,7 @@ public class CAPanel extends Pane {
 			//gbc_lblBirt.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblBirt.gridx = 0;
 			//gbc_lblBirt.gridy = 1;
-			panel.add(lblBirt, //gbc_lblBirt);
+			panel.add(lblBirt, 0, 1, 0, 1); //gbc_lblBirt);
 
 			textField_minOccuranceAge = newTextField();
 			textField_minOccuranceAge.setPrefColumnCount(10);
@@ -294,7 +308,7 @@ public class CAPanel extends Pane {
 			//gbc_textField_7.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_7.gridx = 1;
 			//gbc_textField_7.gridy = 1;
-			panel.add(textField_minOccuranceAge, //gbc_textField_7);
+			panel.add(textField_minOccuranceAge, 1, 1, 1, 1); //gbc_textField_7);
 			
 			Label label = new Label("-");
 			//GridBagConstraints //gbc_label = new GridBagConstraints();
@@ -302,7 +316,7 @@ public class CAPanel extends Pane {
 			//gbc_label.anchor = GridBagConstraints.EAST;
 			//gbc_label.gridx = 2;
 			//gbc_label.gridy = 1;
-			panel.add(label, //gbc_label);
+			panel.add(label, 2 ,1 ,2, 1); //gbc_label);
 			
 			textField_maxOccuranceAge = newTextField();
 			textField_maxOccuranceAge.setPrefColumnCount(10);
@@ -311,13 +325,16 @@ public class CAPanel extends Pane {
 			//gbc_textField_1_1.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_1_1.gridx = 3;
 			//gbc_textField_1_1.gridy = 1;
-			panel.add(textField_maxOccuranceAge, //gbc_textField_1_1);
+			panel.add(textField_maxOccuranceAge, 3, 1, 3, 1); //gbc_textField_1_1);
 		}
 		
 		// always create the combobox, even when it is not displayed
 		CladeAgeMethod[] values = CladeAgeMethod.values();
-		comboBox = new ComboBox(values);
-		comboBox.setSelectedItem(cladeAgeMethod);
+		comboBox = new ComboBox();
+		for (CladeAgeMethod value : values) {
+			comboBox.getItems().add(value);
+		}
+		comboBox.getSelectionModel().select(cladeAgeMethod);
 
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
 					//new String[]{"standard CladeAge"});
@@ -326,28 +343,8 @@ public class CAPanel extends Pane {
 			//gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_comboBox.gridx = 0;
 			//gbc_comboBox.gridy = 0;
-			panel.add(comboBox, //gbc_comboBox);
-			comboBox.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							// if (textField_maxSamplingGap != null) {
-							// 	if (comboBox.getSelectedItem().toString().equals("standard CladeAge")) {
-							// 		textField_maxSamplingGap.setEnabled(true);
-							// 		textField_minSamplingGap.setEnabled(true);
-							// 	} else {
-							// 		textField_maxSamplingGap.setEnabled(false);
-							// 		textField_minSamplingGap.setEnabled(false);
-							// 	}
-							// }
-							guiToData();
-							
-						}
-					});
-				}
-			});
+			panel.add(comboBox, 0, 0, 0, 0);//gbc_comboBox);
+			comboBox.setOnAction(e->guiToData());
 
 			Label lblNetDiversificationRate = new Label("<html>Net&nbsp;diversification&nbsp;rate&nbsp;&lambda;&minus;&mu;:</html>");
 			//GridBagConstraints //gbc_lblNetDiversificationRate = new GridBagConstraints();
@@ -355,7 +352,7 @@ public class CAPanel extends Pane {
 			//gbc_lblNetDiversificationRate.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblNetDiversificationRate.gridx = 0;
 			//gbc_lblNetDiversificationRate.gridy = 2;
-			panel.add(lblNetDiversificationRate, //gbc_lblNetDiversificationRate);
+			panel.add(lblNetDiversificationRate, 0, 2, 0, 2); //gbc_lblNetDiversificationRate);
 			
 			textField_minDivRate = newTextField();
 			textField_minDivRate.setPrefColumnCount(10);
@@ -364,14 +361,14 @@ public class CAPanel extends Pane {
 			//gbc_textField_8.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_8.gridx = 1;
 			//gbc_textField_8.gridy = 2;
-			panel.add(textField_minDivRate, //gbc_textField_8);
+			panel.add(textField_minDivRate, 1, 2, 1, 2); //gbc_textField_8);
 			
 			Label label_1 = new Label("-");
 			//GridBagConstraints //gbc_label_1 = new GridBagConstraints();
 			//gbc_label_1.insets = new Insets(0, 0, 5, 5);
 			//gbc_label_1.gridx = 2;
 			//gbc_label_1.gridy = 2;
-			panel.add(label_1, //gbc_label_1);
+			panel.add(label_1, 2, 2, 2, 2); //gbc_label_1);
 			
 			textField_maxDivRate = newTextField();
 			textField_maxDivRate.setPrefColumnCount(10);
@@ -380,7 +377,7 @@ public class CAPanel extends Pane {
 			//gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_2.gridx = 3;
 			//gbc_textField_2.gridy = 2;
-			panel.add(textField_maxDivRate, //gbc_textField_2);
+			panel.add(textField_maxDivRate, 3, 2, 3, 2); //gbc_textField_2);
 			
 			Label lblRurnoverRateDb = new Label("<html>Turnover&nbsp;rate&nbsp;&mu;/&lambda;:</html>");
 			//GridBagConstraints //gbc_lblRurnoverRateDb = new GridBagConstraints();
@@ -388,7 +385,7 @@ public class CAPanel extends Pane {
 			//gbc_lblRurnoverRateDb.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblRurnoverRateDb.gridx = 0;
 			//gbc_lblRurnoverRateDb.gridy = 3;
-			panel.add(lblRurnoverRateDb, //gbc_lblRurnoverRateDb);
+			panel.add(lblRurnoverRateDb, 0, 3, 0, 3); //gbc_lblRurnoverRateDb);
 			
 			textField_minTurnoverRate = newTextField();
 			textField_minTurnoverRate.setPrefColumnCount(10);
@@ -397,14 +394,14 @@ public class CAPanel extends Pane {
 			//gbc_textField_9.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_9.gridx = 1;
 			//gbc_textField_9.gridy = 3;
-			panel.add(textField_minTurnoverRate, //gbc_textField_9);
+			panel.add(textField_minTurnoverRate, 1, 3, 1, 3); //gbc_textField_9);
 			
 			Label label_2 = new Label("-");
 			//GridBagConstraints //gbc_label_2 = new GridBagConstraints();
 			//gbc_label_2.insets = new Insets(0, 0, 5, 5);
 			//gbc_label_2.gridx = 2;
 			//gbc_label_2.gridy = 3;
-			panel.add(label_2, //gbc_label_2);
+			panel.add(label_2, 2, 3, 2, 3); //gbc_label_2);
 			
 			textField_maxTurnoverRate = newTextField();
 			textField_maxTurnoverRate.setPrefColumnCount(10);
@@ -413,7 +410,7 @@ public class CAPanel extends Pane {
 			//gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_3.gridx = 3;
 			//gbc_textField_3.gridy = 3;
-			panel.add(textField_maxTurnoverRate, //gbc_textField_3);
+			panel.add(textField_maxTurnoverRate, 3, 3, 3, 3); //gbc_textField_3);
 			
 			Label lblSamplingRate = new Label("<html>Sampling&nbsp;rate&nbsp;&psi;:</html>");
 			//GridBagConstraints //gbc_lblSamplingRate = new GridBagConstraints();
@@ -421,27 +418,23 @@ public class CAPanel extends Pane {
 			//gbc_lblSamplingRate.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblSamplingRate.gridx = 0;
 			//gbc_lblSamplingRate.gridy = 4;
-			panel.add(lblSamplingRate, //gbc_lblSamplingRate);
+			panel.add(lblSamplingRate, 0, 4, 0, 4); //gbc_lblSamplingRate);
 			
 			textField_minSamplingRate = newTextField();
-			textField_minSamplingRate.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				}
-			});
 			textField_minSamplingRate.setPrefColumnCount(10);
 			//GridBagConstraints //gbc_textField_10 = new GridBagConstraints();
 			//gbc_textField_10.insets = new Insets(0, 0, 5, 5);
 			//gbc_textField_10.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_10.gridx = 1;
 			//gbc_textField_10.gridy = 4;
-			panel.add(textField_minSamplingRate, //gbc_textField_10);
+			panel.add(textField_minSamplingRate, 1, 4, 1, 4); //gbc_textField_10);
 			
 			Label label_3 = new Label("-");
 			//GridBagConstraints //gbc_label_3 = new GridBagConstraints();
 			//gbc_label_3.insets = new Insets(0, 0, 5, 5);
 			//gbc_label_3.gridx = 2;
 			//gbc_label_3.gridy = 4;
-			panel.add(label_3, //gbc_label_3);
+			panel.add(label_3, 2, 4, 2, 4); //gbc_label_3);
 			
 			textField_maxSamplingRate = newTextField();
 			textField_maxSamplingRate.setPrefColumnCount(10);
@@ -450,12 +443,14 @@ public class CAPanel extends Pane {
 			//gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_4.gridx = 3;
 			//gbc_textField_4.gridy = 4;
-			panel.add(textField_maxSamplingRate, //gbc_textField_4);
+			panel.add(textField_maxSamplingRate, 3, 4, 3, 4); //gbc_textField_4);
 			
-			lblNetDiversificationRate.setTooltip(new Tooltip(DIV_RATE_HELP);
-			lblRurnoverRateDb.setTooltip(new Tooltip(TURNOVER_RATE_HELP);
-			lblSamplingRate.setTooltip(new Tooltip(SAMPLING_RATE_HELP);
+			lblNetDiversificationRate.setTooltip(new Tooltip(DIV_RATE_HELP));
+			lblRurnoverRateDb.setTooltip(new Tooltip(TURNOVER_RATE_HELP));
+			lblSamplingRate.setTooltip(new Tooltip(SAMPLING_RATE_HELP));
 		}
+		
+				
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
 			// Label lblNewLabel = new Label("Sampling gap:");
@@ -473,7 +468,7 @@ public class CAPanel extends Pane {
 			// 	}
 			// });
 			// textField_minSamplingGap.setPrefColumnCount(10);
-			GridBagConstraints //gbc_textField_11 = new GridBagConstraints();
+			//GridBagConstraints //gbc_textField_11 = new GridBagConstraints();
 			//gbc_textField_11.insets = new Insets(0, 0, 0, 5);
 			//gbc_textField_11.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_11.gridx = 1;
@@ -481,11 +476,11 @@ public class CAPanel extends Pane {
 			// panel.add(textField_minSamplingGap, //gbc_textField_11);
 			
 			Label label_4 = new Label("-");
-			GridBagConstraints //gbc_label_4 = new GridBagConstraints();
+			//GridBagConstraints //gbc_label_4 = new GridBagConstraints();
 			//gbc_label_4.insets = new Insets(0, 0, 0, 5);
 			//gbc_label_4.gridx = 2;
 			//gbc_label_4.gridy = 5;
-			panel.add(label_4, //gbc_label_4);
+			panel.add(label_4, 2, 5, 2, 5); //gbc_label_4);
 			
 			// textField_maxSamplingGap = newTextField();
 			// textField_maxSamplingGap.addActionListener(new ActionListener() {
@@ -493,7 +488,7 @@ public class CAPanel extends Pane {
 			// 	}
 			// });
 			// textField_maxSamplingGap.setPrefColumnCount(10);
-			GridBagConstraints //gbc_textField_5 = new GridBagConstraints();
+			//GridBagConstraints //gbc_textField_5 = new GridBagConstraints();
 			//gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_5.gridx = 3;
 			//gbc_textField_5.gridy = 5;
@@ -501,10 +496,10 @@ public class CAPanel extends Pane {
 	
 			// help buttons for panel1
 			Button btnHelpButtonFirstOccurance = newHelpButton();
-			GridBagConstraints //gbc_btnNewButton = new GridBagConstraints();
+			//GridBagConstraints //gbc_btnNewButton = new GridBagConstraints();
 			//gbc_btnNewButton.gridx = 5;
 			//gbc_btnNewButton.gridy = 1;
-			panel.add(btnHelpButtonFirstOccurance, //gbc_btnNewButton);
+			panel.add(btnHelpButtonFirstOccurance, 5, 1, 5, 10); //gbc_btnNewButton);
 			btnHelpButtonFirstOccurance.setOnAction(e ->
 					showHelp(OCCURRENCE_AGE_HELP)
 			);
@@ -513,28 +508,28 @@ public class CAPanel extends Pane {
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_TOP) {
 			Button btnHelpButton2= newHelpButton();
-			GridBagConstraints //gbc_btnNewButton2 = new GridBagConstraints();
+			//GridBagConstraints //gbc_btnNewButton2 = new GridBagConstraints();
 			//gbc_btnNewButton2.gridx = 5;
 			//gbc_btnNewButton2.gridy = 2;
-			panel.add(btnHelpButton2, //gbc_btnNewButton2);
+			panel.add(btnHelpButton2, 5, 2, 5, 2); //gbc_btnNewButton2);
 			btnHelpButton2.setOnAction(e ->
 					showHelp(DIV_RATE_HELP)
 			);
 
 			Button btnHelpButton3= newHelpButton();
-			GridBagConstraints //gbc_btnNewButton3 = new GridBagConstraints();
+			//GridBagConstraints //gbc_btnNewButton3 = new GridBagConstraints();
 			//gbc_btnNewButton3.gridx = 5;
 			//gbc_btnNewButton3.gridy = 3;
-			panel.add(btnHelpButton3, //gbc_btnNewButton3);
+			panel.add(btnHelpButton3, 5, 3, 5, 3); //gbc_btnNewButton3);
 			btnHelpButton3.setOnAction(e ->
 					showHelp(TURNOVER_RATE_HELP)
 			);
 	
 			Button btnHelpButton4= newHelpButton();
-			GridBagConstraints //gbc_btnNewButton4 = new GridBagConstraints();
+			//GridBagConstraints //gbc_btnNewButton4 = new GridBagConstraints();
 			//gbc_btnNewButton4.gridx = 5;
 			//gbc_btnNewButton4.gridy = 4;
-			panel.add(btnHelpButton4, //gbc_btnNewButton4);
+			panel.add(btnHelpButton4, 5, 4, 5, 4); //gbc_btnNewButton4);
 			btnHelpButton4.setOnAction(e ->
 					showHelp(SAMPLING_RATE_HELP)
 			);
@@ -554,53 +549,37 @@ public class CAPanel extends Pane {
 		// 	});
 		// }
 				
-		JPanel panel2b = new JPanel();
-		panel2b.setLayout(new BorderLayout());
+		VBox panel2b = FXUtils.newVBox();
+		// panel2b.setLayout(new BorderLayout());
 		
-		Label lblIcon = new MyLabel(Utils.getIcon(CA_ICON));
+		ImageView icon = FXUtils.getIcon(CA_ICON);
+		Label lblIcon = new Label();
+		lblIcon.setGraphic(icon);
 		if (mode == MODE_BEAUTI_BOTTOM) {
-			lblIcon.setMinimumSize(new Dimension(84,84));
-			lblIcon.setPreferredSize(new Dimension(84,84));
+			lblIcon.setMinSize(84,84);
+			lblIcon.setPrefSize(84,84);
 		} else {
-			lblIcon.setMinimumSize(new Dimension(160,160));
-			lblIcon.setPreferredSize(new Dimension(160,160));
+			lblIcon.setMinSize(160,160);
+			lblIcon.setPrefSize(160,160);
 		}
-		JPanel iconPanel = new JPanel();
-		iconPanel.add(lblIcon);
-		panel2b.add(iconPanel, BorderLayout.NORTH);
+		panel2b.getChildren().add(icon);
 		
 		btnCalculate = new Button("Run");
-		btnCalculate.setMinimumSize(new Dimension(128, 20));
+		btnCalculate.setMinSize(128, 20);
 		btnCalculate.setOnAction(e -> {
-				setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			cursorProperty().set(Cursor.WAIT);
 				guiToData();
 				dataToGUI();
 				ages = null;
 				probs = new CladeAgeProbabilities();
 				
-				Frame parentFrame = Frame.getFrames()[0];
-			    final JDialog dlg = new JDialog(parentFrame, "Progress Dialog", true);
-			    final JProgressBar dpb = new JProgressBar(0, 100);
-			    final Button cancelButton = new Button("Cancel");
-			    cancelButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-							System.err.println("Trying to stop");
-							probs.setCancel();
-							dlg.setVisible(false);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-						
-					}
-				});
-			    dlg.add(BorderLayout.CENTER, dpb);
-			    dlg.add(BorderLayout.NORTH, new Label("Progress..."));
-			    dlg.add(BorderLayout.EAST, cancelButton);
-			    dlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-			    dlg.setSize(300, 75);
-			    dlg.setLocationRelativeTo(parentFrame);
+				Dialog dlg = new Dialog<>();
+				dlg.getDialogPane().setHeaderText("Progress Dialog");
+			    final ProgressBar dpb = new ProgressBar();
+			    dlg.getDialogPane().setContent(dpb);
+			    dlg.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+			    
+			    
 
 			    final Thread t = new Thread(new Runnable() {
 			      public void run() {
@@ -624,30 +603,32 @@ public class CAPanel extends Pane {
 //						throw new RuntimeException(e);
 //					}
 					calcFit(dpb);
-			        dlg.setVisible(false);
+			        dlg.close();
 			      }
 			    });
 			    t.start();
-		        dlg.setVisible(true);
+		        Optional optional = dlg.showAndWait();
+		        if (optional.toString().toLowerCase().contains("cancel")) {
+					try {
+						System.err.println("Trying to stop");
+						probs.setCancel();
+						dlg.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+		        }
 
-			    while (dlg.isVisible()) {
-			    	try {
-			    		Thread.sleep(500);
-			    	} catch (Exception ex) {
-			    		
-			    	}
-			    }
 			    if (probs.getCancel()) {
-					panel_1.repaint();
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					//panel_1.repaint();
+					cursorProperty().set(Cursor.DEFAULT);
 			    	return;
 			    }
 		        
 				ages = probs.getAges();
 				probabilities =  probs.getInt_probabilities();
 
-				panel_1.repaint();
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));				
+				//panel_1.repaint();
+				cursorProperty().set(Cursor.DEFAULT);
 			}
 		);
 //		GridBagConstraints //gbc_btnCalculate = new GridBagConstraints();
@@ -655,9 +636,9 @@ public class CAPanel extends Pane {
 //		//gbc_btnCalculate.insets = new Insets(0, 0, 5, 0);
 //		//gbc_btnCalculate.gridx = 0;
 //		//gbc_btnCalculate.gridy = 4;
-		panel2b.add(btnCalculate, BorderLayout.CENTER);
+		panel2b.getChildren().add(btnCalculate);
 		
-		GridBagConstraints //gbc_lblIcon = new GridBagConstraints();
+		//GridBagConstraints gbc_lblIcon = new GridBagConstraints();
 		//gbc_lblIcon.insets = new Insets(5, 0, 5, 5);
 		//gbc_lblIcon.anchor = GridBagConstraints.EAST;
 		//gbc_lblIcon.gridx = 2;
@@ -665,7 +646,7 @@ public class CAPanel extends Pane {
 		//gbc_lblIcon.gridwidth = 2;
 		
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			add(panel2b, //gbc_lblIcon);
+			getChildren().add(panel2b); //gbc_lblIcon);
 		}
 
 // The below is not needed anymore, as parameters numberOfTreeSimulations, maxNrOfBranches, and samplingReplicatesPer don't exist anymore.
@@ -778,16 +759,16 @@ public class CAPanel extends Pane {
 //			}
 //		});
 		
-		JPanel panel3 = new JPanel();
-		panel3.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Clade age probabilities", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		GridBagConstraints //gbc_panel3 = new GridBagConstraints();
+		GridPane panel3 = new GridPane();
+		//panel3.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Clade age probabilities", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		//GridBagConstraints //gbc_panel3 = new GridBagConstraints();
 		//gbc_panel3.anchor = GridBagConstraints.WEST;
 		//gbc_panel3.fill = GridBagConstraints.BOTH;
 		//gbc_panel3.gridx = 0;
 		//gbc_panel3.gridy = 1;
 		//gbc_panel3.gridwidth = 3;
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
-			add(panel3, //gbc_panel3);
+			getChildren().add(panel3); //gbc_panel3);
 		}
 		GridBagLayout gbl_panel3 = new GridBagLayout();
 		gbl_panel3.columnWidths = new int[]{0};
@@ -796,184 +777,205 @@ public class CAPanel extends Pane {
 		gbl_panel3.rowWeights = new double[]{Double.MIN_VALUE, 1.0};
 		panel3.setLayout(gbl_panel3);
 		
-		panel_1 = new Pane() {
-			protected void paintComponent(java.awt.Graphics g) {
-				g.setColor(new Color(241, 241, 241));
-				g.fillRect(0, 0, getWidth(), getHeight());
-				if (ages != null) {
-		            final int width = getWidth();
-		            final int height = getHeight();
-		            final int graphoffset = 30;
-		            final int labeloffset = 0;
-		            int nGraphWidth = width - graphoffset * 2;
-		            int nGraphHeight = height - graphoffset * 2 - labeloffset;
-		            g.setColor(Color.WHITE);
-		            g.fillRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
-		            g.setColor(Color.BLACK);
-		            g.drawRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
-//		            try {
-//		            	if (m_distr != null) {
-//		            		m_distr.initAndValidate();
-//		            	}
-//		            } catch (Exception e1) {
-//		                // ignore
+		
+		NumberAxis xAxis = new NumberAxis();
+		xAxis.setForceZeroInRange(false);
+        //xAxis.setLabel("x");                
+        NumberAxis yAxis = new NumberAxis();        
+        yAxis.setLabel("p(x)");
+        chart = new LineChart<Number,Number>(xAxis,yAxis);
+        //chart.setAnimated(false);
+        chart.setLegendVisible(false);
+        chart.setCreateSymbols(false);
+        chart.getXAxis().setAutoRanging(true);
+        chart.getYAxis().setAutoRanging(true);
+        series = new LineChart.Series<>();
+        for (int i = 0; i < ages.length; i++) {
+        	series.getData().add(new XYChart.Data<Number,Number>(0,0));
+        }
+        chart.getData().add(series);
+        getChildren().add(chart);
+
+//		panel_1 = new Pane() {
+//			
+//			
+//			protected void paintComponent(java.awt.Graphics g) {
+//				g.setColor(new Color(241, 241, 241));
+//				g.fillRect(0, 0, getWidth(), getHeight());
+//				if (ages != null) {
+//		            final int width = getWidth();
+//		            final int height = getHeight();
+//		            final int graphoffset = 30;
+//		            final int labeloffset = 0;
+//		            int nGraphWidth = width - graphoffset * 2;
+//		            int nGraphHeight = height - graphoffset * 2 - labeloffset;
+//		            g.setColor(Color.WHITE);
+//		            g.fillRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
+//		            g.setColor(Color.BLACK);
+//		            g.drawRect(graphoffset, graphoffset, nGraphWidth, nGraphHeight);
+////		            try {
+////		            	if (m_distr != null) {
+////		            		m_distr.initAndValidate();
+////		            	}
+////		            } catch (Exception e1) {
+////		                // ignore
+////		            }
+//		            int nPoints = ages.length;
+//		            int nPoints2 = getWidth();
+//		            int[] xPoints = new int[nPoints];
+//		            int[] yPoints = new int[nPoints];
+//		            int[] xPoints2 = new int[nPoints2];
+//		            int[] yPoints2 = new int[nPoints2];
+//		            double[] fyPoints = new double[nPoints];
+//		            double[] fyPoints2 = new double[nPoints2];
+//		            Font font = g.getFont();
+//		            double fMinValue = 0.1;
+//		            double fMaxValue = 1;
+//	                fMinValue = Math.min(ages[0], ages[ages.length-1]);
+//	                fMaxValue = Math.max(ages[0], ages[ages.length-1]);
+//		            double fXRange = fMaxValue - fMinValue;
+//		            // adjust fYMax so that the ticks come out right
+//		            double fX0 = fMinValue;
+//		            int k = 0;
+//		            double f = fXRange;
+//		            double f2 = fX0;
+//		            while (f > 10) {
+//		                f /= 10;
+//		                f2 /= 10;
+//		                k++;
 //		            }
-		            int nPoints = ages.length;
-		            int nPoints2 = getWidth();
-		            int[] xPoints = new int[nPoints];
-		            int[] yPoints = new int[nPoints];
-		            int[] xPoints2 = new int[nPoints2];
-		            int[] yPoints2 = new int[nPoints2];
-		            double[] fyPoints = new double[nPoints];
-		            double[] fyPoints2 = new double[nPoints2];
-		            Font font = g.getFont();
-		            double fMinValue = 0.1;
-		            double fMaxValue = 1;
-	                fMinValue = Math.min(ages[0], ages[ages.length-1]);
-	                fMaxValue = Math.max(ages[0], ages[ages.length-1]);
-		            double fXRange = fMaxValue - fMinValue;
-		            // adjust fYMax so that the ticks come out right
-		            double fX0 = fMinValue;
-		            int k = 0;
-		            double f = fXRange;
-		            double f2 = fX0;
-		            while (f > 10) {
-		                f /= 10;
-		                f2 /= 10;
-		                k++;
-		            }
-		            while (f < 1 && f > 0) {
-		                f *= 10;
-		                f2 *= 10;
-		                k--;
-		            }
-		            f = Math.ceil(f);
-		            f2 = Math.floor(f2);
-//					final int NR_OF_TICKS_X = NR_OF_TICKS[(int) f];
-		            for (int i = 0; i < k; i++) {
-		                f *= 10;
-		                f2 *= 10;
-		            }
-		            for (int i = k; i < 0; i++) {
-		                f /= 10;
-		                f2 /= 10;
-		            }
-		            //double fAdjXRange = f;
-
-		            fXRange = fXRange + fMinValue - f2;
-		            fXRange = adjust(fXRange);
-		            final int NR_OF_TICKS_X = m_nTicks;
-
-		            fMinValue = f2; //fXRange = fAdjXRange;
-
-		            double fYMax = 0;
-		            for (int i = 0; i < nPoints2; i++) {
-		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints2;  
-		                if (m_distr != null) {
-		                    try {
-		                    	if (m_distr instanceof CladeAgeDistribution) {
-			                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);
-		                    	} else {
-		                    		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);// - minOccuranceAge);X
-		                    	}
-		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
-		                        	fyPoints2[i] = 0;
-		                        }
-		                    } catch (Exception e) {
-		                        fyPoints2[i] = 0;
-		                    }
-		                }
-		            }
-		            
-		            for (int i = 0; i < nPoints; i++) {
-		                xPoints[i] = (int)(graphoffset + nGraphWidth * (ages[ages.length - 1 - i] - f2)/fXRange);  
-
-		                fyPoints[i] = probabilities[nPoints - i - 1]/probs.getNormaliser();
-
-		                
-		                if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
-		                    fyPoints[i] = 0;
-		                }
-		                //fyPoints[i] = Math.exp(m_distr.logDensity(fMinValue + (fXRange * i)/nPoints));
-		                fYMax = Math.max(fYMax, fyPoints[i]);
-		            }
-
-		            fYMax = adjust(fYMax);
-		            final int NR_OF_TICKS_Y = m_nTicks;
-
-		            
-		            for (int i = 0; i < nPoints; i++) {
-		                yPoints[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
-		                g.drawLine(xPoints[i]+2, yPoints[i], xPoints[i]-2, yPoints[i]);
-		                g.drawLine(xPoints[i], yPoints[i]-2, xPoints[i], yPoints[i]+2);
-		            }
-		            for (int i = 0; i < nPoints2; i++) {
-		                yPoints2[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints2[i] / fYMax);
-		            }
-		            if (m_distr != null) {
-		            	g.drawPolyline(xPoints2, yPoints2, nPoints2);
-		            }
-		            
-
-		            // draw ticks on edge
-		            Font smallFont = new Font(font.getName(), font.getStyle(), 8);
-		            g.setFont(smallFont);
-		            for (int i = 0; i <= NR_OF_TICKS_X; i++) {
-		                int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;
-		                g.drawLine(x, graphoffset + nGraphHeight, x, graphoffset + nGraphHeight + 5);
-		                g.drawString(format(fMinValue + fXRange * i / NR_OF_TICKS_X), x + 2, graphoffset + nGraphHeight + 5 + 4);
-		            }
-		            for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
-		                int y = graphoffset + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
-		                g.drawLine(graphoffset - 5, y, graphoffset, y);
-		                g.drawString(format(fYMax * i / NR_OF_TICKS_Y), 0, y - 2);
-		            }
-		            
-		            // draw statistics
-		            if (m_distr != null) {
-			            int statoffsetx = getWidth() - 120;
-			            int statoffsety = graphoffset + 10;
-//		            	String text = getFitParameters();
-//		            	String [] strs = text.split("\n");
-//		            	for (int i = 0; i < strs.length; i++) {
-//			                g.drawString(strs[i], statoffsetx, statoffsety + i * 10);
-//		            	}
-		            }
-				}
-			};
-
-			/**
-		     * maps most significant digit to nr of ticks on graph *
-		     */
-		    final int[] NR_OF_TICKS = new int[]{5, 10, 8, 6, 8, 10, 6, 7, 8, 9, 10};
-			int m_nTicks = 5;
-			
-	        private double adjust(double fYMax) {
-	            // adjust fYMax so that the ticks come out right
-	            int k = 0;
-	            double fY = fYMax;
-	            while (fY > 10) {
-	                fY /= 10;
-	                k++;
-	            }
-	            while (fY < 1 && fY > 0) {
-	                fY *= 10;
-	                k--;
-	            }
-	            fY = Math.ceil(fY);
-	            m_nTicks = NR_OF_TICKS[(int) fY];
-	            for (int i = 0; i < k; i++) {
-	                fY *= 10;
-	            }
-	            for (int i = k; i < 0; i++) {
-	                fY /= 10;
-	            }
-	            return fY;
-	        }
-	        
-
-		};
-		panel_1.setTooltip(new Tooltip("Click to show parameters of fit");
+//		            while (f < 1 && f > 0) {
+//		                f *= 10;
+//		                f2 *= 10;
+//		                k--;
+//		            }
+//		            f = Math.ceil(f);
+//		            f2 = Math.floor(f2);
+////					final int NR_OF_TICKS_X = NR_OF_TICKS[(int) f];
+//		            for (int i = 0; i < k; i++) {
+//		                f *= 10;
+//		                f2 *= 10;
+//		            }
+//		            for (int i = k; i < 0; i++) {
+//		                f /= 10;
+//		                f2 /= 10;
+//		            }
+//		            //double fAdjXRange = f;
+//
+//		            fXRange = fXRange + fMinValue - f2;
+//		            fXRange = adjust(fXRange);
+//		            final int NR_OF_TICKS_X = m_nTicks;
+//
+//		            fMinValue = f2; //fXRange = fAdjXRange;
+//
+//		            double fYMax = 0;
+//		            for (int i = 0; i < nPoints2; i++) {
+//		                xPoints2[i] = graphoffset + nGraphWidth * i / nPoints2;  
+//		                if (m_distr != null) {
+//		                    try {
+//		                    	if (m_distr instanceof CladeAgeDistribution) {
+//			                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);
+//		                    	} else {
+//		                    		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);// - minOccuranceAge);X
+//		                    	}
+//		                        if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
+//		                        	fyPoints2[i] = 0;
+//		                        }
+//		                    } catch (Exception e) {
+//		                        fyPoints2[i] = 0;
+//		                    }
+//		                }
+//		            }
+//		            
+//		            for (int i = 0; i < nPoints; i++) {
+//		                xPoints[i] = (int)(graphoffset + nGraphWidth * (ages[ages.length - 1 - i] - f2)/fXRange);  
+//
+//		                fyPoints[i] = probabilities[nPoints - i - 1]/probs.getNormaliser();
+//
+//		                
+//		                if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
+//		                    fyPoints[i] = 0;
+//		                }
+//		                //fyPoints[i] = Math.exp(m_distr.logDensity(fMinValue + (fXRange * i)/nPoints));
+//		                fYMax = Math.max(fYMax, fyPoints[i]);
+//		            }
+//
+//		            fYMax = adjust(fYMax);
+//		            final int NR_OF_TICKS_Y = m_nTicks;
+//
+//		            
+//		            for (int i = 0; i < nPoints; i++) {
+//		                yPoints[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
+//		                g.drawLine(xPoints[i]+2, yPoints[i], xPoints[i]-2, yPoints[i]);
+//		                g.drawLine(xPoints[i], yPoints[i]-2, xPoints[i], yPoints[i]+2);
+//		            }
+//		            for (int i = 0; i < nPoints2; i++) {
+//		                yPoints2[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints2[i] / fYMax);
+//		            }
+//		            if (m_distr != null) {
+//		            	g.drawPolyline(xPoints2, yPoints2, nPoints2);
+//		            }
+//		            
+//
+//		            // draw ticks on edge
+//		            Font smallFont = new Font(font.getName(), font.getStyle(), 8);
+//		            g.setFont(smallFont);
+//		            for (int i = 0; i <= NR_OF_TICKS_X; i++) {
+//		                int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;
+//		                g.drawLine(x, graphoffset + nGraphHeight, x, graphoffset + nGraphHeight + 5);
+//		                g.drawString(format(fMinValue + fXRange * i / NR_OF_TICKS_X), x + 2, graphoffset + nGraphHeight + 5 + 4);
+//		            }
+//		            for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
+//		                int y = graphoffset + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
+//		                g.drawLine(graphoffset - 5, y, graphoffset, y);
+//		                g.drawString(format(fYMax * i / NR_OF_TICKS_Y), 0, y - 2);
+//		            }
+//		            
+//		            // draw statistics
+//		            if (m_distr != null) {
+//			            int statoffsetx = getWidth() - 120;
+//			            int statoffsety = graphoffset + 10;
+////		            	String text = getFitParameters();
+////		            	String [] strs = text.split("\n");
+////		            	for (int i = 0; i < strs.length; i++) {
+////			                g.drawString(strs[i], statoffsetx, statoffsety + i * 10);
+////		            	}
+//		            }
+//				}
+//			};
+//
+//			/**
+//		     * maps most significant digit to nr of ticks on graph *
+//		     */
+//		    final int[] NR_OF_TICKS = new int[]{5, 10, 8, 6, 8, 10, 6, 7, 8, 9, 10};
+//			int m_nTicks = 5;
+//			
+//	        private double adjust(double fYMax) {
+//	            // adjust fYMax so that the ticks come out right
+//	            int k = 0;
+//	            double fY = fYMax;
+//	            while (fY > 10) {
+//	                fY /= 10;
+//	                k++;
+//	            }
+//	            while (fY < 1 && fY > 0) {
+//	                fY *= 10;
+//	                k--;
+//	            }
+//	            fY = Math.ceil(fY);
+//	            m_nTicks = NR_OF_TICKS[(int) fY];
+//	            for (int i = 0; i < k; i++) {
+//	                fY *= 10;
+//	            }
+//	            for (int i = k; i < 0; i++) {
+//	                fY /= 10;
+//	            }
+//	            return fY;
+//	        }
+//	        
+//
+//		};
+		panel_1.setTooltip(new Tooltip("Click to show parameters of fit"));
 		panel_1.setOnMouseClicked(e->{
 				String text = getFitParameters();
 				text = text.replaceAll("\n", "<br/>");
@@ -984,11 +986,11 @@ public class CAPanel extends Pane {
 		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_1.setBackground(Color.gray);
 		panel_1.setPreferredSize(new Dimension(1024,400));
-		GridBagConstraints //gbc_panel_1 = new GridBagConstraints();
+		//GridBagConstraints //gbc_panel_1 = new GridBagConstraints();
 		//gbc_panel_1.fill = GridBagConstraints.BOTH;
 		//gbc_panel_1.gridx = 0;
 		//gbc_panel_1.gridy = 1;
-		panel3.add(panel_1, //gbc_panel_1);
+		panel3.getChildren().add(panel_1); //gbc_panel_1);
 //		JPanel panel4 = new JPanel();
 //		panel4.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Approximation", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 //		GridBagConstraints //gbc_panel4 = new GridBagConstraints();
@@ -1091,6 +1093,145 @@ public class CAPanel extends Pane {
 		// setToolTipText(textField_minSamplingGap, SAMPLING_GAP_HELP);
 	}
 
+	
+	
+	protected void refresh() {
+	if (ages != null) {
+        final int width = 1024;
+        final int height = 1024;
+        final int graphoffset = 30;
+        final int labeloffset = 0;
+        int nGraphWidth = width - graphoffset * 2;
+        int nGraphHeight = height - graphoffset * 2 - labeloffset;
+        int nPoints = ages.length;
+        int nPoints2 = width;
+        int[] xPoints = new int[nPoints];
+        int[] yPoints = new int[nPoints];
+        int[] xPoints2 = new int[nPoints2];
+        int[] yPoints2 = new int[nPoints2];
+        double[] fyPoints = new double[nPoints];
+        double[] fyPoints2 = new double[nPoints2];
+        double fMinValue = 0.1;
+        double fMaxValue = 1;
+        fMinValue = Math.min(ages[0], ages[ages.length-1]);
+        fMaxValue = Math.max(ages[0], ages[ages.length-1]);
+        double fXRange = fMaxValue - fMinValue;
+        // adjust fYMax so that the ticks come out right
+        double fX0 = fMinValue;
+        int k = 0;
+        double f = fXRange;
+        double f2 = fX0;
+        while (f > 10) {
+            f /= 10;
+            f2 /= 10;
+            k++;
+        }
+        while (f < 1 && f > 0) {
+            f *= 10;
+            f2 *= 10;
+            k--;
+        }
+        f = Math.ceil(f);
+        f2 = Math.floor(f2);
+//		final int NR_OF_TICKS_X = NR_OF_TICKS[(int) f];
+        for (int i = 0; i < k; i++) {
+            f *= 10;
+            f2 *= 10;
+        }
+        for (int i = k; i < 0; i++) {
+            f /= 10;
+            f2 /= 10;
+        }
+        //double fAdjXRange = f;
+
+        fXRange = fXRange + fMinValue - f2;
+//        fXRange = adjust(fXRange);
+//        final int NR_OF_TICKS_X = m_nTicks;
+
+        fMinValue = f2; //fXRange = fAdjXRange;
+
+        double fYMax = 0;
+        for (int i = 0; i < nPoints2; i++) {
+            xPoints2[i] = graphoffset + nGraphWidth * i / nPoints2;  
+            if (m_distr != null) {
+                try {
+                	if (m_distr instanceof CladeAgeDistribution) {
+                        fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);
+                	} else {
+                		fyPoints2[i] = m_distr.density(fMinValue + (fXRange * i) / nPoints2);// - minOccuranceAge);X
+                	}
+                    if (Double.isInfinite(fyPoints2[i]) || Double.isNaN(fyPoints2[i])) {
+                    	fyPoints2[i] = 0;
+                    }
+                } catch (Exception e) {
+                    fyPoints2[i] = 0;
+                }
+            }
+        }
+        
+        for (int i = 0; i < nPoints; i++) {
+            xPoints[i] = (int)(graphoffset + nGraphWidth * (ages[ages.length - 1 - i] - f2)/fXRange);  
+
+            fyPoints[i] = probabilities[nPoints - i - 1]/probs.getNormaliser();
+
+            
+            if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
+                fyPoints[i] = 0;
+            }
+            //fyPoints[i] = Math.exp(m_distr.logDensity(fMinValue + (fXRange * i)/nPoints));
+            fYMax = Math.max(fYMax, fyPoints[i]);
+        }
+
+//        fYMax = adjust(fYMax);
+//        final int NR_OF_TICKS_Y = m_nTicks;
+
+        series.getData().clear();
+        for (int i = 0; i < ages.length; i++) {
+        	series.getData().add(new XYChart.Data<Number,Number>(xPoints[i],yPoints[i]));
+        }
+
+        
+//        for (int i = 0; i < nPoints; i++) {
+//            yPoints[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
+//            g.drawLine(xPoints[i]+2, yPoints[i], xPoints[i]-2, yPoints[i]);
+//            g.drawLine(xPoints[i], yPoints[i]-2, xPoints[i], yPoints[i]+2);
+//        }
+//        for (int i = 0; i < nPoints2; i++) {
+//            yPoints2[i] = 1 + (int) (graphoffset + nGraphHeight - nGraphHeight * fyPoints2[i] / fYMax);
+//        }
+//        if (m_distr != null) {
+//        	g.drawPolyline(xPoints2, yPoints2, nPoints2);
+//        }
+//        
+//
+//        // draw ticks on edge
+//        Font smallFont = new Font(font.getName(), font.getStyle(), 8);
+//        g.setFont(smallFont);
+//        for (int i = 0; i <= NR_OF_TICKS_X; i++) {
+//            int x = graphoffset + i * nGraphWidth / NR_OF_TICKS_X;
+//            g.drawLine(x, graphoffset + nGraphHeight, x, graphoffset + nGraphHeight + 5);
+//            g.drawString(format(fMinValue + fXRange * i / NR_OF_TICKS_X), x + 2, graphoffset + nGraphHeight + 5 + 4);
+//        }
+//        for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
+//            int y = graphoffset + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
+//            g.drawLine(graphoffset - 5, y, graphoffset, y);
+//            g.drawString(format(fYMax * i / NR_OF_TICKS_Y), 0, y - 2);
+//        }
+//        
+//        // draw statistics
+//        if (m_distr != null) {
+//            int statoffsetx = getWidth() - 120;
+//            int statoffsety = graphoffset + 10;
+////        	String text = getFitParameters();
+////        	String [] strs = text.split("\n");
+////        	for (int i = 0; i < strs.length; i++) {
+////                g.drawString(strs[i], statoffsetx, statoffsety + i * 10);
+////        	}
+//        }
+	}
+};
+
+	
 	private void setToolTipText(Control component, String text) {
 		if (component != null) {
 			component.setTooltip(new Tooltip(text));
@@ -1235,21 +1376,21 @@ public class CAPanel extends Pane {
 		return 0;
 	}
 	
-	class MyLabel extends Label {
-		private static final long serialVersionUID = 1L;
-		ImageIcon imageIcon;
-	    public MyLabel(ImageIcon icon)
-	    {
-	        super();
-	        this.imageIcon = icon;
-	    }
-	    @Override
-	    public void paintComponent(Graphics g)
-	    {
-	        super.paintComponent(g);
-	        g.drawImage(imageIcon.getImage(),0,0,getWidth(),getHeight(),this);
-	    }
-	}
+//	class MyLabel extends Label {
+//		private static final long serialVersionUID = 1L;
+//		ImageIcon imageIcon;
+//	    public MyLabel(ImageIcon icon)
+//	    {
+//	        super();
+//	        this.imageIcon = icon;
+//	    }
+//	    @Override
+//	    public void paintComponent(Graphics g)
+//	    {
+//	        super.paintComponent(g);
+//	        g.drawImage(imageIcon.getImage(),0,0,getWidth(),getHeight(),this);
+//	    }
+//	}
 
 	static void showHelp(String text) {
 		    String title = text.substring(0, text.indexOf(":"));
@@ -1334,191 +1475,133 @@ public class CAPanel extends Pane {
     }
 
     
-    boolean bAdvancedFeatures = false;
-
-	private JMenuBar makeMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
-        fileMenu.setMnemonic('F');
-        menuBar.add(fileMenu);
-        fileMenu.add(new MyAction("New", "Start new Clade Age", "new", KeyEvent.VK_N) {
-        	public void actionPerformed(ActionEvent ae) {
-                main(new String[0]);
-            }
-        });
-
-        if (!Utils.isMac()) {
-            fileMenu.addSeparator();
-            fileMenu.add(new MyAction("Close", "Close Window", "close", KeyEvent.VK_W) {
-			    public void actionPerformed(ActionEvent ae) {
-			        JMenuItem menuItem = (JMenuItem) ae.getSource();
-			        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
-			        Component invoker = popupMenu.getInvoker();
-			        JComponent invokerAsJComponent = (JComponent) invoker;
-			        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
-			        if (topLevel != null) {
-			            ((JFrame) topLevel).dispose();
-			        }
-			    }
-			});
-            
-            fileMenu.add(new MyAction("Exit", "Exit Program", "exit", KeyEvent.VK_F4) {
-            	public void actionPerformed(ActionEvent ae) {
-            		System.exit(0);
-            	}
-            });
-        }
-        
-//        JMenu modeMenu = new JMenu("Mode");
-//        menuBar.add(modeMenu);
-//        modeMenu.setMnemonic('M');
+//    boolean bAdvancedFeatures = false;
 //
-//        JCheckBoxMenuItem advancedMode = new JCheckBoxMenuItem("Show advanced settings", bAdvancedFeatures);
-//        advancedMode.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent ae) {
-//            	JCheckBoxMenuItem advancedMode = (JCheckBoxMenuItem) ae.getSource();
-//                bAdvancedFeatures = advancedMode.getState();
-////                panel2.setVisible(bAdvancedFeatures);
-//                if (bAdvancedFeatures) {
-//                	//gridBagLayout.columnWidths = new int[]{525, 375, 100};
-//            		add(panel2, //gbc_panel2);
-//                	
-//                } else {
-//                    //gridBagLayout.columnWidths = new int[]{800, 0, 100};
-//            		remove(panel2);
-//                	gridBagLayout.removeLayoutComponent(panel2);
-////                    panel2.setMinimumSize(new Dimension(0,0));
-////                    panel2.setSize(new Dimension(0,0));
-////                    panel2.setMaximumSize(new Dimension(0,0));
-////                    gridBagLayout.removeLayoutComponent(panel2);
-//                }
-//                
-//		        JMenuItem menuItem = (JMenuItem) ae.getSource();
-//		        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
-//		        Component invoker = popupMenu.getInvoker();
-//		        JComponent invokerAsJComponent = (JComponent) invoker;
-//		        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
-//		        if (topLevel != null) {
-//		        	JFrame frame = (JFrame) topLevel;
-//		        	Dimension size = frame.getSize(); 
-//		            ((JFrame) topLevel).setSize(new Dimension(size.width, size.height - 1));
-//		            ((JFrame) topLevel).setSize(size);
-//		        }
-//
-//                repaint();
+//	private JMenuBar makeMenuBar() {
+//        JMenuBar menuBar = new JMenuBar();
+//        JMenu fileMenu = new JMenu("File");
+//        fileMenu.setMnemonic('F');
+//        menuBar.add(fileMenu);
+//        fileMenu.add(new MyAction("New", "Start new Clade Age", "new", KeyEvent.VK_N) {
+//        	public void actionPerformed(ActionEvent ae) {
+//                main(new String[0]);
 //            }
 //        });
-//        modeMenu.add(advancedMode);
-        
-        if (!Utils.isMac()) {
-            JMenu helpMenu = new JMenu("Help");
-            helpMenu.setMnemonic('H');
-            menuBar.add(helpMenu);
-            helpMenu.add(new MyAction("About", "Help about", "help", -1) {
-		        public void actionPerformed(ActionEvent ae) {
-		        	showHelp(ABOUT_HELP);
-		        }
-            });
-        }
-
-        
-		return menuBar;
-	}
+//
+//        if (!Utils.isMac()) {
+//            fileMenu.addSeparator();
+//            fileMenu.add(new MyAction("Close", "Close Window", "close", KeyEvent.VK_W) {
+//			    public void actionPerformed(ActionEvent ae) {
+//			        JMenuItem menuItem = (JMenuItem) ae.getSource();
+//			        JPopupMenu popupMenu = (JPopupMenu) menuItem.getParent();
+//			        Component invoker = popupMenu.getInvoker();
+//			        JComponent invokerAsJComponent = (JComponent) invoker;
+//			        Container topLevel = invokerAsJComponent.getTopLevelAncestor();
+//			        if (topLevel != null) {
+//			            ((JFrame) topLevel).dispose();
+//			        }
+//			    }
+//			});
+//            
+//            fileMenu.add(new MyAction("Exit", "Exit Program", "exit", KeyEvent.VK_F4) {
+//            	public void actionPerformed(ActionEvent ae) {
+//            		System.exit(0);
+//            	}
+//            });
+//        }
+//        
+//        
+//        if (!Utils.isMac()) {
+//            JMenu helpMenu = new JMenu("Help");
+//            helpMenu.setMnemonic('H');
+//            menuBar.add(helpMenu);
+//            helpMenu.add(new MyAction("About", "Help about", "help", -1) {
+//		        public void actionPerformed(ActionEvent ae) {
+//		        	showHelp(ABOUT_HELP);
+//		        }
+//            });
+//        }
+//
+//        
+//		return menuBar;
+//	}
 
 	List<CAPanelListener> listeners = new ArrayList<CAPanelListener>();
 	public void addChangeListener(CAPanelListener o) {
 		listeners.add(o);
 	}
 
-	TextField newTextField() {
+	private TextField newTextField() {
 		TextField entry = new TextField();
-	    entry.getDocument().addDocumentListener(new DocumentListener() {
-	        @Override
-	        public void removeUpdate(DocumentEvent e) {
-	        	if (!processingDataToGui) 
-	        		guiToData();
-	        }
-	
-	        @Override
-	        public void insertUpdate(DocumentEvent e) {
-	        	if (!processingDataToGui) 
-	        		guiToData();
-	        }
-	
-	        @Override
-	        public void changedUpdate(DocumentEvent e) {
-	        	if (!processingDataToGui) 
-	        		guiToData();
-	        }
-	    });
+		entry.setOnKeyReleased(e -> guiToData());
 	    return entry;
 	}
 	
     public static void main(String[] args) {
-		JFrame frame = new JFrame();
-        Utils.loadUIManager();
-
-        if (Utils.isMac()) {
-            // set up application about-menu for Mac
-            // Mac-only stuff
-        	try {
-            ImageIcon icon = Utils.getIcon(ModelBuilder.ICONPATH + "beauti.png");
-            if (icon == null) {
-                System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
-            }
-            jam.framework.Application application = new jam.framework.MultiDocApplication(null, "CladeAge", "about" , icon) {
-
-                @Override
-                protected JFrame getDefaultFrame() {
-                    return null;
-                }
-
-                @Override
-                public void doQuit() {
-                    System.exit(0);
-                }
-
-                @Override
-                public void doAbout() {
-                    showHelp(ABOUT_HELP);
-                }
-
-				@Override
-                public DocumentFrame doOpenFile(File file) {
-                    return null;
-                }
-
-                @Override
-                public DocumentFrame doNew() {
-                    return null;
-                }
-            };
-            jam.mac.Utils.macOSXRegistration(application);
-        	} catch (Exception e) {
-        		// ignore
-        	}
-            try {
-            	Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
-                Method method = class_.getMethod("enablePrefs", boolean.class);
-                method.invoke(null, false);
-            } catch (java.lang.Exception e) {
-            	// ignore
-            }
-        }
-        
-		frame.setSize(1024, 728);
-		
-        ImageIcon icon = Utils.getIcon(CA_ICON);
-        if (icon != null) {
-            frame.setIconImage(icon.getImage());
-        }
-		CAPanel pane = new CAPanel(CAPanel.MODE_STAND_ALONE);
-		
-        JMenuBar menuBar = pane.makeMenuBar();
-        frame.setJMenuBar(menuBar);
-		frame.getContentPane().add(pane);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
-		frame.setVisible(true);
+//		JFrame frame = new JFrame();
+//        Utils.loadUIManager();
+//
+//        if (Utils.isMac()) {
+//            // set up application about-menu for Mac
+//            // Mac-only stuff
+//        	try {
+//            ImageIcon icon = Utils.getIcon(ModelBuilder.ICONPATH + "beauti.png");
+//            if (icon == null) {
+//                System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
+//            }
+//            jam.framework.Application application = new jam.framework.MultiDocApplication(null, "CladeAge", "about" , icon) {
+//
+//                @Override
+//                protected JFrame getDefaultFrame() {
+//                    return null;
+//                }
+//
+//                @Override
+//                public void doQuit() {
+//                    System.exit(0);
+//                }
+//
+//                @Override
+//                public void doAbout() {
+//                    showHelp(ABOUT_HELP);
+//                }
+//
+//				@Override
+//                public DocumentFrame doOpenFile(File file) {
+//                    return null;
+//                }
+//
+//                @Override
+//                public DocumentFrame doNew() {
+//                    return null;
+//                }
+//            };
+//            jam.mac.Utils.macOSXRegistration(application);
+//        	} catch (Exception e) {
+//        		// ignore
+//        	}
+//            try {
+//            	Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
+//                Method method = class_.getMethod("enablePrefs", boolean.class);
+//                method.invoke(null, false);
+//            } catch (java.lang.Exception e) {
+//            	// ignore
+//            }
+//        }
+//        
+//		frame.setSize(1024, 728);
+//		
+//        ImageIcon icon = Utils.getIcon(CA_ICON);
+//        if (icon != null) {
+//            frame.setIconImage(icon.getImage());
+//        }
+//		CAPanel pane = new CAPanel(CAPanel.MODE_STAND_ALONE);
+//		
+//        JMenuBar menuBar = pane.makeMenuBar();
+//        frame.setJMenuBar(menuBar);
+//		frame.getContentPane().add(pane);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+//		frame.setVisible(true);
 	} // main
 
 }
