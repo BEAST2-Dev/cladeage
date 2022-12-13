@@ -12,6 +12,7 @@ import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 // Import CladeAge distributions.
 import cladeage.math.distributions.CladeAgeDistribution;
+import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
 
 public class CladeAgeProbabilities {
@@ -251,7 +252,9 @@ public class CladeAgeProbabilities {
 			}
 			// Increment the progress indicator.
 			if (dpb != null) {
-				dpb.setProgress(successful_simulations[successful_simulations.length-1]/100);
+				Platform.runLater(() ->
+					dpb.setProgress(successful_simulations[successful_simulations.length-1]/100)
+				);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.

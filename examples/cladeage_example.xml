@@ -224,7 +224,7 @@ Base frequencies:        estimated
 			<distribution id="prior" spec="beast.base.inference.CompoundDistribution">
 
 				<!-- Divergence age priors -->
-                <distribution id="Holostei.prior" spec="beast.math.distributions.FossilPrior" tree="@tree.t:Species" monophyletic="true">
+                <distribution id="Holostei.prior" spec="cladeage.math.distributions.FossilPrior" tree="@tree.t:Species" monophyletic="true">
                     <!-- †*Acentrophorus varians* Kirkby, 1862 -->
                     <fossilDistr id="Holostei.FossilCalibration"
                         minOccuranceAge="254.1"
@@ -235,7 +235,7 @@ Base frequencies:        estimated
                         maxDivRate="0.081"
                         minTurnoverRate="0.0011"
                         maxTurnoverRate="0.37"
-                        spec="beast.math.distributions.FossilCalibration"/>
+                        spec="cladeage.math.distributions.FossilCalibration"/>
                     <taxonset id="Holostei" spec="TaxonSet">
                         <taxon idref="lepocu"/>
                     </taxonset>
@@ -383,7 +383,7 @@ Base frequencies:        estimated
 
 		<!-- The tree output -->
 		<logger fileName="cladeage_example.trees" id="treelog.t:Species" logEvery="100000" mode="tree">
-			<log id="TreeWithMetaDataLogger.t:Species" spec="beast.base.evolution.tree.TreeWithMetaDataLogger" tree="@tree.t:Species"/>
+			<log id="TreeWithMetaDataLogger.t:Species" spec="beast.base.evolution.TreeWithMetaDataLogger" tree="@tree.t:Species"/>
 		</logger>
 
 	</run>

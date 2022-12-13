@@ -4,11 +4,8 @@ package cladeage.app.ca;
 
 
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,13 +13,10 @@ import java.util.Optional;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 
-import beastfx.app.beauti.BeautiTabPane;
-import beastfx.app.tools.ModelBuilder;
-import beastfx.app.inputeditor.MyAction;
 import beastfx.app.inputeditor.SmallButton;
 import beastfx.app.util.Alert;
 import beastfx.app.util.FXUtils;
-import beastfx.app.util.Utils;
+import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
@@ -38,20 +32,18 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import cladeage.math.distributions.CladeAgeDistribution;
 import cladeage.math.distributions.FossilCalibration.CladeAgeMethod;
-import beast.pkgmgmt.BEASTClassLoader;
 
 
-public class CAPanel extends Pane {
-	private static final long serialVersionUID = 1L;
+public class CAPanel extends VBox {
 
 	static final String CA_ICON = "cladeage/app/ca/icons/cladeage_256x256px.png";
 	static final String CA_ICON2 = "cladeage/app/ca/icons/cladeage_128x128px.png";
@@ -280,14 +272,14 @@ public class CAPanel extends Pane {
 //		//gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
 //		//gbc_lblNewLabel_2.gridx = 1;
 //		//gbc_lblNewLabel_2.gridy = 0;
-		panel.add(lblNewLabel_2, 1, 0, 1, 0); //gbc_lblNewLabel_2);
+		panel.add(lblNewLabel_2, 1, 0, 1, 1); //gbc_lblNewLabel_2);
 		
 		Label lblNewLabel_3 = new Label("Maximum");
 		//GridBagConstraints //gbc_lblNewLabel_3 = new GridBagConstraints();
 		//gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
 		//gbc_lblNewLabel_3.gridx = 3;
 		//gbc_lblNewLabel_3.gridy = 0;
-		panel.add(lblNewLabel_3, 3, 0, 3, 0); //gbc_lblNewLabel_3);
+		panel.add(lblNewLabel_3, 3, 0, 3, 1); //gbc_lblNewLabel_3);
 		
 		
 		
@@ -299,7 +291,7 @@ public class CAPanel extends Pane {
 			//gbc_lblBirt.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblBirt.gridx = 0;
 			//gbc_lblBirt.gridy = 1;
-			panel.add(lblBirt, 0, 1, 0, 1); //gbc_lblBirt);
+			panel.add(lblBirt, 0, 1, 1, 1); //gbc_lblBirt);
 
 			textField_minOccuranceAge = newTextField();
 			textField_minOccuranceAge.setPrefColumnCount(10);
@@ -343,16 +335,16 @@ public class CAPanel extends Pane {
 			//gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_comboBox.gridx = 0;
 			//gbc_comboBox.gridy = 0;
-			panel.add(comboBox, 0, 0, 0, 0);//gbc_comboBox);
+			panel.add(comboBox, 0, 0, 1, 1);//gbc_comboBox);
 			comboBox.setOnAction(e->guiToData());
 
-			Label lblNetDiversificationRate = new Label("<html>Net&nbsp;diversification&nbsp;rate&nbsp;&lambda;&minus;&mu;:</html>");
+			Label lblNetDiversificationRate = new Label("Net diversification rate &lambda;&minus;&mu;:");
 			//GridBagConstraints //gbc_lblNetDiversificationRate = new GridBagConstraints();
 			//gbc_lblNetDiversificationRate.anchor = GridBagConstraints.EAST;
 			//gbc_lblNetDiversificationRate.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblNetDiversificationRate.gridx = 0;
 			//gbc_lblNetDiversificationRate.gridy = 2;
-			panel.add(lblNetDiversificationRate, 0, 2, 0, 2); //gbc_lblNetDiversificationRate);
+			panel.add(lblNetDiversificationRate, 0, 2, 1, 1); //gbc_lblNetDiversificationRate);
 			
 			textField_minDivRate = newTextField();
 			textField_minDivRate.setPrefColumnCount(10);
@@ -361,14 +353,14 @@ public class CAPanel extends Pane {
 			//gbc_textField_8.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_8.gridx = 1;
 			//gbc_textField_8.gridy = 2;
-			panel.add(textField_minDivRate, 1, 2, 1, 2); //gbc_textField_8);
+			panel.add(textField_minDivRate, 1, 2, 1, 1); //gbc_textField_8);
 			
 			Label label_1 = new Label("-");
 			//GridBagConstraints //gbc_label_1 = new GridBagConstraints();
 			//gbc_label_1.insets = new Insets(0, 0, 5, 5);
 			//gbc_label_1.gridx = 2;
 			//gbc_label_1.gridy = 2;
-			panel.add(label_1, 2, 2, 2, 2); //gbc_label_1);
+			panel.add(label_1, 2, 2, 1, 1); //gbc_label_1);
 			
 			textField_maxDivRate = newTextField();
 			textField_maxDivRate.setPrefColumnCount(10);
@@ -377,15 +369,15 @@ public class CAPanel extends Pane {
 			//gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_2.gridx = 3;
 			//gbc_textField_2.gridy = 2;
-			panel.add(textField_maxDivRate, 3, 2, 3, 2); //gbc_textField_2);
+			panel.add(textField_maxDivRate, 3, 2, 1, 1); //gbc_textField_2);
 			
-			Label lblRurnoverRateDb = new Label("<html>Turnover&nbsp;rate&nbsp;&mu;/&lambda;:</html>");
+			Label lblRurnoverRateDb = new Label("Turnover rate &mu;/&lambda;:");
 			//GridBagConstraints //gbc_lblRurnoverRateDb = new GridBagConstraints();
 			//gbc_lblRurnoverRateDb.anchor = GridBagConstraints.EAST;
 			//gbc_lblRurnoverRateDb.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblRurnoverRateDb.gridx = 0;
 			//gbc_lblRurnoverRateDb.gridy = 3;
-			panel.add(lblRurnoverRateDb, 0, 3, 0, 3); //gbc_lblRurnoverRateDb);
+			panel.add(lblRurnoverRateDb, 0, 3, 1, 1); //gbc_lblRurnoverRateDb);
 			
 			textField_minTurnoverRate = newTextField();
 			textField_minTurnoverRate.setPrefColumnCount(10);
@@ -394,14 +386,14 @@ public class CAPanel extends Pane {
 			//gbc_textField_9.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_9.gridx = 1;
 			//gbc_textField_9.gridy = 3;
-			panel.add(textField_minTurnoverRate, 1, 3, 1, 3); //gbc_textField_9);
+			panel.add(textField_minTurnoverRate, 1, 3, 1, 1); //gbc_textField_9);
 			
 			Label label_2 = new Label("-");
 			//GridBagConstraints //gbc_label_2 = new GridBagConstraints();
 			//gbc_label_2.insets = new Insets(0, 0, 5, 5);
 			//gbc_label_2.gridx = 2;
 			//gbc_label_2.gridy = 3;
-			panel.add(label_2, 2, 3, 2, 3); //gbc_label_2);
+			panel.add(label_2, 2, 3, 1, 1); //gbc_label_2);
 			
 			textField_maxTurnoverRate = newTextField();
 			textField_maxTurnoverRate.setPrefColumnCount(10);
@@ -410,15 +402,15 @@ public class CAPanel extends Pane {
 			//gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_3.gridx = 3;
 			//gbc_textField_3.gridy = 3;
-			panel.add(textField_maxTurnoverRate, 3, 3, 3, 3); //gbc_textField_3);
+			panel.add(textField_maxTurnoverRate, 3, 3, 1, 1); //gbc_textField_3);
 			
-			Label lblSamplingRate = new Label("<html>Sampling&nbsp;rate&nbsp;&psi;:</html>");
+			Label lblSamplingRate = new Label("Sampling rate &psi;:");
 			//GridBagConstraints //gbc_lblSamplingRate = new GridBagConstraints();
 			//gbc_lblSamplingRate.anchor = GridBagConstraints.EAST;
 			//gbc_lblSamplingRate.insets = new Insets(0, 0, 5, 5);
 			//gbc_lblSamplingRate.gridx = 0;
 			//gbc_lblSamplingRate.gridy = 4;
-			panel.add(lblSamplingRate, 0, 4, 0, 4); //gbc_lblSamplingRate);
+			panel.add(lblSamplingRate, 0, 4, 1, 1); //gbc_lblSamplingRate);
 			
 			textField_minSamplingRate = newTextField();
 			textField_minSamplingRate.setPrefColumnCount(10);
@@ -427,14 +419,14 @@ public class CAPanel extends Pane {
 			//gbc_textField_10.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_10.gridx = 1;
 			//gbc_textField_10.gridy = 4;
-			panel.add(textField_minSamplingRate, 1, 4, 1, 4); //gbc_textField_10);
+			panel.add(textField_minSamplingRate, 1, 4, 1, 1); //gbc_textField_10);
 			
 			Label label_3 = new Label("-");
 			//GridBagConstraints //gbc_label_3 = new GridBagConstraints();
 			//gbc_label_3.insets = new Insets(0, 0, 5, 5);
 			//gbc_label_3.gridx = 2;
 			//gbc_label_3.gridy = 4;
-			panel.add(label_3, 2, 4, 2, 4); //gbc_label_3);
+			panel.add(label_3, 2, 4, 1, 1); //gbc_label_3);
 			
 			textField_maxSamplingRate = newTextField();
 			textField_maxSamplingRate.setPrefColumnCount(10);
@@ -443,11 +435,11 @@ public class CAPanel extends Pane {
 			//gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_4.gridx = 3;
 			//gbc_textField_4.gridy = 4;
-			panel.add(textField_maxSamplingRate, 3, 4, 3, 4); //gbc_textField_4);
+			panel.add(textField_maxSamplingRate, 3, 4, 1, 1); //gbc_textField_4);
 			
-			lblNetDiversificationRate.setTooltip(new Tooltip(DIV_RATE_HELP));
-			lblRurnoverRateDb.setTooltip(new Tooltip(TURNOVER_RATE_HELP));
-			lblSamplingRate.setTooltip(new Tooltip(SAMPLING_RATE_HELP));
+			setToolTipText(lblNetDiversificationRate, DIV_RATE_HELP);
+			setToolTipText(lblRurnoverRateDb, TURNOVER_RATE_HELP);
+			setToolTipText(lblSamplingRate, SAMPLING_RATE_HELP);
 		}
 		
 				
@@ -480,7 +472,7 @@ public class CAPanel extends Pane {
 			//gbc_label_4.insets = new Insets(0, 0, 0, 5);
 			//gbc_label_4.gridx = 2;
 			//gbc_label_4.gridy = 5;
-			panel.add(label_4, 2, 5, 2, 5); //gbc_label_4);
+			panel.add(label_4, 2, 5, 1, 1); //gbc_label_4);
 			
 			// textField_maxSamplingGap = newTextField();
 			// textField_maxSamplingGap.addActionListener(new ActionListener() {
@@ -511,7 +503,7 @@ public class CAPanel extends Pane {
 			//GridBagConstraints //gbc_btnNewButton2 = new GridBagConstraints();
 			//gbc_btnNewButton2.gridx = 5;
 			//gbc_btnNewButton2.gridy = 2;
-			panel.add(btnHelpButton2, 5, 2, 5, 2); //gbc_btnNewButton2);
+			panel.add(btnHelpButton2, 5, 2, 1, 1); //gbc_btnNewButton2);
 			btnHelpButton2.setOnAction(e ->
 					showHelp(DIV_RATE_HELP)
 			);
@@ -520,7 +512,7 @@ public class CAPanel extends Pane {
 			//GridBagConstraints //gbc_btnNewButton3 = new GridBagConstraints();
 			//gbc_btnNewButton3.gridx = 5;
 			//gbc_btnNewButton3.gridy = 3;
-			panel.add(btnHelpButton3, 5, 3, 5, 3); //gbc_btnNewButton3);
+			panel.add(btnHelpButton3, 5, 3, 1, 1); //gbc_btnNewButton3);
 			btnHelpButton3.setOnAction(e ->
 					showHelp(TURNOVER_RATE_HELP)
 			);
@@ -529,7 +521,7 @@ public class CAPanel extends Pane {
 			//GridBagConstraints //gbc_btnNewButton4 = new GridBagConstraints();
 			//gbc_btnNewButton4.gridx = 5;
 			//gbc_btnNewButton4.gridy = 4;
-			panel.add(btnHelpButton4, 5, 4, 5, 4); //gbc_btnNewButton4);
+			panel.add(btnHelpButton4, 5, 4, 1, 1); //gbc_btnNewButton4);
 			btnHelpButton4.setOnAction(e ->
 					showHelp(SAMPLING_RATE_HELP)
 			);
@@ -580,7 +572,7 @@ public class CAPanel extends Pane {
 			    dlg.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 			    
 			    
-
+			    final boolean [] finished = new boolean[1];
 			    final Thread t = new Thread(new Runnable() {
 			      public void run() {
 //					try {
@@ -603,12 +595,13 @@ public class CAPanel extends Pane {
 //						throw new RuntimeException(e);
 //					}
 					calcFit(dpb);
-			        dlg.close();
+					finished[0] = true;
+					Platform.runLater(() ->dlg.close());
 			      }
 			    });
 			    t.start();
 		        Optional optional = dlg.showAndWait();
-		        if (optional.toString().toLowerCase().contains("cancel")) {
+		        if (!finished[0] && optional.toString().toLowerCase().contains("cancel")) {
 					try {
 						System.err.println("Trying to stop");
 						probs.setCancel();
@@ -619,7 +612,7 @@ public class CAPanel extends Pane {
 		        }
 
 			    if (probs.getCancel()) {
-					//panel_1.repaint();
+					refresh(); //panel_1.repaint();
 					cursorProperty().set(Cursor.DEFAULT);
 			    	return;
 			    }
@@ -627,7 +620,7 @@ public class CAPanel extends Pane {
 				ages = probs.getAges();
 				probabilities =  probs.getInt_probabilities();
 
-				//panel_1.repaint();
+				refresh(); //panel_1.repaint();
 				cursorProperty().set(Cursor.DEFAULT);
 			}
 		);
@@ -770,12 +763,12 @@ public class CAPanel extends Pane {
 		if (mode == MODE_STAND_ALONE || mode == MODE_BEAUTI_BOTTOM) {
 			getChildren().add(panel3); //gbc_panel3);
 		}
-		GridBagLayout gbl_panel3 = new GridBagLayout();
-		gbl_panel3.columnWidths = new int[]{0};
-		gbl_panel3.rowHeights = new int[]{0, 103};
-		gbl_panel3.columnWeights = new double[]{1.0};
-		gbl_panel3.rowWeights = new double[]{Double.MIN_VALUE, 1.0};
-		panel3.setLayout(gbl_panel3);
+//		GridBagLayout gbl_panel3 = new GridBagLayout();
+//		gbl_panel3.columnWidths = new int[]{0};
+//		gbl_panel3.rowHeights = new int[]{0, 103};
+//		gbl_panel3.columnWeights = new double[]{1.0};
+//		gbl_panel3.rowWeights = new double[]{Double.MIN_VALUE, 1.0};
+//		panel3.setLayout(gbl_panel3);
 		
 		
 		NumberAxis xAxis = new NumberAxis();
@@ -790,13 +783,16 @@ public class CAPanel extends Pane {
         chart.getXAxis().setAutoRanging(true);
         chart.getYAxis().setAutoRanging(true);
         series = new LineChart.Series<>();
-        for (int i = 0; i < ages.length; i++) {
-        	series.getData().add(new XYChart.Data<Number,Number>(0,0));
+        if (ages != null) {
+        	for (int i = 0; i < ages.length; i++) {
+        		series.getData().add(new XYChart.Data<Number,Number>(0,0));
+        	}
         }
         chart.getData().add(series);
-        getChildren().add(chart);
 
-//		panel_1 = new Pane() {
+		panel_1 = new GridPane();// {
+		panel3.add(panel2b, 0, 2, 1, 1);
+		panel_1.add(chart, 0, 1, 1, 1);
 //			
 //			
 //			protected void paintComponent(java.awt.Graphics g) {
@@ -975,7 +971,11 @@ public class CAPanel extends Pane {
 //	        
 //
 //		};
-		panel_1.setTooltip(new Tooltip("Click to show parameters of fit"));
+        for (Node n : panel_1.getChildren()) {
+        	if (n instanceof Control) {
+        		((Control)n).setTooltip(new Tooltip("Click to show parameters of fit"));
+        	}
+        }
 		panel_1.setOnMouseClicked(e->{
 				String text = getFitParameters();
 				text = text.replaceAll("\n", "<br/>");
@@ -983,9 +983,9 @@ public class CAPanel extends Pane {
 			}
 		);
 		
-		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panel_1.setBackground(Color.gray);
-		panel_1.setPreferredSize(new Dimension(1024,400));
+//		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel_1.setBackground(Background.fill(Color.GRAY));
+		panel_1.setPrefSize(1024,400);
 		//GridBagConstraints //gbc_panel_1 = new GridBagConstraints();
 		//gbc_panel_1.fill = GridBagConstraints.BOTH;
 		//gbc_panel_1.gridx = 0;
@@ -1187,7 +1187,7 @@ public class CAPanel extends Pane {
 
         series.getData().clear();
         for (int i = 0; i < ages.length; i++) {
-        	series.getData().add(new XYChart.Data<Number,Number>(xPoints[i],yPoints[i]));
+        	series.getData().add(new XYChart.Data<Number,Number>(ages[i], fyPoints[i]));
         }
 
         
@@ -1234,6 +1234,7 @@ public class CAPanel extends Pane {
 	
 	private void setToolTipText(Control component, String text) {
 		if (component != null) {
+			text = normalise(text);
 			component.setTooltip(new Tooltip(text));
 		}
 	}
@@ -1393,6 +1394,8 @@ public class CAPanel extends Pane {
 //	}
 
 	static void showHelp(String text) {
+			text = normalise(text);
+		
 		    String title = text.substring(0, text.indexOf(":"));
 
 		    TextArea textArea = new TextArea(text);
@@ -1407,7 +1410,16 @@ public class CAPanel extends Pane {
             Alert.showMessageDialog(null, box, title, Alert.INFORMATION_MESSAGE);
 	}
 
-    private String getFitParameters() {
+    private static String normalise(String text) {
+		text = text.replace("<br>", "\n");
+		text = text.replace("<br/>", "\n");
+		text = text.replace("&nbsp;", " ");
+		text = text.replace("<html>", "");
+		text = text.replace("</html>", "");
+		return text;
+    }
+    
+	private String getFitParameters() {
     	if (m_distr == null) {
     		return "No model fit yet";
     	}
@@ -1537,7 +1549,7 @@ public class CAPanel extends Pane {
 	    return entry;
 	}
 	
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //		JFrame frame = new JFrame();
 //        Utils.loadUIManager();
 //
@@ -1602,6 +1614,6 @@ public class CAPanel extends Pane {
 //		frame.getContentPane().add(pane);
 //        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 //		frame.setVisible(true);
-	} // main
+//	} // main
 
 }
