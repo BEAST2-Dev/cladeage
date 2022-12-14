@@ -19,8 +19,6 @@ import cladeage.math.distributions.FossilCalibration.CladeAgeMethod;
 
 public class FossilCalibrationInputEditor extends BEASTObjectInputEditor implements CAPanelListener {
 
-	private static final long serialVersionUID = 1L;
-
 	public FossilCalibrationInputEditor(BeautiDoc doc) {
 		super(doc);
 	}

@@ -5,19 +5,17 @@ package cladeage.app.beauti;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import beastfx.app.inputeditor.BeautiDoc;
 import beastfx.app.inputeditor.BeautiSubTemplate;
 import beast.base.parser.PartitionContext;
 import beastfx.app.beauti.PriorListInputEditor;
 import beastfx.app.inputeditor.TaxonSetDialog;
+import beastfx.app.util.Alert;
 import cladeage.app.ca.CAPanel;
 import cladeage.app.ca.CAPanelListener;
 import beastfx.app.inputeditor.BEASTObjectPanel;
 import beast.base.core.BEASTInterface;
-import beast.base.core.BEASTObject;
 import beast.base.core.Input;
 import beast.base.inference.Logger;
 import beast.base.inference.State;
@@ -28,6 +26,7 @@ import beast.base.evolution.alignment.TaxonSet;
 import beast.base.evolution.tree.Tree;
 import cladeage.math.distributions.FossilCalibration;
 import cladeage.math.distributions.FossilPrior;
+import javafx.scene.layout.Pane;
 import beast.base.inference.distribution.OneOnX;
 
 
@@ -47,27 +46,32 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	        return FossilPrior.class;
 	    }
 	    
-	    CAPanel panel;
+	    CAPanel caPanel;
 	    FossilCalibration calibration;
 	    
 	    @Override
 	    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 	    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+	    	
+	    	// add panel at end
 	    	List<?> list = (List) input.get();
 	    	if (list.size() > 0) {
 	    		calibration = ((FossilPrior) list.get(0)).calibrationDistr.get();
-	    		panel = new CAPanel(CAPanel.MODE_BEAUTI_TOP);
-	            panel.setMinDivRate(calibration.minDivRateInput.get().getValue());
-	            panel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
-	            panel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
-	            panel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
-	            panel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
-	            panel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
-	            panel.setMethod(calibration.cladeAgeMethodInput.get());
-	            panel.dataToGUI();
-	            panel.addChangeListener(this);
-	            panel.setVisible(true);
-	            getChildren().add(panel);
+	    		caPanel = new CAPanel(CAPanel.MODE_BEAUTI_TOP);
+	    		caPanel.setMinDivRate(calibration.minDivRateInput.get().getValue());
+	    		caPanel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
+	    		caPanel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
+	    		caPanel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
+	    		caPanel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
+	    		caPanel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
+	    		caPanel.setMethod(calibration.cladeAgeMethodInput.get());
+	            caPanel.dataToGUI();
+	            caPanel.addChangeListener(this);
+	            caPanel.setVisible(true);
+	            caPanel.setPrefWidth(640);
+	            Pane p = ((Pane)pane.getChildren().get(0));
+	            int pos = p.getChildren().size() - 1;
+	            p.getChildren().add(pos, caPanel);
 	    	}
 	    }
 	    
@@ -90,9 +94,15 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	                for (int j = 0; j < sTreeIDs.length; j++) {
 	                    sTreeIDs[j] = trees.get(j).getID();
 	                }
-	                iTree = JOptionPane.showOptionDialog(null, "Select a tree", "MRCA selector",
-	                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-	                        sTreeIDs, trees.get(0));
+	                
+	                String treeID = (String) Alert.showInputDialog(null, "Select a tree", "MRCA selector", Alert.QUESTION_MESSAGE, null, sTreeIDs, trees.get(0));
+	                iTree = 0;
+	                while (iTree < sTreeIDs.length && !sTreeIDs[iTree].equals(treeID)) {
+	                	iTree++;
+	                }
+	                if (iTree == sTreeIDs.length) {
+	                	iTree = -1;
+	                }
 	            }
 	            if (iTree < 0) {
 	                return null;
@@ -152,14 +162,14 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 		@Override
 		public void update() {
 			//setValue(calibration.m_offset, panel.getMinOccuranceAge());
-			setValue(calibration.minDivRateInput, panel.getMinDivRate());
-			setValue(calibration.maxDivRateInput, panel.getMaxDivRate());
-			setValue(calibration.minTurnoverRateInput, panel.getMinTurnoverRate());
-			setValue(calibration.maxTurnoverRateInput, panel.getMaxTurnoverRate());
-			setValue(calibration.minSamplingRateInput, panel.getMinSamplingRate());
-			setValue(calibration.maxSamplingRateInput, panel.getMaxSamplingRate());
+			setValue(calibration.minDivRateInput, caPanel.getMinDivRate());
+			setValue(calibration.maxDivRateInput, caPanel.getMaxDivRate());
+			setValue(calibration.minTurnoverRateInput, caPanel.getMinTurnoverRate());
+			setValue(calibration.maxTurnoverRateInput, caPanel.getMaxTurnoverRate());
+			setValue(calibration.minSamplingRateInput, caPanel.getMinSamplingRate());
+			setValue(calibration.maxSamplingRateInput, caPanel.getMaxSamplingRate());
 			try {
-				calibration.cladeAgeMethodInput.setValue(panel.getMethod(), calibration);
+				calibration.cladeAgeMethodInput.setValue(caPanel.getMethod(), calibration);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

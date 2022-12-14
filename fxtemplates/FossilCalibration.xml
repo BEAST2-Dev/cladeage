@@ -28,9 +28,9 @@
 <!-- Parametric distributions, all without hyperpriors -->
 
 <!-- CalibratedDistribution -->
-        <subtemplate id='FossilCalibration' class='beast.math.distributions.FossilCalibration' mainid='[top]'>
+        <subtemplate id='FossilCalibration' class='cladeage.math.distributions.FossilCalibration' mainid='[top]'>
 <![CDATA[
-        <distr spec="beast.math.distributions.FossilCalibration">
+        <distr spec="cladeage.math.distributions.FossilCalibration">
 			<parameter name='minOccuranceAge' value="0.0"/>
 			<parameter name='maxOccuranceAge' value="0.0"/>
 			<minDivRate      idref="minDivRate"/>
@@ -59,7 +59,7 @@
 <mergewith point='aux-partitiontemplate'>
 <![CDATA[
 <!--
-        <distribution spec="beast.math.distributions.CompoundFossilPrior" id="fossilCalibrations"/>	
+        <distribution spec="cladeage.math.distributions.CompoundFossilPrior" id="fossilCalibrations"/>	
 -->
 
         <distribution spec="CompoundDistribution" id="fossilCalibrations"/>	
@@ -77,7 +77,7 @@
 	<panel spec='BeautiPanelConfig' panelname="Clade Ages" tiptext="Priors based on fossil record"
             path='distribution/distribution[id="fossilCalibrations"]/distribution'
             hasPartitions="none" icon='7.png.x' forceExpansion='TRUE_START_COLLAPSED'
-            type='beast.math.distributions.FossilPrior'
+            type='cladeage.math.distributions.FossilPrior'
         />
 
 </mergewith>

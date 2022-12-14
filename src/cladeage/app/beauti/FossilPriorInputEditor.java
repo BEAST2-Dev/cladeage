@@ -1,14 +1,9 @@
 package cladeage.app.beauti;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 
 import beastfx.app.inputeditor.BeautiDoc;
 import beastfx.app.inputeditor.MRCAPriorInputEditor;
@@ -20,10 +15,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import beast.base.core.BEASTInterface;
-import beast.base.core.BEASTObject;
 import beast.base.core.Input;
 import beast.base.evolution.alignment.Taxon;
 import beast.base.evolution.alignment.TaxonSet;
+import cladeage.math.distributions.FossilCalibration;
 import cladeage.math.distributions.FossilPrior;
 import beast.base.evolution.tree.MRCAPrior;
 import beast.base.inference.distribution.OneOnX;
@@ -42,13 +37,16 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
 
 	@Override
 	public void init(Input<?> input, BEASTInterface plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.tree");
-		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.distr");
-		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.monophyletic");
-		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.useOriginate");
-		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.tipsonly");
-		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilPrior.taxonset");
-		doc.beautiConfig.suppressBEASTObjects.add("beast.math.distributions.FossilCalibration.offset");
+		String className = FossilPrior.class.getName();
+		doc.beautiConfig.suppressBEASTObjects.add(className + ".tree");
+		doc.beautiConfig.suppressBEASTObjects.add(className + ".distr");
+		doc.beautiConfig.suppressBEASTObjects.add(className + ".monophyletic");
+		doc.beautiConfig.suppressBEASTObjects.add(className + ".useOriginate");
+		doc.beautiConfig.suppressBEASTObjects.add(className + ".tipsonly");
+		doc.beautiConfig.suppressBEASTObjects.add(className + ".taxonset");
+
+		className = FossilCalibration.class.getName();
+		doc.beautiConfig.suppressBEASTObjects.add(className + ".offset");
 
         m_bAddButtons = bAddButtons;
         m_input = input;
