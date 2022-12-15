@@ -1187,7 +1187,7 @@ public class CAPanel extends VBox {
 
         series.getData().clear();
         for (int i = 0; i < ages.length; i++) {
-        	series.getData().add(new XYChart.Data<Number,Number>(ages[i], fyPoints[i]));
+        	series.getData().add(new XYChart.Data<Number,Number>(ages[ages.length - 1 - i], fyPoints[i]));
         }
 
         

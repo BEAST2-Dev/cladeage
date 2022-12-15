@@ -54,6 +54,7 @@ public class FossilCalibrationInputEditor extends BEASTObjectInputEditor impleme
         panel.addChangeListener(this);
         Dimension2D size = new Dimension2D(panel.getPrefWidth() - 40, panel.getPrefHeight());
 
+        size = new Dimension2D(1024 - 40, panel.getPrefHeight());
         panel.setPrefSize(size.getWidth(), size.getHeight());
         panel.setMinSize(size.getWidth(), size.getHeight());
         panel.setMaxSize(size.getWidth(), size.getHeight());

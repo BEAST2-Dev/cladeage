@@ -8,12 +8,21 @@ import java.util.List;
 
 import beastfx.app.inputeditor.BeautiDoc;
 import beastfx.app.inputeditor.BeautiSubTemplate;
+import beastfx.app.inputeditor.ExpandActionListener;
+import beastfx.app.inputeditor.Expandable;
+import beastfx.app.inputeditor.InputEditor;
+import beastfx.app.inputeditor.SmallButton;
+import beastfx.app.inputeditor.SmallLabel;
 import beast.base.parser.PartitionContext;
 import beastfx.app.beauti.PriorListInputEditor;
 import beastfx.app.inputeditor.TaxonSetDialog;
+import beastfx.app.inputeditor.InputEditor.ExpandOption;
+import beastfx.app.inputeditor.ListInputEditor.ActionListenerObject;
 import beastfx.app.util.Alert;
+import beastfx.app.util.FXUtils;
 import cladeage.app.ca.CAPanel;
 import cladeage.app.ca.CAPanelListener;
+import beastfx.app.inputeditor.BEASTObjectInputEditor;
 import beastfx.app.inputeditor.BEASTObjectPanel;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Input;
@@ -26,7 +35,12 @@ import beast.base.evolution.alignment.TaxonSet;
 import beast.base.evolution.tree.Tree;
 import cladeage.math.distributions.FossilCalibration;
 import cladeage.math.distributions.FossilPrior;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.Control;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import beast.base.inference.distribution.OneOnX;
 
 
@@ -183,5 +197,101 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 				
 			}
 		}
+
+		
+	    protected void addSingleItem(BEASTInterface beastObject) {
+	        Pane itemBox0 = FXUtils.newVBox();
+	        Pane itemBox = FXUtils.newHBox();
+	        
+	        SmallButton editButton = new SmallButton("e", true, SmallButton.ButtonType.square);
+	        editButton.setId(beastObject.getID() + ".editButton");
+            editButton.setTooltip(new Tooltip("Expand/collapse item in the list"));
+            editButton.setButtonType(SmallButton.ButtonType.toolbar);
+	        m_editButton.add(editButton);
+	        itemBox.getChildren().add(editButton);
+
+	        InputEditor editor = addPluginItem(itemBox, beastObject);
+
+	        SmallLabel validateLabel = new SmallLabel("x", "red");
+	        itemBox.getChildren().add(validateLabel);
+	        validateLabel.setVisible(true);
+	        m_validateLabels.add(validateLabel);
+	        
+	        itemBox0.getChildren().add(itemBox);
+        	VBox expandBox = createExpandBox(beastObject, editor, editButton);
+        	
+            editButton.setOnAction(e-> {
+	            expandBox.setVisible(!expandBox.isVisible());
+	            if (expandBox.isVisible()) {
+	                try {
+	                	editButton.setImg(DOWN_ICON);
+	                }catch (Exception e2) {
+						// ignore
+					}
+	                expandBox.setPrefHeight(USE_COMPUTED_SIZE);
+	                //expandBox.setMinHeight(m_box.getPrefHeight());
+	                expandBox.setMinHeight(400);
+	                expandBox.setVisible(true);
+	                expandBox.setManaged(true);
+	                g_collapsedIDs.remove(m_beastObject.getID());
+	            } else {
+	            	try {
+	            		editButton.setImg(RIGHT_ICON);
+	                }catch (Exception e2) {
+						// ignore
+					}
+	            	expandBox.setPrefHeight(0);
+	            	expandBox.setMinHeight(0);
+	            	expandBox.setVisible(false);
+	            	expandBox.setManaged(false);
+	                g_collapsedIDs.add(m_beastObject.getID());
+	            }
+            });
+            try {
+    	        if (!g_collapsedIDs.contains(m_beastObject.getID())) {
+    	            editButton.setImg(DOWN_ICON);
+    	        } else {
+    	            editButton.setImg(RIGHT_ICON);
+    	        }
+            } catch (Exception e) {
+    			// ignore
+    		}
+            itemBox0.getChildren().add(expandBox);
+	         
+	        m_listBox.getChildren().add(itemBox0);
+
+	    } // addSingleItem
+
+	    private VBox createExpandBox(BEASTInterface beastObject, InputEditor editor, SmallButton editButton) {
+	        VBox expandBox = FXUtils.newVBox();
+	        FossilCalibrationInputEditor fossilCalibrationEditor = new FossilCalibrationInputEditor(doc);
+	        FossilPrior prior = (FossilPrior) beastObject;
+	        fossilCalibrationEditor.init(prior.calibrationDistr, beastObject, -1, m_bExpandOption, m_bAddButtons);
+	    	expandBox.getChildren().clear();
+	    	expandBox.getChildren().add(fossilCalibrationEditor);
+
+            if (g_collapsedIDs.contains(m_beastObject.getID())) {
+        		expandBox.setPrefHeight(0);
+            	expandBox.setMinHeight(0);
+        		expandBox.setVisible(false);
+        		expandBox.setManaged(false);
+        	} else {
+            	expandBox.setPrefHeight(USE_COMPUTED_SIZE);
+            	expandBox.setMinHeight(expandBox.getPrefHeight());
+        		expandBox.setVisible(true);
+        		expandBox.setManaged(true);
+        	}
+            
+            if (editor instanceof Expandable) {
+            	((Expandable)editor).setExpandBox(expandBox);
+            }
+	        String id = m_beastObject.getID();
+	        expandBox.setVisible(!g_collapsedIDs.contains(id));
+
+        	m_listBox.getChildren().add(expandBox);
+	        return expandBox;
+		}
+	    
+	    
 
 }

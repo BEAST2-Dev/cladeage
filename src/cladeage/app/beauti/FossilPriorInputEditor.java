@@ -6,6 +6,8 @@ import java.util.Set;
 
 
 import beastfx.app.inputeditor.BeautiDoc;
+import beastfx.app.inputeditor.Expandable;
+import beastfx.app.inputeditor.ListInputEditor;
 import beastfx.app.inputeditor.MRCAPriorInputEditor;
 import beastfx.app.beauti.PriorInputEditor;
 import beastfx.app.inputeditor.TaxonSetDialog;
@@ -14,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Input;
 import beast.base.evolution.alignment.Taxon;
@@ -24,7 +27,7 @@ import beast.base.evolution.tree.MRCAPrior;
 import beast.base.inference.distribution.OneOnX;
 
 
-public class FossilPriorInputEditor extends MRCAPriorInputEditor {
+public class FossilPriorInputEditor extends MRCAPriorInputEditor implements Expandable {
 
 	public FossilPriorInputEditor(BeautiDoc doc) {
 		super(doc);
@@ -52,6 +55,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         m_input = input;
         m_beastObject = plugin;
         this.itemNr= listItemNr;
+        
 		
         HBox itemBox = FXUtils.newHBox();
 
@@ -103,6 +107,8 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         //itemBox.getChildren().add(Box.createGlue());
 
         getChildren().add(itemBox);
+        setPrefHeight(20);
+        setMaxHeight(20);
 	}
 	
     Set<Taxon> getTaxonCandidates(FossilPrior prior) {
@@ -124,5 +130,18 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor {
         }
         return candidates;
     }
+
+    VBox expandBox = null;
+	public void setExpandBox(VBox expandBox) {
+		this.expandBox = expandBox;
+	}
+	
+	@Override
+	public void refreshPanel() {
+		if (expandBox != null) {
+			ListInputEditor.updateExpandBox(doc, expandBox, m_beastObject, this);
+		}
+		super.refreshPanel();
+	}	
 
 }
