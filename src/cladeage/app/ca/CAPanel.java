@@ -17,6 +17,7 @@ import beastfx.app.inputeditor.SmallButton;
 import beastfx.app.util.Alert;
 import beastfx.app.util.FXUtils;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
@@ -256,6 +257,9 @@ public class CAPanel extends VBox {
 ////		setLayout(gridBagLayout);
 		
 		panel = new GridPane();
+		panel.setHgap(5);
+		panel.setVgap(5);
+		panel.setPadding(new Insets(0,0,5,0));
 		//panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Model parameters", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 //		//gbc_panel.fill = GridBagConstraints.BOTH;
 //		//gbc_panel.gridx = 0;
@@ -308,7 +312,7 @@ public class CAPanel extends VBox {
 			//gbc_label.anchor = GridBagConstraints.EAST;
 			//gbc_label.gridx = 2;
 			//gbc_label.gridy = 1;
-			panel.add(label, 2 ,1 ,2, 1); //gbc_label);
+			panel.add(label, 2 ,1 ,1, 1); //gbc_label);
 			
 			textField_maxOccuranceAge = newTextField();
 			textField_maxOccuranceAge.setPrefColumnCount(10);
@@ -317,7 +321,7 @@ public class CAPanel extends VBox {
 			//gbc_textField_1_1.fill = GridBagConstraints.HORIZONTAL;
 			//gbc_textField_1_1.gridx = 3;
 			//gbc_textField_1_1.gridy = 1;
-			panel.add(textField_maxOccuranceAge, 3, 1, 3, 1); //gbc_textField_1_1);
+			panel.add(textField_maxOccuranceAge, 3, 1, 1, 1); //gbc_textField_1_1);
 		}
 		
 		// always create the combobox, even when it is not displayed
@@ -338,7 +342,7 @@ public class CAPanel extends VBox {
 			panel.add(comboBox, 0, 0, 1, 1);//gbc_comboBox);
 			comboBox.setOnAction(e->guiToData());
 
-			Label lblNetDiversificationRate = new Label("Net diversification rate &lambda;&minus;&mu;:");
+			Label lblNetDiversificationRate = new Label("Net diversification rate \u03BB-\u03BC:");
 			//GridBagConstraints //gbc_lblNetDiversificationRate = new GridBagConstraints();
 			//gbc_lblNetDiversificationRate.anchor = GridBagConstraints.EAST;
 			//gbc_lblNetDiversificationRate.insets = new Insets(0, 0, 5, 5);
@@ -371,7 +375,7 @@ public class CAPanel extends VBox {
 			//gbc_textField_2.gridy = 2;
 			panel.add(textField_maxDivRate, 3, 2, 1, 1); //gbc_textField_2);
 			
-			Label lblRurnoverRateDb = new Label("Turnover rate &mu;/&lambda;:");
+			Label lblRurnoverRateDb = new Label("Turnover rate \u03BC/\u03BB:");
 			//GridBagConstraints //gbc_lblRurnoverRateDb = new GridBagConstraints();
 			//gbc_lblRurnoverRateDb.anchor = GridBagConstraints.EAST;
 			//gbc_lblRurnoverRateDb.insets = new Insets(0, 0, 5, 5);
@@ -404,7 +408,7 @@ public class CAPanel extends VBox {
 			//gbc_textField_3.gridy = 3;
 			panel.add(textField_maxTurnoverRate, 3, 3, 1, 1); //gbc_textField_3);
 			
-			Label lblSamplingRate = new Label("Sampling rate &psi;:");
+			Label lblSamplingRate = new Label("Sampling rate \u03a8:");
 			//GridBagConstraints //gbc_lblSamplingRate = new GridBagConstraints();
 			//gbc_lblSamplingRate.anchor = GridBagConstraints.EAST;
 			//gbc_lblSamplingRate.insets = new Insets(0, 0, 5, 5);
@@ -467,12 +471,12 @@ public class CAPanel extends VBox {
 			//gbc_textField_11.gridy = 5;
 			// panel.add(textField_minSamplingGap, //gbc_textField_11);
 			
-			Label label_4 = new Label("-");
+			//Label label_4 = new Label("-");
 			//GridBagConstraints //gbc_label_4 = new GridBagConstraints();
 			//gbc_label_4.insets = new Insets(0, 0, 0, 5);
 			//gbc_label_4.gridx = 2;
 			//gbc_label_4.gridy = 5;
-			panel.add(label_4, 2, 5, 1, 1); //gbc_label_4);
+			//panel.add(label_4, 2, 5, 1, 1); //gbc_label_4);
 			
 			// textField_maxSamplingGap = newTextField();
 			// textField_maxSamplingGap.addActionListener(new ActionListener() {
@@ -491,7 +495,7 @@ public class CAPanel extends VBox {
 			//GridBagConstraints //gbc_btnNewButton = new GridBagConstraints();
 			//gbc_btnNewButton.gridx = 5;
 			//gbc_btnNewButton.gridy = 1;
-			panel.add(btnHelpButtonFirstOccurance, 5, 1, 5, 10); //gbc_btnNewButton);
+			panel.add(btnHelpButtonFirstOccurance, 5, 1, 1, 1); //gbc_btnNewButton);
 			btnHelpButtonFirstOccurance.setOnAction(e ->
 					showHelp(OCCURRENCE_AGE_HELP)
 			);
@@ -541,20 +545,22 @@ public class CAPanel extends VBox {
 		// 	});
 		// }
 				
-		VBox panel2b = FXUtils.newVBox();
+		HBox panel2b = FXUtils.newHBox();
 		// panel2b.setLayout(new BorderLayout());
 		
-		ImageView icon = FXUtils.getIcon(CA_ICON);
+		ImageView icon = FXUtils.getIcon(CA_ICON2);
 		Label lblIcon = new Label();
 		lblIcon.setGraphic(icon);
 		if (mode == MODE_BEAUTI_BOTTOM) {
-			lblIcon.setMinSize(84,84);
+			lblIcon.setMinSize(4,4);
 			lblIcon.setPrefSize(84,84);
+			lblIcon.setMaxSize(4,4);
+			panel.add(lblIcon, 6, 2, 1, 1);
 		} else {
 			lblIcon.setMinSize(160,160);
 			lblIcon.setPrefSize(160,160);
+			panel2b.getChildren().add(lblIcon);
 		}
-		panel2b.getChildren().add(icon);
 		
 		btnCalculate = new Button("Run");
 		btnCalculate.setMinSize(128, 20);
@@ -629,7 +635,11 @@ public class CAPanel extends VBox {
 //		//gbc_btnCalculate.insets = new Insets(0, 0, 5, 0);
 //		//gbc_btnCalculate.gridx = 0;
 //		//gbc_btnCalculate.gridy = 4;
-		panel2b.getChildren().add(btnCalculate);
+		if (mode == MODE_BEAUTI_BOTTOM) {
+			panel.add(btnCalculate, 8, 1, 1, 1);
+		} else {
+			panel2b.getChildren().add(btnCalculate);
+		}
 		
 		//GridBagConstraints gbc_lblIcon = new GridBagConstraints();
 		//gbc_lblIcon.insets = new Insets(5, 0, 5, 5);
@@ -792,7 +802,17 @@ public class CAPanel extends VBox {
 
 		panel_1 = new GridPane();// {
 		panel3.add(panel2b, 0, 2, 1, 1);
-		panel_1.add(chart, 0, 1, 1, 1);
+		if (mode == MODE_BEAUTI_BOTTOM) {
+			panel.add(chart, 0, 2, 6, 1);
+			chart.setOnMouseClicked(e->{
+				String text = getFitParameters();
+				text = text.replaceAll("\n", "<br/>");
+				showHelp("<html>Distribution fit:<br/>" + text + "</html>");
+			}
+		);
+		} else {
+			panel_1.add(chart, 0, 1, 1, 1);
+		}
 //			
 //			
 //			protected void paintComponent(java.awt.Graphics g) {
@@ -990,7 +1010,9 @@ public class CAPanel extends VBox {
 		//gbc_panel_1.fill = GridBagConstraints.BOTH;
 		//gbc_panel_1.gridx = 0;
 		//gbc_panel_1.gridy = 1;
-		panel3.getChildren().add(panel_1); //gbc_panel_1);
+		if (mode != MODE_BEAUTI_BOTTOM) {
+			panel3.getChildren().add(panel_1); //gbc_panel_1);
+		}
 //		JPanel panel4 = new JPanel();
 //		panel4.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Approximation", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 //		GridBagConstraints //gbc_panel4 = new GridBagConstraints();

@@ -252,9 +252,7 @@ public class CladeAgeProbabilities {
 			}
 			// Increment the progress indicator.
 			if (dpb != null) {
-				Platform.runLater(() ->
-					dpb.setProgress(successful_simulations[successful_simulations.length-1]/100)
-				);
+				dpb.progressProperty().set(successful_simulations[successful_simulations.length-1]/10000.0);
 			}
 
 			// Draw values for parameters ndr (net diversification rate, lambda - mu) and epsilon (turnover rate, mu/lambda) from uniform distributions, and calculate lambda and mu from them.

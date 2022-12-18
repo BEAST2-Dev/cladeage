@@ -2,13 +2,13 @@ package cladeage.app.beauti;
 
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 import beastfx.app.inputeditor.BeautiDoc;
 import beastfx.app.inputeditor.BeautiSubTemplate;
-import beastfx.app.inputeditor.ExpandActionListener;
 import beastfx.app.inputeditor.Expandable;
 import beastfx.app.inputeditor.InputEditor;
 import beastfx.app.inputeditor.SmallButton;
@@ -16,13 +16,10 @@ import beastfx.app.inputeditor.SmallLabel;
 import beast.base.parser.PartitionContext;
 import beastfx.app.beauti.PriorListInputEditor;
 import beastfx.app.inputeditor.TaxonSetDialog;
-import beastfx.app.inputeditor.InputEditor.ExpandOption;
-import beastfx.app.inputeditor.ListInputEditor.ActionListenerObject;
 import beastfx.app.util.Alert;
 import beastfx.app.util.FXUtils;
 import cladeage.app.ca.CAPanel;
 import cladeage.app.ca.CAPanelListener;
-import beastfx.app.inputeditor.BEASTObjectInputEditor;
 import beastfx.app.inputeditor.BEASTObjectPanel;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Input;
@@ -35,9 +32,6 @@ import beast.base.evolution.alignment.TaxonSet;
 import beast.base.evolution.tree.Tree;
 import cladeage.math.distributions.FossilCalibration;
 import cladeage.math.distributions.FossilPrior;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -62,6 +56,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    
 	    CAPanel caPanel;
 	    FossilCalibration calibration;
+	    boolean topPanelPresent = false;
 	    
 	    @Override
 	    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
@@ -70,26 +65,33 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    	// add panel at end
 	    	List<?> list = (List) input.get();
 	    	if (list.size() > 0) {
-	    		calibration = ((FossilPrior) list.get(0)).calibrationDistr.get();
-	    		caPanel = new CAPanel(CAPanel.MODE_BEAUTI_TOP);
-	    		caPanel.setMinDivRate(calibration.minDivRateInput.get().getValue());
-	    		caPanel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
-	    		caPanel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
-	    		caPanel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
-	    		caPanel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
-	    		caPanel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
-	    		caPanel.setMethod(calibration.cladeAgeMethodInput.get());
-	            caPanel.dataToGUI();
-	            caPanel.addChangeListener(this);
-	            caPanel.setVisible(true);
-	            caPanel.setPrefWidth(640);
-	            Pane p = ((Pane)pane.getChildren().get(0));
-	            int pos = p.getChildren().size() - 1;
-	            p.getChildren().add(pos, caPanel);
+	    		addTopCAPanel(((FossilPrior) list.get(0)).calibrationDistr.get());
 	    	}
 	    }
 	    
-	    @Override
+	    private void addTopCAPanel(FossilCalibration calibrationx) {
+	    	calibration = calibrationx;
+    		caPanel = new CAPanel(CAPanel.MODE_BEAUTI_TOP);
+    		caPanel.setMinDivRate(calibration.minDivRateInput.get().getValue());
+    		caPanel.setMinTurnoverRate(calibration.minTurnoverRateInput.get().getValue());
+    		caPanel.setMinSamplingRate(calibration.minSamplingRateInput.get().getValue());
+    		caPanel.setMaxDivRate(calibration.maxDivRateInput.get().getValue());
+    		caPanel.setMaxTurnoverRate(calibration.maxTurnoverRateInput.get().getValue());
+    		caPanel.setMaxSamplingRate(calibration.maxSamplingRateInput.get().getValue());
+    		caPanel.setMethod(calibration.cladeAgeMethodInput.get());
+            caPanel.dataToGUI();
+            caPanel.addChangeListener(this);
+            caPanel.setVisible(true);
+            caPanel.setPrefWidth(640);
+            if (pane.getChildren().size() > 0) {
+            	Pane p = ((Pane)pane.getChildren().get(0));
+            	int pos = p.getChildren().size() - 1;
+            	p.getChildren().add(pos, caPanel);
+                topPanelPresent = true;
+            }
+		}
+
+		@Override
 	    public List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> sTabuList) {
 	        FossilPrior prior = new FossilPrior();
 	        try {
@@ -169,7 +171,8 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	        }
 	        List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
 	        selectedPlugins.add(prior);
-	        g_collapsedIDs.add(prior.getID());	        
+	        g_collapsedIDs.add(prior.getID());
+	        
 	        return selectedPlugins;
 	    }
 
@@ -233,7 +236,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	                expandBox.setMinHeight(400);
 	                expandBox.setVisible(true);
 	                expandBox.setManaged(true);
-	                g_collapsedIDs.remove(m_beastObject.getID());
+	                g_collapsedIDs.remove(beastObject.getID());
 	            } else {
 	            	try {
 	            		editButton.setImg(RIGHT_ICON);
@@ -244,11 +247,11 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	            	expandBox.setMinHeight(0);
 	            	expandBox.setVisible(false);
 	            	expandBox.setManaged(false);
-	                g_collapsedIDs.add(m_beastObject.getID());
+	                g_collapsedIDs.add(beastObject.getID());
 	            }
             });
             try {
-    	        if (!g_collapsedIDs.contains(m_beastObject.getID())) {
+    	        if (!g_collapsedIDs.contains(beastObject.getID())) {
     	            editButton.setImg(DOWN_ICON);
     	        } else {
     	            editButton.setImg(RIGHT_ICON);
@@ -258,7 +261,17 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
     		}
             itemBox0.getChildren().add(expandBox);
 	         
-	        m_listBox.getChildren().add(itemBox0);
+            int pos = 0;
+            if (topPanelPresent) {
+            	pos = m_listBox.getChildren().size() - 2;
+            }
+	        m_listBox.getChildren().add(pos, itemBox0);
+
+	        
+	    	if (!topPanelPresent) {
+	    		List<?> list = (List) m_input.get();
+	    		addTopCAPanel(((FossilPrior) list.get(0)).calibrationDistr.get());
+	    	}
 
 	    } // addSingleItem
 
@@ -270,7 +283,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	    	expandBox.getChildren().clear();
 	    	expandBox.getChildren().add(fossilCalibrationEditor);
 
-            if (g_collapsedIDs.contains(m_beastObject.getID())) {
+            if (g_collapsedIDs.contains(beastObject.getID())) {
         		expandBox.setPrefHeight(0);
             	expandBox.setMinHeight(0);
         		expandBox.setVisible(false);
@@ -285,7 +298,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
             if (editor instanceof Expandable) {
             	((Expandable)editor).setExpandBox(expandBox);
             }
-	        String id = m_beastObject.getID();
+	        String id = beastObject.getID();
 	        expandBox.setVisible(!g_collapsedIDs.contains(id));
 
         	m_listBox.getChildren().add(expandBox);

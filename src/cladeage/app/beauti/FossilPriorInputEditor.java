@@ -12,6 +12,7 @@ import beastfx.app.inputeditor.MRCAPriorInputEditor;
 import beastfx.app.beauti.PriorInputEditor;
 import beastfx.app.inputeditor.TaxonSetDialog;
 import beastfx.app.util.FXUtils;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tooltip;
@@ -57,7 +58,8 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor implements Expa
         this.itemNr= listItemNr;
         
 		
-        HBox itemBox = FXUtils.newHBox();
+        HBox itemBox = new HBox();
+        itemBox.setSpacing(5);
 
         MRCAPrior prior = (MRCAPrior) plugin;
         String sText = prior.taxonsetInput.get().getID();
@@ -100,6 +102,7 @@ public class FossilPriorInputEditor extends MRCAPriorInputEditor implements Expa
         isMonophyleticdBox.setId(sText+".isMonophyletic");
         isMonophyleticdBox.setSelected(prior.isMonophyleticInput.get());
         isMonophyleticdBox.setTooltip(new Tooltip(prior.isMonophyleticInput.getTipText()));
+        isMonophyleticdBox.setPadding(new Insets(5));
         isMonophyleticdBox.setOnAction(e->{
             prior.isMonophyleticInput.setValue(isMonophyleticdBox.isSelected(), prior);
         });
