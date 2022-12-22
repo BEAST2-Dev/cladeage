@@ -6,7 +6,7 @@ import java.util.Set;
 
 
 import beastfx.app.inputeditor.BeautiDoc;
-import beastfx.app.inputeditor.Expandable;
+// import beastfx.app.inputeditor.Expandable;
 import beastfx.app.inputeditor.ListInputEditor;
 import beastfx.app.inputeditor.MRCAPriorInputEditor;
 import beastfx.app.beauti.PriorInputEditor;
@@ -28,7 +28,7 @@ import beast.base.evolution.tree.MRCAPrior;
 import beast.base.inference.distribution.OneOnX;
 
 
-public class FossilPriorInputEditor extends MRCAPriorInputEditor implements Expandable {
+public class FossilPriorInputEditor extends MRCAPriorInputEditor { //implements Expandable {
 
 	public FossilPriorInputEditor(BeautiDoc doc) {
 		super(doc);

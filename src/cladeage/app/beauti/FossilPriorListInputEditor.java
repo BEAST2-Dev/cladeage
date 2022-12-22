@@ -9,7 +9,7 @@ import java.util.List;
 
 import beastfx.app.inputeditor.BeautiDoc;
 import beastfx.app.inputeditor.BeautiSubTemplate;
-import beastfx.app.inputeditor.Expandable;
+// import beastfx.app.inputeditor.Expandable;
 import beastfx.app.inputeditor.InputEditor;
 import beastfx.app.inputeditor.SmallButton;
 import beastfx.app.inputeditor.SmallLabel;
@@ -295,8 +295,8 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
         		expandBox.setManaged(true);
         	}
             
-            if (editor instanceof Expandable) {
-            	((Expandable)editor).setExpandBox(expandBox);
+            if (editor instanceof FossilPriorInputEditor) {
+            	((FossilPriorInputEditor)editor).setExpandBox(expandBox);
             }
 	        String id = beastObject.getID();
 	        expandBox.setVisible(!g_collapsedIDs.contains(id));

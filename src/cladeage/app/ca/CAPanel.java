@@ -548,7 +548,7 @@ public class CAPanel extends VBox {
 		HBox panel2b = FXUtils.newHBox();
 		// panel2b.setLayout(new BorderLayout());
 		
-		ImageView icon = FXUtils.getIcon(CA_ICON2);
+		ImageView icon = FXUtils.getIcon("CA", CA_ICON2);
 		Label lblIcon = new Label();
 		lblIcon.setGraphic(icon);
 		if (mode == MODE_BEAUTI_BOTTOM) {
