@@ -1438,6 +1438,8 @@ public class CAPanel extends VBox {
 		text = text.replace("&nbsp;", " ");
 		text = text.replace("<html>", "");
 		text = text.replace("</html>", "");
+		text = text.replaceAll("<a[^>]+>", "");
+		text = text.replace("</a>", "\n");
 		return text;
     }
     

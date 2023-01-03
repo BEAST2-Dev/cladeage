@@ -29,7 +29,7 @@ public class FossilPrior extends MRCAPrior {
 		
 		distInput.setValue(calibrationDistr.get(), this);
 		super.initAndValidate();
-		distInput.setValue(null, this);
+		// distInput.setValue(null, this);
 	};
 	
 	

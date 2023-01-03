@@ -163,7 +163,7 @@ public class FossilPriorListInputEditor extends PriorListInputEditor implements 
 	        	fossilCalibration.setID("FossilCalibration.0");
 	        	doc.registerPlugin(fossilCalibration);
 		        prior.calibrationDistr.setValue(fossilCalibration, prior);
-
+		        prior.initAndValidate();
 	            
 	        } catch (Exception e) {
 	        	e.printStackTrace();
